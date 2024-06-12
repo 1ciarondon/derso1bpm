@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Solicitação de Derso - 1º BPM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e5/Bras%C3%A3o_PMRO.PNG');
+            background-size: 70%; /* Reduz o tamanho da imagem para 70% do contêiner */
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.7);
+            background-blend-mode: overlay;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #ffffff;
+            text-shadow: 2px 2px 5px #000000;
+        }
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        label {
+            font-weight: bold;
+            color: #333333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="email"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            color: #333333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="email"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 14L6 8h8l-4 6z" fill="%23424242"/></svg>');
+            background-position: right 10px top 50%;
+            background-repeat: no-repeat;
+            background-size: 20px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 10px rgba(0, 86, 179, 0.5);
+        }
+        .checkbox-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            color: #333333;
+            display: inline;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulário de Solicitação de Derso - 1º BPM</h1>
+    <form action="#" method="post" onsubmit="return validarForm()">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" required><br>
+        
+        <label for="nome_guerra">Nome de Guerra:</label>
+        <input type="text" id="nome_guerra" name="nome_guerra" required><br>
+        
+        <label for="re">RE (Registro Estatístico):</label>
+        <input type="text" id="re" name="re" required pattern="1000\d{6}" title="Insira seu RE, iniciando com 1000, sem pontos ou traços"><br>
+        
+        <label for="folga">Folga:</label>
+        <select id="folga" name="folga" required>
+            <option value="">Selecione...</option>
+            <option value="24h">24H</option>
+            <option value="48h">48H</option>
+            <option value="72h">72H</option>
+            <option value="1a_folga">1ª Folga</option>
+            <option value="2a_folga">2ª Folga</option>
+            <option value="expediente">Expediente</option>
+        </select><br>
+        
+        <label for="data_requerida">Data Requerida:</label>
+        <input type="text" id="data_requerida" name="data_requerida" class="flatpickr" required><br>
+        
+        <label for="policiamento">Policiamento:</label><br>
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" id="reforco" name="policiamento[]" value="reforco" required>
+                <label for="reforco">Reforço</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="rural" name="policiamento[]" value="rural" required>
+                <label for="rural">Rural</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="tj_cal" name="policiamento[]" value="tj_cal" required>
+                <label for="tj_cal">TJ Cal</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="emeron" name="policiamento[]" value="emeron" required>
+                <label for="emeron">Emeron</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="comercio_seguro" name="policiamento[]" value="comercio_seguro" required>
+                <label for="comercio_seguro">Comércio Seguro</label>
+            </div>
+        </div>
+        
+        <input type="submit" value="Enviar">
+   </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/l10n/pt.js"></script>
+    <script>
+        flatpickr(".flatpickr", {
+            locale: "pt",
+            enable: [
+                function(date) {
+                    return date.getMonth() === (new Date().getMonth() + 1);
+                }
+            ],
+            minDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+            dateFormat: "Y-m-d",
+        });
+
+        function validarForm() {
+            var reInput = document.getElementById("re");
+            var reValue = reInput.value.trim();
+            var rePattern = /^1000\d{6}$/;
+
+            if (!rePattern.test(reValue)) {
+                alert("RE inválido. Certifique-se de que começa com 1000 e possui 10 dígitos.");
+                return false;
+            }
+
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Por favor, selecione pelo menos uma opção de policiamento.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>
