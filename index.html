@@ -111,8 +111,8 @@
         <label for="nome_guerra">Nome de Guerra:</label>
         <input type="text" id="nome_guerra" name="nome_guerra" required><br>
         
-       <label for="re">RE (Registro Estatístico):</label>
-<input type="text" id="re" name="re" required pattern="1000\d{5}" title="Insira seu RE, iniciando com 1000 e seguido por mais 5 dígitos"><br>
+        <label for="re">RE (Registro Estatístico):</label>
+        <input type="text" id="re" name="re" required pattern="1000\d{5}" title="Insira seu RE, iniciando com 1000 e seguido por mais 5 dígitos"><br>
         
         <label for="folga">Folga:</label>
         <select id="folga" name="folga" required>
@@ -129,31 +129,31 @@
         <input type="text" id="data_requerida" name="data_requerida" class="flatpickr" required><br>
         
         <label for="policiamento">Policiamento:</label><br>
-<div class="checkbox-group">
-    <div class="checkbox-item">
-        <input type="checkbox" id="reforco" name="policiamento[]" value="reforco">
-        <label for="reforco">Reforço</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="rural" name="policiamento[]" value="rural">
-        <label for="rural">Rural</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="tj_cal" name="policiamento[]" value="tj_cal">
-        <label for="tj_cal">TJ Cal</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="emeron" name="policiamento[]" value="emeron">
-        <label for="emeron">Emeron</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="comercio_seguro" name="policiamento[]" value="comercio_seguro">
-        <label for="comercio_seguro">Comércio Seguro</label>
-    </div>
-</div>
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" id="reforco" name="policiamento[]" value="reforco">
+                <label for="reforco">Reforço</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="rural" name="policiamento[]" value="rural">
+                <label for="rural">Rural</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="tj_cal" name="policiamento[]" value="tj_cal">
+                <label for="tj_cal">TJ Cal</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="emeron" name="policiamento[]" value="emeron">
+                <label for="emeron">Emeron</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="comercio_seguro" name="policiamento[]" value="comercio_seguro">
+                <label for="comercio_seguro">Comércio Seguro</label>
+            </div>
+        </div>
         
         <input type="submit" value="Enviar">
-   </form>
+    </form>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/l10n/pt.js"></script>
@@ -169,26 +169,24 @@
             dateFormat: "Y-m-d",
         });
 
-     <script>
-    function validarForm() {
-        var reInput = document.getElementById("re");
-        var reValue = reInput.value.trim();
-        var rePattern = /^1000\d{5}$/;
+        function validarForm() {
+            var reInput = document.getElementById("re");
+            var reValue = reInput.value.trim();
+            var rePattern = /^1000\d{5}$/;
 
-        if (!rePattern.test(reValue)) {
-            alert("RE inválido. Certifique-se de que começa com 1000 e possui 9 dígitos.");
-            return false;
+            if (!rePattern.test(reValue)) {
+                alert("RE inválido. Certifique-se de que começa com 1000 e possui 9 dígitos.");
+                return false;
+            }
+
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Por favor, selecione pelo menos uma opção de policiamento.");
+                return false;
+            }
+
+            return true;
         }
-
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            alert("Por favor, selecione pelo menos uma opção de policiamento.");
-            return false;
-        }
-
-        return true;
-    }
-</script>
-
+    </script>
 </body>
 </html>
