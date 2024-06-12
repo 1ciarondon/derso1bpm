@@ -172,7 +172,7 @@
         function validarForm() {
             var reInput = document.getElementById("re");
             var reValue = reInput.value.trim();
-            var rePattern = /^1000\d{6}$/;
+            var rePattern = /^1000\d{5}$/;
 
             if (!rePattern.test(reValue)) {
                 alert("RE inválido. Certifique-se de que começa com 1000 e possui 10 dígitos.");
