@@ -104,7 +104,7 @@
 </head>
 <body>
     <h1>Formulário de Solicitação de Derso - 1º BPM</h1>
-    <form action="#" method="post" onsubmit="return validarForm()">
+    <form action="https://script.google.com/macros/s/AKfycbwDnk9SiKW5srrGohZedH-iaE8EX4U0xm-W3daacKHX3KggbVM_dghVR6Op19yo9wsX/exec" method="post" onsubmit="return validarForm()">
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required><br>
         
