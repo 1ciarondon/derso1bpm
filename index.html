@@ -170,28 +170,44 @@
             dateFormat: "Y-m-d",
         });
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
-
-            const form = document.getElementById('dersoForm');
+            const form = event.target;
             const formData = new FormData(form);
 
-            fetch('https://script.google.com/macros/s/AKfycbxLJuUXkW5V8NoDuvTVTj2ZzZQ86tOwS_uGQT7WdMZfMX1GMoEJiitSDLDP7_l51es/exec', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(responseText => {
-                alert('Formulário enviado com sucesso!');
-                form.reset();
-                // Mantém o usuário na mesma página para que possa enviar novos dados
-            })
-            .catch(error => {
-                console.error('Erro ao enviar formulário:', error);
-                alert('Ocorreu um erro ao enviar o formulário.');
+            const data = {};
+            formData.forEach((value, key) => {
+                if (data[key]) {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
             });
 
-            return false;
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzaosyfnYUB-Y0HDoZcgp5X6TdE1biDvhrAZZkEITA/exec', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(data)
+                });
+
+                if (response.ok) {
+                    alert('Formulário enviado com sucesso!');
+                    form.reset();
+                } else {
+                    throw new Error('Erro ao enviar formulário');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar formulário:', error);
+                alert('Houve um problema ao enviar o formulário.');
+            }
         }
 
         function validarForm() {
