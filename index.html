@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Teste - Solicitação de Folga DERSO</title>
+  <title>Solicitação de Folga - DERSO</title>
   <style>
     body {
       background-color: #f7f7f7;
@@ -53,7 +53,7 @@
       cursor: pointer;
     }
     .radio-group input[type="radio"] {
-      margin: 0 6px 0 0; /* reduz o espaço entre o botão e o texto */
+      margin: 0 6px 0 0;
     }
     .button {
       background-color: #007BFF;
@@ -83,7 +83,7 @@
       return num;
     }
 
-    // Carrega a lista de funcionários (usando o Apps Script)
+    // Carrega a lista de funcionários a partir do Apps Script
     function loadEmployeeList() {
       const listURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec?action=lista";
       fetch(listURL)
@@ -132,29 +132,29 @@
       return parts[2] + "/" + parts[1] + "/" + parts[0];
     }
 
-    // Obtém o valor selecionado do grupo de radio buttons para "Folga"
+    // Obtém o valor selecionado dos radio buttons para "Folga"
     function getFolgaValue() {
       let selected = document.querySelector("input[name='folga']:checked");
       return selected ? selected.value : "";
     }
 
-    // Submete o formulário com timestamp e data formatados
+    // Submete o formulário com os dados formatados
     function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Formata o timestamp para "dd/mm/aaaa HH:MM:SS"
+      // Formata o timestamp no formato "dd/mm/aaaa HH:MM:SS"
       let timestamp = new Date().toLocaleString('pt-BR', { hour12: false });
       formData.set("timestamp", timestamp);
       
-      // Converte a data para "dd/mm/aaaa"
+      // Converte o valor do campo de data para "dd/mm/aaaa"
       let dataValue = document.getElementById("data").value;
       if (dataValue) {
         formData.set("data", formatDateToBR(dataValue));
       }
       
-      // Define o valor selecionado de "Folga"
+      // Define o valor selecionado para "Folga"
       let folgaValue = getFolgaValue();
       formData.set("folga", folgaValue);
       
@@ -170,7 +170,7 @@
           console.error("Erro no envio:", error);
         });
     }
-
+    
     document.addEventListener("DOMContentLoaded", function(){
       loadEmployeeList();
       setDateLimits();
