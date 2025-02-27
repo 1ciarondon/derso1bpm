@@ -74,7 +74,8 @@
     }
   </style>
   <script>
-    let employeeList = {};
+    // Use window.employeeList para garantir que a variável esteja no escopo global
+    window.employeeList = {};
 
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
@@ -87,14 +88,15 @@
     // Carrega a lista de funcionários a partir do Apps Script
     function loadEmployeeList() {
       const listURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec?action=lista";
-     fetch(listURL)
+      fetch(listURL)
         .then(response => response.json())
         .then(data => {
-          employeeList = data;
+          window.employeeList = data;
+          console.log("Lista carregada:", data);
         })
         .catch(error => {
           console.error("Erro ao carregar a lista de funcionários:", error);
-          employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
+          window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
 
