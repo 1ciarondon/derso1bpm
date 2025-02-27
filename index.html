@@ -21,6 +21,7 @@
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 20px;
     }
     .form-group {
       margin-bottom: 15px;
@@ -39,17 +40,29 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+    }
     .radio-group label {
-      display: block;
+      display: flex;
+      align-items: center;
       margin-bottom: 5px;
       font-size: 16px;
       color: #555;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"] {
+      margin-right: 5px; /* Reduz o espaço entre a bolinha e o texto */
     }
     .button {
       background-color: #007BFF;
       color: #fff;
       border: none;
       cursor: pointer;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
       transition: background-color 0.3s ease;
     }
     .button:hover {
@@ -103,7 +116,7 @@
       }
     }
 
-    // Configura o campo de data para aceitar somente datas do próximo mês
+    // Configura o campo de data para aceitar apenas datas do próximo mês
     function setDateLimits() {
       const dateInput = document.getElementById("data");
       let today = new Date();
@@ -157,7 +170,7 @@
           console.error("Erro no envio:", error);
         });
     }
-    
+
     document.addEventListener("DOMContentLoaded", function(){
       loadEmployeeList();
       setDateLimits();
@@ -206,7 +219,7 @@
         <button type="submit" class="button">Enviar Solicitação</button>
       </div>
     </form>
-    <div id="duplicateError" style="color: red;"></div>
+    <div id="duplicateError" class="error"></div>
   </div>
 </body>
 </html>
