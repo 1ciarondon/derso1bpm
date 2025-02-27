@@ -10,7 +10,7 @@
     .error { color: red; }
   </style>
   <script>
-    // Função que padroniza a matrícula (remove caracteres não numéricos e adiciona "1000" se necessário)
+    // Função que padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -68,56 +68,30 @@
       return parts[2] + "/" + parts[1] + "/" + parts[0];
     }
     
-    // Reúne os valores selecionados para "Folga" (checkboxes) em uma string separada por vírgulas
-    function getFolgaValues() {
-      let checkboxes = document.querySelectorAll("input[name='folga']:checked");
-      let values = [];
-      checkboxes.forEach(function(box) {
-        values.push(box.value);
-      });
-      return values.join(", ");
+    // Obtém o valor selecionado do grupo de radio buttons para "Folga"
+    function getFolgaValue() {
+      let selected = document.querySelector("input[name='folga']:checked");
+      return selected ? selected.value : "";
     }
     
-    // Verifica se já existe uma solicitação para a mesma data com o mesmo e-mail ou matrícula
-    async function checkDuplicateSubmission(email, matricula, dataField) {
-      const url = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec?action=check"
-                + "&email=" + encodeURIComponent(email)
-                + "&matricula=" + encodeURIComponent(matricula)
-                + "&data=" + encodeURIComponent(dataField);
-      try {
-        let response = await fetch(url);
-        let result = await response.json();
-        return result.duplicate;
-      } catch (error) {
-        console.error("Erro na verificação de duplicata:", error);
-        return false;
-      }
-    }
-    
-    // Submete o formulário após verificar duplicatas
-    async function submitForm(event) {
+    // Submete o formulário após preparar os dados formatados
+    function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
-      const duplicateErrorDiv = document.getElementById("duplicateError");
-      duplicateErrorDiv.textContent = "";
-      
-      let email = document.getElementById("email").value.trim();
-      let matricula = standardizeMatricula(document.getElementById("matricula").value);
-      let dataValue = document.getElementById("data").value;
-      let formattedDate = formatDateToBR(dataValue);
-      
-      let duplicate = await checkDuplicateSubmission(email, matricula, formattedDate);
-      if (duplicate) {
-        duplicateErrorDiv.textContent = "Já existe uma solicitação para esta data com este e-mail ou matrícula.";
-        return;
-      }
       
       const formData = new FormData(form);
+      // Formata o timestamp para data e hora no formato "dd/mm/aaaa HH:MM:SS"
       let timestamp = new Date().toLocaleString('pt-BR', { hour12: false });
       formData.set("timestamp", timestamp);
-      formData.set("data", formattedDate);
       
-      let folgaValue = getFolgaValues();
+      // Converte o valor do campo de data para "dd/mm/aaaa"
+      let dataValue = document.getElementById("data").value;
+      if (dataValue) {
+        formData.set("data", formatDateToBR(dataValue));
+      }
+      
+      // Pega o valor selecionado do grupo de radio buttons para "Folga"
+      let folgaValue = getFolgaValue();
       formData.set("folga", folgaValue);
       
       const scriptURL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
@@ -157,12 +131,12 @@
     <br>
     
     <label>Folga:</label>
-    <label><input type="checkbox" name="folga" value="24H">24H</label>
-    <label><input type="checkbox" name="folga" value="48H">48H</label>
-    <label><input type="checkbox" name="folga" value="72H">72H</label>
-    <label><input type="checkbox" name="folga" value="1ª FOLGA">1ª FOLGA</label>
-    <label><input type="checkbox" name="folga" value="2ª FOLGA">2ª FOLGA</label>
-    <label><input type="checkbox" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
+    <label><input type="radio" name="folga" value="24H" required>24H</label>
+    <label><input type="radio" name="folga" value="48H">48H</label>
+    <label><input type="radio" name="folga" value="72H">72H</label>
+    <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
+    <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
+    <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
     <br>
     
     <label for="data">Data:</label>
@@ -171,6 +145,7 @@
     
     <button type="submit">Enviar Solicitação</button>
   </form>
+  <!-- Aqui você pode adicionar uma div para erros de duplicidade, se necessário -->
   <div id="duplicateError" style="color: red;"></div>
 </body>
 </html>
