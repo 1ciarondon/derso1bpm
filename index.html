@@ -74,7 +74,8 @@
     }
   </style>
   <script>
-    // Função para padronizar a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
+    let employeeList = {};
+
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -86,15 +87,14 @@
     // Carrega a lista de funcionários a partir do Apps Script
     function loadEmployeeList() {
       const listURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec?action=lista";
-      fetch(listURL)
+     fetch(listURL)
         .then(response => response.json())
         .then(data => {
-          window.employeeList = data;
-          console.log("Lista carregada:", data);
+          employeeList = data;
         })
         .catch(error => {
-          console.error("Erro ao carregar a lista:", error);
-          window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
+          console.error("Erro ao carregar a lista de funcionários:", error);
+          employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
 
@@ -103,7 +103,6 @@
       const matriculaInput = document.getElementById("matricula");
       const nomeInput = document.getElementById("nome");
       const errorMsg = document.getElementById("matriculaError");
-      
       let standardized = standardizeMatricula(matriculaInput.value);
       matriculaInput.value = standardized;
       
