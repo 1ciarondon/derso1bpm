@@ -21,7 +21,15 @@
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555;
       margin-bottom: 20px;
+      font-weight: normal;
+      font-size: 15px;
+      line-height: 1.4;
     }
     .form-group {
       margin-bottom: 15px;
@@ -30,6 +38,7 @@
       display: block;
       margin-bottom: 5px;
       color: #555;
+      font-weight: bold;
     }
     .form-group input,
     .form-group button,
@@ -40,17 +49,16 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    /* Distribui os radio buttons em duas linhas de três colunas */
     .radio-group {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      display: flex;
+      flex-direction: column;
     }
     .radio-group label {
       display: flex;
       align-items: center;
       font-size: 16px;
       color: #555;
+      margin-bottom: 8px;
       cursor: pointer;
     }
     .radio-group input[type="radio"] {
@@ -75,6 +83,9 @@
     }
   </style>
   <script>
+    // URL principal do seu Apps Script (doPost/doGet)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec";
+
     // Variável global para a lista de funcionários
     window.employeeList = {};
 
@@ -89,15 +100,15 @@
 
     // Carrega a lista de funcionários do Apps Script
     function loadEmployeeList() {
-      const listURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec?action=lista";
+      const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
         .then(response => response.json())
         .then(data => {
           window.employeeList = data;
-          console.log("Lista carregada:", data);
         })
         .catch(error => {
-          console.error("Erro ao carregar a lista:", error);
+          console.error("Erro ao carregar a lista de funcionários:", error);
+          // Em caso de falha, define alguns valores de teste
           window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
@@ -141,8 +152,25 @@
       return selected ? selected.value : "";
     }
 
+    // Verifica duplicidade para a mesma matrícula + data
+    // (Chama o Apps Script com ?action=check, que deve ser implementado)
+    async function checkDuplicate(matricula, dataValue) {
+      const checkURL = SCRIPT_URL + "?action=check"
+        + "&matricula=" + encodeURIComponent(matricula)
+        + "&data=" + encodeURIComponent(dataValue);
+
+      try {
+        let response = await fetch(checkURL);
+        let result = await response.json();
+        return result.duplicate; // true ou false
+      } catch (error) {
+        console.error("Erro na verificação de duplicata:", error);
+        return false;
+      }
+    }
+
     // Submete o formulário com os dados formatados (timestamp e data)
-    function submitForm(event) {
+    async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
@@ -153,17 +181,25 @@
       
       // Converte o valor do campo de data para "dd/mm/aaaa"
       let dataValue = document.getElementById("data").value;
-      if (dataValue) {
-        formData.set("data", formatDateToBR(dataValue));
+      let dataBR = formatDateToBR(dataValue);
+      formData.set("data", dataBR);
+
+      // Matrícula padronizada
+      let matricula = standardizeMatricula(document.getElementById("matricula").value);
+
+      // Verifica se já existe solicitação para a mesma matrícula + data
+      let duplicate = await checkDuplicate(matricula, dataBR);
+      if (duplicate) {
+        alert("Já existe solicitação para essa data com essa matrícula!");
+        return; // Impede o envio
       }
-      
+
       // Define o valor selecionado para "Folga"
       let folgaValue = getFolgaValue();
       formData.set("folga", folgaValue);
       
-      const scriptURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec";
-      
-      fetch(scriptURL, { method: "POST", body: formData })
+      // Envia para o Apps Script
+      fetch(SCRIPT_URL, { method: "POST", body: formData })
         .then(response => {
           alert("Solicitação enviada com sucesso!");
           form.reset();
@@ -173,8 +209,30 @@
           console.error("Erro no envio:", error);
         });
     }
-    
+
+    // Exibe o texto do subtítulo com o mês de recebimento (próximo mês) e o ano correspondente
+    function setSubtitle() {
+      const subtitleElem = document.getElementById("subtitle");
+      let today = new Date();
+      // Próximo mês e ano (caso o próximo mês seja janeiro do ano seguinte)
+      let nextMonthIndex = today.getMonth() + 1; // 0 a 11
+      let nextMonthYear = today.getFullYear();
+      if (nextMonthIndex > 11) {
+        nextMonthIndex = 0;
+        nextMonthYear += 1;
+      }
+      let monthNames = ["janeiro","fevereiro","março","abril","maio","junho",
+                        "julho","agosto","setembro","outubro","novembro","dezembro"];
+      let nextMonthName = monthNames[nextMonthIndex];
+      
+      subtitleElem.textContent =
+        "Formulário destinado ao recebimento de informações sobre voluntários para a Diária Especial de Reforço do Serviço Operacional (DERSO) do mês de "
+        + nextMonthName.charAt(0).toUpperCase() + nextMonthName.slice(1)
+        + " de " + nextMonthYear + ".";
+    }
+
     document.addEventListener("DOMContentLoaded", function(){
+      setSubtitle();
       loadEmployeeList();
       setDateLimits();
       document.getElementById("matricula").addEventListener("blur", checkMatricula);
@@ -184,6 +242,9 @@
 <body>
   <div class="container">
     <h2>Solicitação de Folga - DERSO</h2>
+    <!-- Subtítulo dinâmico -->
+    <p class="subtitle" id="subtitle"></p>
+    
     <form id="dersoForm" onsubmit="submitForm(event)">
       <div class="form-group">
         <label for="email">E-mail:</label>
@@ -222,6 +283,7 @@
         <button type="submit" class="button">Enviar Solicitação</button>
       </div>
     </form>
+    
     <div id="duplicateError" class="error"></div>
   </div>
 </body>
