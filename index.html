@@ -89,13 +89,13 @@
     }
   </style>
   <script>
-    // URL do Apps Script (para GET e POST)
+    // URL do Apps Script (certifique-se de estar usando a URL publicada que termina em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
-    // Lista global de funcionários (carregada via GET action=lista)
+    // Lista global de funcionários
     window.employeeList = {};
 
-    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
+    // Remove caracteres não numéricos e garante prefixo "1000"
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -104,7 +104,7 @@
       return num;
     }
 
-    // Carrega a lista de funcionários
+    // Carrega a lista de funcionários via GET (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -119,14 +119,13 @@
         });
     }
 
-    // Verifica a matrícula e preenche o campo "Nome"
+    // Ao sair do campo matrícula, preenche o nome automaticamente
     function checkMatricula() {
       const matriculaInput = document.getElementById("matricula");
       const nomeInput = document.getElementById("nome");
       const errorMsg = document.getElementById("matriculaError");
       let standardized = standardizeMatricula(matriculaInput.value);
       matriculaInput.value = standardized;
-      
       if (window.employeeList && window.employeeList[standardized]) {
         nomeInput.value = window.employeeList[standardized];
         errorMsg.textContent = "";
@@ -136,7 +135,7 @@
       }
     }
 
-    // Configura o campo de data para aceitar apenas datas do próximo mês
+    // Configura o campo de data para permitir somente datas do próximo mês
     function setDateLimits() {
       const dateInput = document.getElementById("data");
       let today = new Date();
@@ -146,34 +145,36 @@
       dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
     }
 
-    // Converte data do formato "aaaa-mm-dd" para "dd/MM/yyyy"
+    // Converte data de "yyyy-mm-dd" para "dd/MM/yyyy"
     function formatDateToBR(dateStr) {
       let parts = dateStr.split("-");
       return parts[2] + "/" + parts[1] + "/" + parts[0];
     }
 
-    // Obtém o valor selecionado dos radio buttons para "Folga"
+    // Retorna o valor selecionado para "Folga"
     function getFolgaValue() {
       let selected = document.querySelector("input[name='folga']:checked");
       return selected ? selected.value : "";
     }
 
-    // Função para gerar o timestamp no formato desejado: "dd/MM/yyyy HH:mm:ss" sem vírgula
+    // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
     function getFormattedTimestamp() {
       let now = new Date();
-      let datePart = now.toLocaleDateString('pt-BR'); // "dd/MM/yyyy"
-      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // "HH:mm:ss"
+      let datePart = now.toLocaleDateString('pt-BR'); // ex.: "28/02/2025"
+      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // ex.: "10:50:16"
       return datePart + " " + timePart;
     }
 
-    // Verifica duplicidade (mesma matrícula + mesma data) chamando o endpoint action=check
+    // Verifica duplicidade: chama o endpoint action=check com parâmetros matricula e data (com "nocache" para evitar cache)
     async function checkDuplicate(matricula, dataValue) {
       const checkURL = SCRIPT_URL + "?action=check"
         + "&matricula=" + encodeURIComponent(matricula)
-        + "&data=" + encodeURIComponent(dataValue);
+        + "&data=" + encodeURIComponent(dataValue)
+        + "&nocache=" + new Date().getTime();
       try {
         let response = await fetch(checkURL);
         let result = await response.json();
+        console.log("Resultado checkDuplicate:", result);
         return result.duplicate;
       } catch (error) {
         console.error("Erro na verificação de duplicata:", error);
@@ -181,7 +182,7 @@
       }
     }
 
-    // Define o subtítulo dinâmico com o próximo mês e o ano correspondente
+    // Define o subtítulo com o próximo mês e o ano correspondente
     function setSubtitle() {
       const subtitleElem = document.getElementById("subtitle");
       let today = new Date();
@@ -191,25 +192,25 @@
         nextMonthIndex = 0;
         nextMonthYear += 1;
       }
-      let monthNames = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
-                        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+      let monthNames = ["janeiro","fevereiro","março","abril","maio","junho",
+                        "julho","agosto","setembro","outubro","novembro","dezembro"];
       let nextMonthName = monthNames[nextMonthIndex];
       subtitleElem.textContent =
         "Formulário destinado ao recebimento de informações sobre voluntários para a Diária Especial de Reforço do Serviço Operacional (DERSO) do mês de " +
         nextMonthName.charAt(0).toUpperCase() + nextMonthName.slice(1) + " de " + nextMonthYear + ".";
     }
 
-    // Submete o formulário com validação de duplicidade e obrigatoriedade de selecionar folga
+    // Submete o formulário com validações de duplicidade e folga obrigatória
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Gera o timestamp formatado
+      // Gera o timestamp e define no formData
       let timestamp = getFormattedTimestamp();
       formData.set("timestamp", timestamp);
       
-      // Converte a data para "dd/MM/yyyy"
+      // Converte a data para "dd/MM/yyyy" e define no formData
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
       formData.set("data", dataBR);
@@ -217,7 +218,7 @@
       // Padroniza a matrícula
       let matricula = standardizeMatricula(document.getElementById("matricula").value);
       
-      // Verifica se uma opção de folga foi selecionada
+      // Verifica se a opção de folga foi selecionada
       let folgaValue = getFolgaValue();
       if (!folgaValue) {
         alert("Por favor, selecione uma opção de folga.");
@@ -232,7 +233,7 @@
         return;
       }
       
-      // Envia os dados para o Apps Script via POST
+      // Envia os dados via POST para o Apps Script
       fetch(SCRIPT_URL, { method: "POST", body: formData })
         .then(response => {
           alert("Solicitação enviada com sucesso!");
