@@ -41,21 +41,25 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    .radio-group {
-      display: flex;
-      flex-direction: column;   /* empilha verticalmente */
-      align-items: flex-start;  /* alinha à esquerda */
-    }
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-    .radio-group input[type="radio"] {
-      margin-right: 6px;
+   .radio-group {
+  display: flex;
+  flex-direction: column;   /* Mantém as opções empilhadas */
+  align-items: flex-start;  /* Alinha os radio buttons à esquerda */
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;      /* Mantém o número e o texto na mesma linha */
+  gap: 5px;                 /* Dá um pequeno espaçamento entre o rádio e o texto */
+  margin-bottom: 8px;       /* Espaço entre as opções */
+  cursor: pointer;
+  white-space: nowrap;      /* Evita quebra de linha nos textos */
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 6px;
+}
+
     }
     .button {
       background-color: #007BFF;
@@ -77,7 +81,7 @@
   </style>
   <script>
     // URL do seu Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec";
     
     // Lista global de funcionários
     window.employeeList = {};
@@ -232,14 +236,15 @@
       
       <div class="form-group">
         <label>Folga:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="folga" value="24H" required>24H</label>
-          <label><input type="radio" name="folga" value="48H">48H</label>
-          <label><input type="radio" name="folga" value="72H">72H</label>
-          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
-          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
-          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
-        </div>
+       <div class="radio-group">
+  <label><input type="radio" name="folga" value="24H"> 24H</label>
+  <label><input type="radio" name="folga" value="48H"> 48H</label>
+  <label><input type="radio" name="folga" value="72H"> 72H</label>
+  <label><input type="radio" name="folga" value="1ª FOLGA"> 1ª FOLGA</label>
+  <label><input type="radio" name="folga" value="2ª FOLGA"> 2ª FOLGA</label>
+  <label><input type="radio" name="folga" value="EXPEDIENTE"> EXPEDIENTE</label>
+</div>
+
       </div>
       
       <div class="form-group">
