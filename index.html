@@ -40,20 +40,21 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    /* Distribui os radio buttons em duas linhas de três colunas */
     .radio-group {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
     }
     .radio-group label {
       display: flex;
       align-items: center;
       font-size: 16px;
       color: #555;
-      margin-bottom: 4px;
       cursor: pointer;
     }
     .radio-group input[type="radio"] {
-      margin: 0 6px 0 0;
+      margin-right: 6px;
     }
     .button {
       background-color: #007BFF;
@@ -74,9 +75,10 @@
     }
   </style>
   <script>
-    // Use window.employeeList para garantir que a variável esteja no escopo global
+    // Variável global para a lista de funcionários
     window.employeeList = {};
 
+    // Padroniza a matrícula removendo caracteres não numéricos e garantindo o prefixo "1000"
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -85,7 +87,7 @@
       return num;
     }
 
-    // Carrega a lista de funcionários a partir do Apps Script
+    // Carrega a lista de funcionários do Apps Script
     function loadEmployeeList() {
       const listURL = "https://script.google.com/macros/s/AKfycby0n3thWreIPvhhsv1alsLv-Ljf-7WO7R-4F-9f3aTbuwR7laLctnvk-MX_ilos86jw5g/exec?action=lista";
       fetch(listURL)
@@ -95,7 +97,7 @@
           console.log("Lista carregada:", data);
         })
         .catch(error => {
-          console.error("Erro ao carregar a lista de funcionários:", error);
+          console.error("Erro ao carregar a lista:", error);
           window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
@@ -139,7 +141,7 @@
       return selected ? selected.value : "";
     }
 
-    // Submete o formulário com os dados formatados
+    // Submete o formulário com os dados formatados (timestamp e data)
     function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
