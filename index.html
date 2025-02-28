@@ -104,7 +104,7 @@
       return num;
     }
 
-    // Carrega a lista de funcionários do Apps Script (action=lista)
+    // Carrega a lista de funcionários
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -146,7 +146,7 @@
       dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
     }
 
-    // Converte data do formato "aaaa-mm-dd" para "dd/mm/aaaa"
+    // Converte data do formato "aaaa-mm-dd" para "dd/MM/yyyy"
     function formatDateToBR(dateStr) {
       let parts = dateStr.split("-");
       return parts[2] + "/" + parts[1] + "/" + parts[0];
@@ -158,7 +158,15 @@
       return selected ? selected.value : "";
     }
 
-    // Verifica duplicidade: chama o endpoint action=check passando matrícula e data (formato dd/mm/aaaa)
+    // Função para gerar o timestamp no formato desejado: "dd/MM/yyyy HH:mm:ss" sem vírgula
+    function getFormattedTimestamp() {
+      let now = new Date();
+      let datePart = now.toLocaleDateString('pt-BR'); // "dd/MM/yyyy"
+      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // "HH:mm:ss"
+      return datePart + " " + timePart;
+    }
+
+    // Verifica duplicidade (mesma matrícula + mesma data) chamando o endpoint action=check
     async function checkDuplicate(matricula, dataValue) {
       const checkURL = SCRIPT_URL + "?action=check"
         + "&matricula=" + encodeURIComponent(matricula)
@@ -183,25 +191,25 @@
         nextMonthIndex = 0;
         nextMonthYear += 1;
       }
-      let monthNames = ["janeiro","fevereiro","março","abril","maio","junho",
-                        "julho","agosto","setembro","outubro","novembro","dezembro"];
+      let monthNames = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
       let nextMonthName = monthNames[nextMonthIndex];
       subtitleElem.textContent =
         "Formulário destinado ao recebimento de informações sobre voluntários para a Diária Especial de Reforço do Serviço Operacional (DERSO) do mês de " +
         nextMonthName.charAt(0).toUpperCase() + nextMonthName.slice(1) + " de " + nextMonthYear + ".";
     }
 
-    // Submete o formulário com validações: obrigatoriedade de folga e verificação de duplicata
+    // Submete o formulário com validação de duplicidade e obrigatoriedade de selecionar folga
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Formata o timestamp no formato "dd/mm/aaaa HH:MM:SS"
-      let timestamp = new Date().toLocaleString('pt-BR', { hour12: false });
+      // Gera o timestamp formatado
+      let timestamp = getFormattedTimestamp();
       formData.set("timestamp", timestamp);
       
-      // Converte a data para "dd/mm/aaaa"
+      // Converte a data para "dd/MM/yyyy"
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
       formData.set("data", dataBR);
@@ -209,7 +217,7 @@
       // Padroniza a matrícula
       let matricula = standardizeMatricula(document.getElementById("matricula").value);
       
-      // Verifica se alguma opção de folga foi selecionada
+      // Verifica se uma opção de folga foi selecionada
       let folgaValue = getFolgaValue();
       if (!folgaValue) {
         alert("Por favor, selecione uma opção de folga.");
@@ -217,7 +225,7 @@
       }
       formData.set("folga", folgaValue);
       
-      // Verifica duplicidade (mesma matrícula e data)
+      // Verifica duplicidade: mesma matrícula + mesma data
       let duplicate = await checkDuplicate(matricula, dataBR);
       if (duplicate) {
         alert("Já existe solicitação para essa data com essa matrícula!");
