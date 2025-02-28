@@ -21,7 +21,14 @@
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555;
       margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.4;
     }
     .form-group {
       margin-bottom: 15px;
@@ -41,25 +48,23 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-   .radio-group {
-  display: flex;
-  flex-direction: column;   /* Mantém as opções empilhadas */
-  align-items: flex-start;  /* Alinha os radio buttons à esquerda */
-}
-
-.radio-group label {
-  display: flex;
-  align-items: center;      /* Mantém o número e o texto na mesma linha */
-  gap: 5px;                 /* Dá um pequeno espaçamento entre o rádio e o texto */
-  margin-bottom: 8px;       /* Espaço entre as opções */
-  cursor: pointer;
-  white-space: nowrap;      /* Evita quebra de linha nos textos */
-}
-
-.radio-group input[type="radio"] {
-  margin-right: 6px;
-}
-
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 16px;
+      color: #555;
+    }
+    .radio-group input[type="radio"] {
+      margin-right: 6px;
     }
     .button {
       background-color: #007BFF;
@@ -78,14 +83,19 @@
       color: red;
       margin-top: 5px;
     }
+    .required-star {
+      color: red;
+      margin-left: 4px;
+    }
   </style>
   <script>
-    // URL do seu Apps Script
+    // URL do Apps Script (para GET e POST)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
-    // Lista global de funcionários
+    // Lista global de funcionários (carregada via GET action=lista)
     window.employeeList = {};
 
+    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -94,17 +104,17 @@
       return num;
     }
 
-    // Carrega lista de funcionários do Apps Script
+    // Carrega a lista de funcionários do Apps Script (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
         .then(response => response.json())
         .then(data => {
           window.employeeList = data;
+          console.log("Lista carregada:", data);
         })
         .catch(error => {
           console.error("Erro ao carregar a lista:", error);
-          // fallback de teste
           window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
@@ -136,7 +146,7 @@
       dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
     }
 
-    // Converte data "aaaa-mm-dd" para "dd/mm/aaaa"
+    // Converte data do formato "aaaa-mm-dd" para "dd/mm/aaaa"
     function formatDateToBR(dateStr) {
       let parts = dateStr.split("-");
       return parts[2] + "/" + parts[1] + "/" + parts[0];
@@ -148,53 +158,73 @@
       return selected ? selected.value : "";
     }
 
-    // Verifica duplicidade (mesma matrícula + mesma data)
+    // Verifica duplicidade: chama o endpoint action=check passando matrícula e data (formato dd/mm/aaaa)
     async function checkDuplicate(matricula, dataValue) {
-      // Necessário implementar no Apps Script a ação "check"
       const checkURL = SCRIPT_URL + "?action=check"
         + "&matricula=" + encodeURIComponent(matricula)
         + "&data=" + encodeURIComponent(dataValue);
-
       try {
         let response = await fetch(checkURL);
         let result = await response.json();
-        return result.duplicate; // true ou false
+        return result.duplicate;
       } catch (error) {
         console.error("Erro na verificação de duplicata:", error);
         return false;
       }
     }
 
-    // Submete o formulário
+    // Define o subtítulo dinâmico com o próximo mês e o ano correspondente
+    function setSubtitle() {
+      const subtitleElem = document.getElementById("subtitle");
+      let today = new Date();
+      let nextMonthIndex = today.getMonth() + 1;
+      let nextMonthYear = today.getFullYear();
+      if (nextMonthIndex > 11) {
+        nextMonthIndex = 0;
+        nextMonthYear += 1;
+      }
+      let monthNames = ["janeiro","fevereiro","março","abril","maio","junho",
+                        "julho","agosto","setembro","outubro","novembro","dezembro"];
+      let nextMonthName = monthNames[nextMonthIndex];
+      subtitleElem.textContent =
+        "Formulário destinado ao recebimento de informações sobre voluntários para a Diária Especial de Reforço do Serviço Operacional (DERSO) do mês de " +
+        nextMonthName.charAt(0).toUpperCase() + nextMonthName.slice(1) + " de " + nextMonthYear + ".";
+    }
+
+    // Submete o formulário com validações: obrigatoriedade de folga e verificação de duplicata
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Gera timestamp dd/mm/aaaa HH:MM:SS
+      // Formata o timestamp no formato "dd/mm/aaaa HH:MM:SS"
       let timestamp = new Date().toLocaleString('pt-BR', { hour12: false });
       formData.set("timestamp", timestamp);
       
-      // Converte data
+      // Converte a data para "dd/mm/aaaa"
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
       formData.set("data", dataBR);
-
-      // Matrícula padronizada
+      
+      // Padroniza a matrícula
       let matricula = standardizeMatricula(document.getElementById("matricula").value);
-
-      // Verifica se já existe solicitação para mesma matrícula + data
+      
+      // Verifica se alguma opção de folga foi selecionada
+      let folgaValue = getFolgaValue();
+      if (!folgaValue) {
+        alert("Por favor, selecione uma opção de folga.");
+        return;
+      }
+      formData.set("folga", folgaValue);
+      
+      // Verifica duplicidade (mesma matrícula e data)
       let duplicate = await checkDuplicate(matricula, dataBR);
       if (duplicate) {
         alert("Já existe solicitação para essa data com essa matrícula!");
         return;
       }
-
-      // Folga
-      let folgaValue = getFolgaValue();
-      formData.set("folga", folgaValue);
       
-      // Envia ao Apps Script
+      // Envia os dados para o Apps Script via POST
       fetch(SCRIPT_URL, { method: "POST", body: formData })
         .then(response => {
           alert("Solicitação enviada com sucesso!");
@@ -205,8 +235,9 @@
           console.error("Erro no envio:", error);
         });
     }
-    
+
     document.addEventListener("DOMContentLoaded", function(){
+      setSubtitle();
       loadEmployeeList();
       setDateLimits();
       document.getElementById("matricula").addEventListener("blur", checkMatricula);
@@ -216,6 +247,7 @@
 <body>
   <div class="container">
     <h2>Solicitação de Folga - DERSO</h2>
+    <p class="subtitle" id="subtitle"></p>
     <form id="dersoForm" onsubmit="submitForm(event)">
       
       <div class="form-group">
@@ -235,16 +267,15 @@
       </div>
       
       <div class="form-group">
-        <label>Folga:</label>
-       <div class="radio-group">
-  <label><input type="radio" name="folga" value="24H"> 24H</label>
-  <label><input type="radio" name="folga" value="48H"> 48H</label>
-  <label><input type="radio" name="folga" value="72H"> 72H</label>
-  <label><input type="radio" name="folga" value="1ª FOLGA"> 1ª FOLGA</label>
-  <label><input type="radio" name="folga" value="2ª FOLGA"> 2ª FOLGA</label>
-  <label><input type="radio" name="folga" value="EXPEDIENTE"> EXPEDIENTE</label>
-</div>
-
+        <label>Folga<span class="required-star">*</span>:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="folga" value="24H" required>24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
+        </div>
       </div>
       
       <div class="form-group">
