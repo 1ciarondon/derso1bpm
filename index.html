@@ -87,7 +87,6 @@
       color: red;
       margin-left: 4px;
     }
-    /* Destaques para período */
     .destaque-encerrou {
       color: red;
       font-weight: bold;
@@ -98,13 +97,13 @@
     }
   </style>
   <script>
-    // URL do Apps Script (certifique-se de usar a URL publicada que termina em /exec)
+    // URL do Apps Script (use a URL publicada, terminada em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
-    // Lista global de funcionários
+    // Lista global de funcionários (carregada via GET action=lista)
     window.employeeList = {};
 
-    // Calcula o período de solicitação para um determinado mês (mês: 0-11)
+    // Função para calcular o período de solicitação para um determinado mês (0-11)
     function getPeriod(year, month) {
       // Calcula a primeira segunda-feira do mês
       let firstMonday = new Date(year, month, 1);
@@ -123,35 +122,37 @@
       return { start: firstMonday, end: penultimateFriday };
     }
 
-    // Inicializa o formulário: se fora do período ativo, exibe mensagem; senão, exibe o formulário
+    // Inicializa o formulário: verifica se estamos no período ativo para solicitar o mês seguinte.
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const today = new Date();
-      // Aqui, definimos o período ativo para o mês atual; se preferir para o próximo mês, altere os parâmetros.
+      
+      // O período de solicitação é calculado para o mês atual (que é o período em que serão feitas solicitações para o próximo mês)
       const period = getPeriod(today.getFullYear(), today.getMonth());
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      const requestedMonthActive = monthNames[today.getMonth()];
+      // As solicitações serão para o próximo mês:
+      const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
-      // Se a data atual estiver fora do período ativo, exibe a mensagem e não exibe o formulário
+      // Se hoje estiver fora do período ativo, exibe mensagem e não mostra o formulário
       if (today < period.start || today > period.end) {
         let mensagem = "";
         if (today < period.start) {
-          mensagem = `<h3>O período de solicitações para ${requestedMonthActive} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+          mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
         } else if (today > period.end) {
           const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
           const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
-          const requestedMonthNext = monthNames[(nextDate.getMonth())]; // próximo mês
-          mensagem = `<h3>O período de solicitações para ${requestedMonthActive} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+          const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
+          mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
                       As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
         }
         formularioDiv.innerHTML = mensagem;
         return;
       }
-      // Se estiver dentro do período, o formulário permanece
+      // Caso esteja dentro do período, o formulário permanece.
     }
 
-    // Função para padronizar a matrícula
+    // Padroniza a matrícula removendo caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -175,7 +176,7 @@
         });
     }
 
-    // Preenche o campo "Nome" com base na matrícula
+    // Ao sair do campo matrícula, preenche o campo "Nome"
     function checkMatricula() {
       const matriculaInput = document.getElementById("matricula");
       const nomeInput = document.getElementById("nome");
@@ -216,8 +217,8 @@
     // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
     function getFormattedTimestamp() {
       let now = new Date();
-      let datePart = now.toLocaleDateString('pt-BR'); // "dd/MM/yyyy"
-      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // "HH:mm:ss"
+      let datePart = now.toLocaleDateString('pt-BR'); // ex.: "28/02/2025"
+      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // ex.: "10:50:16"
       return datePart + " " + timePart;
     }
 
@@ -244,22 +245,22 @@
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Gera o timestamp e define no formData
+      // Gera o timestamp e adiciona
       let timestamp = getFormattedTimestamp();
       formData.set("timestamp", timestamp);
       
-      // Converte a data para "dd/MM/yyyy"
+      // Converte a data para "dd/MM/yyyy" e adiciona
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
       formData.set("data", dataBR);
       
-      // Padroniza a matrícula
+      // Padroniza a matrícula e adiciona
       let matricula = standardizeMatricula(document.getElementById("matricula").value);
       
       // Verifica se a opção de folga foi selecionada
       let folgaValue = getFolgaValue();
       if (!folgaValue) {
-        alert("Por favor, selecione uma opção de folga.");
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
         return;
       }
       formData.set("folga", folgaValue);
@@ -267,8 +268,10 @@
       // Verifica duplicidade: mesma matrícula + mesma data
       let duplicate = await checkDuplicate(matricula, dataBR);
       if (duplicate) {
-        alert("Já existe solicitação para essa data com essa matrícula!");
+        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
         return;
+      } else {
+        document.getElementById("duplicateError").textContent = "";
       }
       
       // Envia os dados via POST
@@ -276,6 +279,7 @@
         .then(response => {
           alert("Solicitação enviada com sucesso!");
           form.reset();
+          document.getElementById("duplicateError").textContent = "";
         })
         .catch(error => {
           alert("Erro ao enviar solicitação!");
