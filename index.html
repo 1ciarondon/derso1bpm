@@ -89,13 +89,62 @@
     }
   </style>
   <script>
-    // URL do Apps Script (certifique-se de estar usando a URL publicada que termina em /exec)
+    // URL do Apps Script (certifique-se de usar a URL publicada, que termina em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
     // Lista global de funcionários
     window.employeeList = {};
 
-    // Remove caracteres não numéricos e garante prefixo "1000"
+    // Calcula o período de solicitação para o próximo mês (utilizado no backend para salvar os registros)
+    function getPeriod(year, month) {
+      // Calcula a primeira segunda-feira do mês
+      let firstMonday = new Date(year, month, 1);
+      while (firstMonday.getDay() !== 1) {
+        firstMonday.setDate(firstMonday.getDate() + 1);
+      }
+      // Calcula a última sexta-feira do mês
+      let lastDay = new Date(year, month + 1, 0);
+      let lastFriday = new Date(lastDay);
+      while (lastFriday.getDay() !== 5) {
+        lastFriday.setDate(lastFriday.getDate() - 1);
+      }
+      // Penúltima sexta-feira: última sexta menos 7 dias
+      let penultimateFriday = new Date(lastFriday);
+      penultimateFriday.setDate(penultimateFriday.getDate() - 7);
+      return { start: firstMonday, end: penultimateFriday };
+    }
+
+    // Inicializa o formulário; exibe mensagem se estivermos fora do período ativo
+    function initializeForm() {
+      const formularioDiv = document.getElementById("formulario");
+      const today = new Date();
+      
+      // Calcula o período ativo para o próximo mês
+      let nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const period = getPeriod(nextMonthDate.getFullYear(), nextMonthDate.getMonth());
+      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      const requestedMonthActive = monthNames[nextMonthDate.getMonth()];
+      
+      // Se hoje estiver fora do período ativo, exibe mensagem informando o próximo período
+      if (today < period.start || today > period.end) {
+        let mensagem = "";
+        if (today < period.start) {
+          mensagem = `<h3>O período de solicitações para ${requestedMonthActive} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+        } else if (today > period.end) {
+          const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+          const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
+          const requestedMonthNext = monthNames[nextDate.getMonth()];
+          mensagem = `<h3>O período de solicitações para ${requestedMonthActive} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                      As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+        }
+        formularioDiv.innerHTML = mensagem;
+        return;
+      }
+      // Se estiver dentro do período, o formulário é exibido normalmente.
+    }
+
+    // Padroniza a matrícula: remove caracteres não numéricos e garante o prefixo "1000"
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -104,7 +153,7 @@
       return num;
     }
 
-    // Carrega a lista de funcionários via GET (action=lista)
+    // Carrega a lista de funcionários do Apps Script (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -119,7 +168,7 @@
         });
     }
 
-    // Ao sair do campo matrícula, preenche o nome automaticamente
+    // Preenche o campo "Nome" com base na matrícula digitada
     function checkMatricula() {
       const matriculaInput = document.getElementById("matricula");
       const nomeInput = document.getElementById("nome");
@@ -135,7 +184,7 @@
       }
     }
 
-    // Configura o campo de data para permitir somente datas do próximo mês
+    // Configura o campo de data para aceitar somente datas do próximo mês
     function setDateLimits() {
       const dateInput = document.getElementById("data");
       let today = new Date();
@@ -165,7 +214,7 @@
       return datePart + " " + timePart;
     }
 
-    // Verifica duplicidade: chama o endpoint action=check com parâmetros matricula e data (com "nocache" para evitar cache)
+    // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
     async function checkDuplicate(matricula, dataValue) {
       const checkURL = SCRIPT_URL + "?action=check"
         + "&matricula=" + encodeURIComponent(matricula)
@@ -182,46 +231,28 @@
       }
     }
 
-    // Define o subtítulo com o próximo mês e o ano correspondente
-    function setSubtitle() {
-      const subtitleElem = document.getElementById("subtitle");
-      let today = new Date();
-      let nextMonthIndex = today.getMonth() + 1;
-      let nextMonthYear = today.getFullYear();
-      if (nextMonthIndex > 11) {
-        nextMonthIndex = 0;
-        nextMonthYear += 1;
-      }
-      let monthNames = ["janeiro","fevereiro","março","abril","maio","junho",
-                        "julho","agosto","setembro","outubro","novembro","dezembro"];
-      let nextMonthName = monthNames[nextMonthIndex];
-      subtitleElem.textContent =
-        "Formulário destinado ao recebimento de informações sobre voluntários para a Diária Especial de Reforço do Serviço Operacional (DERSO) do mês de " +
-        nextMonthName.charAt(0).toUpperCase() + nextMonthName.slice(1) + " de " + nextMonthYear + ".";
-    }
-
-    // Submete o formulário com validações de duplicidade e folga obrigatória
+    // Submete o formulário com validação: se duplicado, exibe mensagem na página
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       
-      // Gera o timestamp e define no formData
+      // Gera o timestamp e adiciona
       let timestamp = getFormattedTimestamp();
       formData.set("timestamp", timestamp);
       
-      // Converte a data para "dd/MM/yyyy" e define no formData
+      // Converte a data para "dd/MM/yyyy" e adiciona
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
       formData.set("data", dataBR);
       
-      // Padroniza a matrícula
+      // Padroniza a matrícula e adiciona
       let matricula = standardizeMatricula(document.getElementById("matricula").value);
       
       // Verifica se a opção de folga foi selecionada
       let folgaValue = getFolgaValue();
       if (!folgaValue) {
-        alert("Por favor, selecione uma opção de folga.");
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
         return;
       }
       formData.set("folga", folgaValue);
@@ -229,15 +260,18 @@
       // Verifica duplicidade: mesma matrícula + mesma data
       let duplicate = await checkDuplicate(matricula, dataBR);
       if (duplicate) {
-        alert("Já existe solicitação para essa data com essa matrícula!");
+        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
         return;
+      } else {
+        document.getElementById("duplicateError").textContent = "";
       }
       
-      // Envia os dados via POST para o Apps Script
+      // Envia os dados via POST
       fetch(SCRIPT_URL, { method: "POST", body: formData })
         .then(response => {
           alert("Solicitação enviada com sucesso!");
           form.reset();
+          document.getElementById("duplicateError").textContent = "";
         })
         .catch(error => {
           alert("Erro ao enviar solicitação!");
@@ -246,7 +280,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function(){
-      setSubtitle();
+      initializeForm();
       loadEmployeeList();
       setDateLimits();
       document.getElementById("matricula").addEventListener("blur", checkMatricula);
@@ -254,11 +288,10 @@
   </script>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="formulario">
     <h2>Solicitação de Folga - DERSO</h2>
     <p class="subtitle" id="subtitle"></p>
     <form id="dersoForm" onsubmit="submitForm(event)">
-      
       <div class="form-group">
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required>
