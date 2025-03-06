@@ -97,20 +97,44 @@
     }
   </style>
   <script>
-    // URL do Apps Script (certifique-se de usar a URL publicada, terminada em /exec)
+    // URL do Apps Script (use a URL publicada, terminada em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
     // Lista global de funcionários (carregada via GET action=lista)
     window.employeeList = {};
-
-    // Função para calcular o período de solicitação para um determinado mês (0–11)
+    
+    // Array de provedores para sugestões
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    
+    // Atualiza o datalist de provedores após o "@" ser digitado
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) {
+        datalist.innerHTML = "";
+        return;
+      }
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+      datalist.innerHTML = "";
+      filtered.forEach(provider => {
+        const option = document.createElement("option");
+        option.value = provider;
+        datalist.appendChild(option);
+      });
+    }
+    
+    // Calcula o período de solicitação para um determinado mês (0–11)
+    // Ex: Se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
     function getPeriod(year, month) {
-      // Calcula a primeira segunda-feira do mês
+      // Primeira segunda-feira
       let firstMonday = new Date(year, month, 1);
       while (firstMonday.getDay() !== 1) {
         firstMonday.setDate(firstMonday.getDate() + 1);
       }
-      // Calcula a última sexta-feira do mês
+      // Última sexta-feira
       let lastDay = new Date(year, month + 1, 0);
       let lastFriday = new Date(lastDay);
       while (lastFriday.getDay() !== 5) {
@@ -121,21 +145,20 @@
       penultimateFriday.setDate(penultimateFriday.getDate() - 7);
       return { start: firstMonday, end: penultimateFriday };
     }
-
-    // Inicializa o formulário: exibe mensagem se a data atual estiver fora do período ativo para solicitações
+    
+    // Inicializa o formulário: se estiver fora do período ativo, exibe mensagem; senão, mantém o formulário.
+    // O período ativo é calculado com base no mês atual, para solicitações do próximo mês.
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const today = new Date();
       
-      // Para solicitações de um determinado mês (ex: se estamos em março, as solicitações para abril devem ocorrer)
-      // O período ativo é calculado com base no mês atual
+      // Calcula o período ativo para o mês atual
       const period = getPeriod(today.getFullYear(), today.getMonth());
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
       // As solicitações serão para o próximo mês
       const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
-      // Se hoje estiver fora do período ativo, exibe mensagem
       if (today < period.start || today > period.end) {
         let mensagem = "";
         if (today < period.start) {
@@ -150,10 +173,10 @@
         formularioDiv.innerHTML = mensagem;
         return;
       }
-      // Caso contrário, o formulário permanece.
+      // Caso esteja dentro do período, o formulário é exibido normalmente.
     }
-
-    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
+    
+    // Padroniza a matrícula removendo caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -161,8 +184,8 @@
       }
       return num;
     }
-
-    // Carrega a lista de funcionários
+    
+    // Carrega a lista de funcionários (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -176,7 +199,7 @@
           window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
         });
     }
-
+    
     // Preenche o campo "Nome" com base na matrícula digitada
     function checkMatricula() {
       const matriculaInput = document.getElementById("matricula");
@@ -192,7 +215,7 @@
         errorMsg.textContent = "Matrícula não encontrada!";
       }
     }
-
+    
     // Configura o campo de data para aceitar somente datas do próximo mês
     function setDateLimits() {
       const dateInput = document.getElementById("data");
@@ -202,27 +225,27 @@
       dateInput.min = nextMonth.toISOString().split("T")[0];
       dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
     }
-
+    
     // Converte data de "yyyy-mm-dd" para "dd/MM/yyyy"
     function formatDateToBR(dateStr) {
       let parts = dateStr.split("-");
       return parts[2] + "/" + parts[1] + "/" + parts[0];
     }
-
+    
     // Retorna o valor selecionado para "Folga"
     function getFolgaValue() {
       let selected = document.querySelector("input[name='folga']:checked");
       return selected ? selected.value : "";
     }
-
+    
     // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
     function getFormattedTimestamp() {
       let now = new Date();
-      let datePart = now.toLocaleDateString('pt-BR'); // ex.: "28/02/2025"
-      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false }); // ex.: "10:50:16"
+      let datePart = now.toLocaleDateString('pt-BR');
+      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false });
       return datePart + " " + timePart;
     }
-
+    
     // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
     async function checkDuplicate(matricula, dataValue) {
       const checkURL = SCRIPT_URL + "?action=check"
@@ -239,8 +262,8 @@
         return false;
       }
     }
-
-    // Submete o formulário com validação: se duplicado, exibe mensagem na página
+    
+    // Submete o formulário com validação de duplicidade e folga obrigatória
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
@@ -287,12 +310,13 @@
           console.error("Erro no envio:", error);
         });
     }
-
+    
     document.addEventListener("DOMContentLoaded", function(){
       initializeForm();
       loadEmployeeList();
       setDateLimits();
       document.getElementById("matricula").addEventListener("blur", checkMatricula);
+      document.getElementById("email").addEventListener("input", updateEmailDatalist);
     });
   </script>
 </head>
@@ -301,31 +325,20 @@
     <h2>Solicitação de Folga - DERSO</h2>
     <p class="subtitle" id="subtitle"></p>
     <form id="dersoForm" onsubmit="submitForm(event)">
-      
       <div class="form-group">
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" list="emailProviders" required>
-        <datalist id="emailProviders">
-          <option value="gmail.com">
-          <option value="hotmail.com">
-          <option value="outlook.com">
-          <option value="yahoo.com">
-          <option value="terra.com.br">
-          <option value="bol.com.br">
-        </datalist>
+        <datalist id="emailProviders"></datalist>
       </div>
-      
       <div class="form-group">
         <label for="matricula">Matrícula:</label>
         <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
         <div id="matriculaError" class="error"></div>
       </div>
-      
       <div class="form-group">
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" readonly required>
       </div>
-      
       <div class="form-group">
         <label>Folga<span class="required-star">*</span>:</label>
         <div class="radio-group">
@@ -337,12 +350,10 @@
           <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
         </div>
       </div>
-      
       <div class="form-group">
         <label for="data">Data:</label>
         <input type="date" id="data" name="data" required>
       </div>
-      
       <div class="form-group">
         <button type="submit" class="button">Enviar Solicitação</button>
       </div>
