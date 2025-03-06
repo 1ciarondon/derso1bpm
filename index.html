@@ -97,13 +97,13 @@
     }
   </style>
   <script>
-    // URL do Apps Script (use a URL publicada, terminada em /exec)
+    // URL do Apps Script (certifique-se de usar a URL publicada, terminada em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
     // Lista global de funcionários (carregada via GET action=lista)
     window.employeeList = {};
 
-    // Função para calcular o período de solicitação para um determinado mês (0-11)
+    // Função para calcular o período de solicitação para um determinado mês (0–11)
     function getPeriod(year, month) {
       // Calcula a primeira segunda-feira do mês
       let firstMonday = new Date(year, month, 1);
@@ -122,19 +122,20 @@
       return { start: firstMonday, end: penultimateFriday };
     }
 
-    // Inicializa o formulário: verifica se estamos no período ativo para solicitar o mês seguinte.
+    // Inicializa o formulário: exibe mensagem se a data atual estiver fora do período ativo para solicitações
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const today = new Date();
       
-      // O período de solicitação é calculado para o mês atual (que é o período em que serão feitas solicitações para o próximo mês)
+      // Para solicitações de um determinado mês (ex: se estamos em março, as solicitações para abril devem ocorrer)
+      // O período ativo é calculado com base no mês atual
       const period = getPeriod(today.getFullYear(), today.getMonth());
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      // As solicitações serão para o próximo mês:
+      // As solicitações serão para o próximo mês
       const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
-      // Se hoje estiver fora do período ativo, exibe mensagem e não mostra o formulário
+      // Se hoje estiver fora do período ativo, exibe mensagem
       if (today < period.start || today > period.end) {
         let mensagem = "";
         if (today < period.start) {
@@ -149,10 +150,10 @@
         formularioDiv.innerHTML = mensagem;
         return;
       }
-      // Caso esteja dentro do período, o formulário permanece.
+      // Caso contrário, o formulário permanece.
     }
 
-    // Padroniza a matrícula removendo caracteres não numéricos e adiciona "1000" se necessário
+    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -176,7 +177,7 @@
         });
     }
 
-    // Ao sair do campo matrícula, preenche o campo "Nome"
+    // Preenche o campo "Nome" com base na matrícula digitada
     function checkMatricula() {
       const matriculaInput = document.getElementById("matricula");
       const nomeInput = document.getElementById("nome");
@@ -239,7 +240,7 @@
       }
     }
 
-    // Submete o formulário com validação de duplicidade e folga obrigatória
+    // Submete o formulário com validação: se duplicado, exibe mensagem na página
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
@@ -303,7 +304,15 @@
       
       <div class="form-group">
         <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" list="emailProviders" required>
+        <datalist id="emailProviders">
+          <option value="gmail.com">
+          <option value="hotmail.com">
+          <option value="outlook.com">
+          <option value="yahoo.com">
+          <option value="terra.com.br">
+          <option value="bol.com.br">
+        </datalist>
       </div>
       
       <div class="form-group">
