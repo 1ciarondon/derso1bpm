@@ -100,10 +100,10 @@
     // URL do Apps Script (use a URL publicada que termina em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
-    // Lista global de funcionários
+    // Lista global de funcionários (será carregada via GET action=lista)
     window.employeeList = {};
     
-    // Array de provedores para sugestões
+    // Array de provedores para sugestões de e-mail
     const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
     
     // Atualiza o datalist de provedores após o "@" ser digitado
@@ -127,36 +127,30 @@
     }
     
     // Calcula o período de solicitação para um determinado mês (0–11)
-    // Ex: se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
+    // Ex: Se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
     function getPeriod(year, month) {
-      // Primeira segunda-feira
       let firstMonday = new Date(year, month, 1);
       while (firstMonday.getDay() !== 1) {
         firstMonday.setDate(firstMonday.getDate() + 1);
       }
-      // Última sexta-feira
       let lastDay = new Date(year, month + 1, 0);
       let lastFriday = new Date(lastDay);
       while (lastFriday.getDay() !== 5) {
         lastFriday.setDate(lastFriday.getDate() - 1);
       }
-      // Penúltima sexta-feira: última sexta menos 7 dias
       let penultimateFriday = new Date(lastFriday);
       penultimateFriday.setDate(penultimateFriday.getDate() - 7);
       return { start: firstMonday, end: penultimateFriday };
     }
     
-    // Inicializa o formulário: exibe mensagem se fora do período ativo, caso contrário mantém o formulário.
+    // Inicializa o formulário: se estiver fora do período ativo, exibe mensagem; senão, mantém o formulário.
     // O período ativo é calculado para o mês atual, para solicitações do próximo mês.
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const today = new Date();
-      
-      // Calcula o período ativo para o mês atual
       const period = getPeriod(today.getFullYear(), today.getMonth());
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      // As solicitações serão para o próximo mês:
       const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
       if (today < period.start || today > period.end) {
@@ -175,7 +169,7 @@
       }
     }
     
-    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
+    // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -184,7 +178,7 @@
       return num;
     }
     
-    // Carrega a lista de funcionários via GET (action=lista)
+    // Carrega a lista de funcionários (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -192,10 +186,11 @@
         .then(data => {
           window.employeeList = data;
           console.log("Lista carregada:", data);
+          console.log("Total funcionários: " + Object.keys(data).length);
         })
         .catch(error => {
           console.error("Erro ao carregar a lista:", error);
-          window.employeeList = { "100012345": "João Silva", "100098765": "Maria Oliveira" };
+          window.employeeList = {};
         });
     }
     
@@ -321,7 +316,7 @@
 </head>
 <body>
   <div class="container" id="formulario">
-    <h2>Solicitação de Folga - DERSO</h2>
+    <h2>DERSO 1º BPM</h2>
     <p class="subtitle" id="subtitle"></p>
     <form id="dersoForm" onsubmit="submitForm(event)">
       <div class="form-group">
