@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>SOLICITAÇÃO DE DERSO - 1º BPM RO</title>
+  <title>Solicitação de Folga - DERSO</title>
   <style>
     body {
       background-color: #f7f7f7;
@@ -97,10 +97,10 @@
     }
   </style>
   <script>
-    // URL do Apps Script (use a URL publicada, terminada em /exec)
+    // URL do Apps Script (use a URL publicada que termina em /exec)
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
-    // Lista global de funcionários (carregada via GET action=lista)
+    // Lista global de funcionários
     window.employeeList = {};
     
     // Array de provedores para sugestões
@@ -127,7 +127,7 @@
     }
     
     // Calcula o período de solicitação para um determinado mês (0–11)
-    // Ex: Se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
+    // Ex: se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
     function getPeriod(year, month) {
       // Primeira segunda-feira
       let firstMonday = new Date(year, month, 1);
@@ -146,8 +146,8 @@
       return { start: firstMonday, end: penultimateFriday };
     }
     
-    // Inicializa o formulário: se estiver fora do período ativo, exibe mensagem; senão, mantém o formulário.
-    // O período ativo é calculado com base no mês atual, para solicitações do próximo mês.
+    // Inicializa o formulário: exibe mensagem se fora do período ativo, caso contrário mantém o formulário.
+    // O período ativo é calculado para o mês atual, para solicitações do próximo mês.
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const today = new Date();
@@ -156,7 +156,7 @@
       const period = getPeriod(today.getFullYear(), today.getMonth());
       const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      // As solicitações serão para o próximo mês
+      // As solicitações serão para o próximo mês:
       const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
       if (today < period.start || today > period.end) {
@@ -173,10 +173,9 @@
         formularioDiv.innerHTML = mensagem;
         return;
       }
-      // Caso esteja dentro do período, o formulário é exibido normalmente.
     }
     
-    // Padroniza a matrícula removendo caracteres não numéricos e adiciona "1000" se necessário
+    // Padroniza a matrícula: remove caracteres não numéricos e adiciona "1000" se necessário
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
       if (!num.startsWith("1000")) {
@@ -185,7 +184,7 @@
       return num;
     }
     
-    // Carrega a lista de funcionários (action=lista)
+    // Carrega a lista de funcionários via GET (action=lista)
     function loadEmployeeList() {
       const listURL = SCRIPT_URL + "?action=lista";
       fetch(listURL)
@@ -263,7 +262,7 @@
       }
     }
     
-    // Submete o formulário com validação de duplicidade e folga obrigatória
+    // Submete o formulário com validação: se duplicado, exibe mensagem na página
     async function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
@@ -322,7 +321,7 @@
 </head>
 <body>
   <div class="container" id="formulario">
-    <h2>SOLICITAÇÃO DE DERSO - 1º BPM RO</h2>
+    <h2>Solicitação de Folga - DERSO</h2>
     <p class="subtitle" id="subtitle"></p>
     <form id="dersoForm" onsubmit="submitForm(event)">
       <div class="form-group">
