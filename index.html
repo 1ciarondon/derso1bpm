@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>DERSO 1º BPM</title>
+  <title>Solicitação de Folga - DERSO</title>
   <style>
     body {
       background-color: #f7f7f7;
@@ -98,7 +98,7 @@
   </style>
   <script>
     // URL do Apps Script (use a URL publicada que termina em /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     
     // Lista global de funcionários (será carregada via GET action=lista)
     window.employeeList = {};
@@ -267,76 +267,94 @@
       let timestamp = getFormattedTimestamp();
       formData.set("timestamp", timestamp);
       
-      // Pega valores
-      let matricula = standardizeMatricula(formData.get("matricula"));
-      let dataValue = formData.get("data");
+      // Converte a data para "dd/MM/yyyy" e adiciona
+      let dataValue = document.getElementById("data").value;
+      let dataBR = formatDateToBR(dataValue);
+      formData.set("data", dataBR);
       
-      // Verifica duplicidade
-      let isDuplicate = await checkDuplicate(matricula, dataValue);
-      if (isDuplicate) {
-        alert("Essa solicitação já foi registrada para essa data!");
+      // Padroniza a matrícula e adiciona
+      let matricula = standardizeMatricula(document.getElementById("matricula").value);
+      
+      // Verifica se a opção de folga foi selecionada
+      let folgaValue = getFolgaValue();
+      if (!folgaValue) {
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
         return;
       }
+      formData.set("folga", folgaValue);
       
-      // Envia os dados
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: formData
-      })
-      .then(response => response.text())
-      .then(responseText => {
-        alert(responseText);
-        form.reset();
-      })
-      .catch(error => {
-        console.error("Erro ao enviar o formulário:", error);
-        alert("Erro ao enviar a solicitação. Tente novamente mais tarde.");
-      });
+      // Verifica duplicidade: mesma matrícula + mesma data
+      let duplicate = await checkDuplicate(matricula, dataBR);
+      if (duplicate) {
+        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
+        return;
+      } else {
+        document.getElementById("duplicateError").textContent = "";
+      }
+      
+      // Envia os dados via POST
+      fetch(SCRIPT_URL, { method: "POST", body: formData })
+        .then(response => {
+          alert("Solicitação enviada com sucesso!");
+          form.reset();
+          document.getElementById("duplicateError").textContent = "";
+        })
+        .catch(error => {
+          alert("Erro ao enviar solicitação!");
+          console.error("Erro no envio:", error);
+        });
     }
     
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", function(){
       initializeForm();
       loadEmployeeList();
       setDateLimits();
-      
-      const form = document.getElementById("dersoForm");
-      form.addEventListener("submit", submitForm);
-      
-      const matriculaInput = document.getElementById("matricula");
-      matriculaInput.addEventListener("blur", checkMatricula);
+      document.getElementById("matricula").addEventListener("blur", checkMatricula);
+      document.getElementById("email").addEventListener("input", updateEmailDatalist);
     });
   </script>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="formulario">
     <h2>DERSO 1º BPM</h2>
-    <p class="subtitle">Preencha os dados abaixo para solicitar a sua folga.</p>
-    <form id="dersoForm">
+    <p class="subtitle" id="subtitle"></p>
+    <form id="dersoForm" onsubmit="submitForm(event)">
       <div class="form-group">
-        <label for="matricula">Matrícula <span class="required-star">*</span></label>
-        <input type="text" id="matricula" name="matricula" placeholder="Digite sua matrícula" required>
-        <span id="matriculaError" class="error"></span>
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required>
+        <datalist id="emailProviders"></datalist>
       </div>
       <div class="form-group">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" readonly>
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+        <div id="matriculaError" class="error"></div>
       </div>
       <div class="form-group">
-        <label for="data">Data da Solicitação <span class="required-star">*</span></label>
-        <input type="date" id="data" name="data" required>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" readonly required>
       </div>
       <div class="form-group">
-        <label for="folga">Selecione a Folga:</label>
+        <label>Folga<span class="required-star">*</span>:</label>
         <div class="radio-group">
-          <label><input type="radio" name="folga" value="Folga 1" required> Folga 1</label>
-          <label><input type="radio" name="folga" value="Folga 2" required> Folga 2</label>
-          <label><input type="radio" name="folga" value="Folga 3" required> Folga 3</label>
+          <label><input type="radio" name="folga" value="24H" required>24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
         </div>
+      </div>
+      <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
       </div>
       <div class="form-group">
         <button type="submit" class="button">Enviar Solicitação</button>
       </div>
     </form>
+    <div id="duplicateError" class="error"></div>
   </div>
 </body>
 </html>
+
+
