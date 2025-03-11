@@ -87,121 +87,121 @@
       color: red;
       margin-left: 4px;
     }
-    .destaque-encerrou {
-      color: red;
-      font-weight: bold;
-    }
-    .destaque-iniciara {
-      color: green;
-      font-weight: bold;
-    }
   </style>
   <script>
-    // URLs do Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
     const ACTION_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
-
-    // Verifica duplicatas antes do envio
-    async function checkDuplicate(matricula, dataValue) {
-        const checkURL = ACTION_URL + "?action=check"
-            + "&matricula=" + encodeURIComponent(matricula)
-            + "&data=" + encodeURIComponent(dataValue)
-            + "&nocache=" + new Date().getTime();
-        try {
-            let response = await fetch(checkURL);
-            let result = await response.json();
-            console.log("Resultado checkDuplicate:", result);
-            return result.duplicate;
-        } catch (error) {
-            console.error("Erro na verificação de duplicata:", error);
-            return false;
-        }
+    
+    window.employeeList = {};
+    
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) {
+        datalist.innerHTML = "";
+        return;
+      }
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+      datalist.innerHTML = "";
+      filtered.forEach(provider => {
+        const option = document.createElement("option");
+        option.value = provider;
+        datalist.appendChild(option);
+      });
     }
-
-    // Envia o formulário
+    
+    function standardizeMatricula(matricula) {
+      let num = matricula.replace(/\D/g, '');
+      if (!num.startsWith("1000")) {
+        num = "1000" + num;
+      }
+      return num;
+    }
+    
+    function checkMatricula() {
+      const matriculaInput = document.getElementById("matricula");
+      const nomeInput = document.getElementById("nome");
+      const errorMsg = document.getElementById("matriculaError");
+      let standardized = standardizeMatricula(matriculaInput.value);
+      matriculaInput.value = standardized;
+      if (window.employeeList && window.employeeList[standardized]) {
+        nomeInput.value = window.employeeList[standardized];
+        errorMsg.textContent = "";
+      } else {
+        nomeInput.value = "";
+        errorMsg.textContent = "Matrícula não encontrada!";
+      }
+    }
+    
     async function submitForm(event) {
-        event.preventDefault();
-        const form = document.getElementById("dersoForm");
-        const formData = new FormData(form);
+      event.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const formData = new FormData(form);
 
-        // Gera o timestamp
-        let timestamp = new Date().toLocaleString("pt-BR");
-        formData.set("timestamp", timestamp);
+      let timestamp = new Date().toLocaleString('pt-BR');
+      formData.set("timestamp", timestamp);
 
-        // Formata a data
-        let dataValue = document.getElementById("data").value;
-        let dataBR = dataValue.split("-").reverse().join("/");
-        formData.set("data", dataBR);
+      let dataValue = document.getElementById("data").value;
+      let dataBR = dataValue.split("-").reverse().join("/");
+      formData.set("data", dataBR);
 
-        // Padroniza a matrícula
-        let matricula = document.getElementById("matricula").value.replace(/\D/g, '');
-        if (!matricula.startsWith("1000")) {
-            matricula = "1000" + matricula;
-        }
-        formData.set("matricula", matricula);
+      let matricula = standardizeMatricula(document.getElementById("matricula").value);
+      
+      let folgaValue = document.querySelector("input[name='folga']:checked")?.value;
+      if (!folgaValue) {
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+        return;
+      }
+      formData.set("folga", folgaValue);
 
-        // Verifica se uma opção de folga foi selecionada
-        let folgaValue = document.querySelector("input[name='folga']:checked");
-        if (!folgaValue) {
-            document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-            return;
-        }
-        formData.set("folga", folgaValue.value);
+      let duplicate = await checkDuplicate(matricula, dataBR);
+      if (duplicate) {
+        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
+        return;
+      } else {
+        document.getElementById("duplicateError").textContent = "";
+      }
 
-        // Verifica duplicidade
-        let duplicate = await checkDuplicate(matricula, dataBR);
-        if (duplicate) {
-            document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
-            return;
-        }
-
-        // Envia os dados
-        fetch(ACTION_URL, { method: "POST", body: formData })
-            .then(response => {
-                alert("Solicitação enviada com sucesso!");
-                form.reset();
-                document.getElementById("duplicateError").textContent = "";
-            })
-            .catch(error => {
-                alert("Erro ao enviar solicitação!");
-                console.error("Erro no envio:", error);
-            });
+      fetch(ACTION_URL, { method: "POST", body: formData })
+        .then(() => {
+          alert("Solicitação enviada com sucesso!");
+          form.reset();
+          document.getElementById("duplicateError").textContent = "";
+        })
+        .catch(() => {
+          alert("Erro ao enviar solicitação!");
+        });
     }
   </script>
 </head>
 <body>
   <div class="container">
     <h2>DERSO 1º BPM</h2>
-    <p class="subtitle">Solicite sua folga preenchendo o formulário abaixo:</p>
     <form id="dersoForm" onsubmit="submitForm(event)">
       <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required oninput="updateEmailDatalist()">
+        <datalist id="emailProviders"></datalist>
+      </div>
+      <div class="form-group">
         <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required>
-        <div id="duplicateError" class="error"></div>
+        <input type="text" id="matricula" name="matricula" required onblur="checkMatricula()">
+        <div id="matriculaError" class="error"></div>
       </div>
       <div class="form-group">
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" readonly required>
       </div>
       <div class="form-group">
-        <label>Folga<span class="required-star">*</span>:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="folga" value="24H" required>24H</label>
-          <label><input type="radio" name="folga" value="48H">48H</label>
-          <label><input type="radio" name="folga" value="72H">72H</label>
-          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
-          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
-          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="data">Data:</label>
-        <input type="date" id="data" name="data" required>
-      </div>
-      <div class="form-group">
         <button type="submit" class="button">Enviar Solicitação</button>
       </div>
     </form>
+    <div id="duplicateError" class="error"></div>
   </div>
 </body>
 </html>
