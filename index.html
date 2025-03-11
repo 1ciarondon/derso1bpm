@@ -243,9 +243,11 @@
     // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
    async function checkDuplicate(matricula, dataValue) {
   const checkURL = SCRIPT_URL + "?action=check"
-    + "&matricula=" + encodeURIComponent(matricula)
-    + "&data=" + encodeURIComponent(dataValue)
-    + "&nocache=" + new Date().getTime();
+  + "&matricula=" + encodeURIComponent(matricula)
+  + "&data=" + encodeURIComponent(dataValue)
+  + "&nocache=" + new Date().getTime();
+
+console.log("URL da requisição:", checkURL);
   
   try {
     let response = await fetch(checkURL);
