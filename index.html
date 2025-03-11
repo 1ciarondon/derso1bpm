@@ -241,21 +241,25 @@
     }
     
     // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
-    async function checkDuplicate(matricula, dataValue) {
-      const checkURL = SCRIPT_URL + "?action=check"
-        + "&matricula=" + encodeURIComponent(matricula)
-        + "&data=" + encodeURIComponent(dataValue)
-        + "&nocache=" + new Date().getTime();
-      try {
-        let response = await fetch(checkURL);
-        let result = await response.json();
-        console.log("Resultado checkDuplicate:", result);
-        return result.duplicate;
-      } catch (error) {
-        console.error("Erro na verificação de duplicata:", error);
-        return false;
-      }
-    }
+   async function checkDuplicate(matricula, dataValue) {
+  const checkURL = SCRIPT_URL + "?action=check"
+    + "&matricula=" + encodeURIComponent(matricula)
+    + "&data=" + encodeURIComponent(dataValue)
+    + "&nocache=" + new Date().getTime();
+  
+  try {
+    let response = await fetch(checkURL);
+    let text = await response.text(); // Obtém a resposta como texto
+    console.log("Resposta da API:", text);
+    
+    let result = JSON.parse(text); // Tenta converter para JSON
+    return result.duplicate;
+  } catch (error) {
+    console.error("Erro na verificação de duplicata:", error);
+    return false;
+  }
+}
+
     
     // Submete o formulário com validação: se duplicado, exibe mensagem na página
     async function submitForm(event) {
