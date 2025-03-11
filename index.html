@@ -156,7 +156,7 @@
       if (today < period.start || today > period.end) {
         let mensagem = "";
         if (today < period.start) {
-          mensagem = <h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>;
+          mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
         } else if (today > period.end) {
           const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
           const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
