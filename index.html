@@ -249,15 +249,15 @@
   
   try {
     let response = await fetch(checkURL);
-    let text = await response.text(); // Obtém a resposta como texto
-    console.log("Resposta da API:", text);
-    
+let text = await response.text(); // Obtém o texto puro
+console.log("Resposta da API:", text);
+
+try {
     let result = JSON.parse(text); // Tenta converter para JSON
     return result.duplicate;
-  } catch (error) {
-    console.error("Erro na verificação de duplicata:", error);
-    return false;
-  }
+} catch (error) {
+    console.error("Erro ao analisar JSON:", error, "Resposta:", text);
+    return false; // Retorna false se houver erro
 }
 
     
