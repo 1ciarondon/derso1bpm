@@ -161,8 +161,8 @@
           const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
           const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
           const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
-          mensagem = <h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                      As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>;
+          mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                      As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
         }
         formularioDiv.innerHTML = mensagem;
         return;
