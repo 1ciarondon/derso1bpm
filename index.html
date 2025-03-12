@@ -241,30 +241,30 @@
     }
     
     // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
-  async function checkDuplicate(matricula, dataValue) {
-    const checkURL = SCRIPT_URL + "?action=check"
-        + "&matricula=" + encodeURIComponent(matricula)
-        + "&data=" + encodeURIComponent(dataValue)
-        + "&nocache=" + new Date().getTime();
+ function checkDuplicate(matricula, data) {
+    let dataObj = new Date(data.split("/").reverse().join("-")); // Convertendo dd/mm/aaaa para Date
+    let mesAno = dataObj.toLocaleString("pt-BR", { month: "long" }).charAt(0).toUpperCase() +
+                 dataObj.toLocaleString("pt-BR", { month: "long" }).slice(1) +
+                 String(dataObj.getFullYear()).slice(-2); // Formata "Abril25"
+    
+    let url = `https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec`;
+    let params = new URLSearchParams({
+        action: "check",
+        matricula: matricula,
+        data: data,
+        aba: mesAno, // Nome correto da aba
+        nocache: new Date().getTime() // Evita cache
+    });
 
-    console.log("URL da requisição:", checkURL);
-
-    try {
-        let response = await fetch(checkURL);
-        let text = await response.text(); // Obtém o texto puro
-        console.log("Resposta da API:", text);
-
-        try {
-            let result = JSON.parse(text); // Tenta converter para JSON
-            return result.duplicate;
-        } catch (error) {
-            console.error("Erro ao analisar JSON:", error, "Resposta:", text);
-            return false; // Retorna false se houver erro
-        }
-    } catch (error) {
-        console.error("Erro na requisição:", error);
-        return false;
-    }
+    fetch(`${url}?${params}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Resposta da API:", data);
+            if (data.duplicate) {
+                alert("Matrícula já registrada nesta data.");
+            }
+        })
+        .catch(error => console.error("Erro ao analisar JSON:", error));
 }
    
     // Submete o formulário com validação: se duplicado, exibe mensagem na página
