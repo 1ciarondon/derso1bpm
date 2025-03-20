@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Solicitações</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h2>Consultar Solicitação</h2>
+    <label for="matricula">Matrícula:</label>
+    <input type="text" id="matricula">
+    <button onclick="filtrarTabela()">Buscar</button>
+    
+    <table id="tabela">
+        <thead>
+            <tr>
+                <th>E-mail</th>
+                <th>Nome</th>
+                <th>Folga</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const dados = [
+            { email: "marianoleite658@gmail.com", matricula: "100084434", nome: "1º SGT PM MARIANO", folga: "48H", data: "01/04/2025" },
+            { email: "cassiendejrodelveira@gmail.com", matricula: "100086732", nome: "2º SGT PM PEDRO", folga: "48H", data: "01/04/2025" },
+            { email: "edwilson_100@hotmail.com", matricula: "100089873", nome: "3º SGT PM SEIXAS", folga: "24H", data: "01/04/2025" },
+            { email: "joseluisvieira741@gmail.com", matricula: "100089234", nome: "3º SGT PM J. VIEIRA", folga: "48H", data: "01/04/2025" }
+            // Adicione mais registros conforme necessário
+        ];
+
+        function filtrarTabela() {
+            const matricula = document.getElementById("matricula").value;
+            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
+            tbody.innerHTML = "";
+            
+            const resultados = dados.filter(d => d.matricula === matricula);
+            
+            resultados.forEach(dado => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = dado.email;
+                row.insertCell(1).textContent = dado.nome;
+                row.insertCell(2).textContent = dado.folga;
+                row.insertCell(3).textContent = dado.data;
+            });
+        }
+    </script>
+</body>
+</html>
