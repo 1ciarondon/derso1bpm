@@ -259,7 +259,7 @@ function initializeForm() {
         nocache: new Date().getTime() // Evita cache
     });
 
-    fetch(${url}?${params})
+   fetch(`${url}?${params}`)
         .then(response => response.json())
         .then(data => {
             console.log("Resposta da API:", data);
