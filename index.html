@@ -241,20 +241,26 @@
     }
     
     // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
- function checkDuplicate(matricula, data) {
-    let dataObj = new Date(data.split("/").reverse().join("-")); // Convertendo dd/mm/aaaa para Date
-    let mesAno = dataObj.toLocaleString("pt-BR", { month: "long" }).charAt(0).toUpperCase() +
-                 dataObj.toLocaleString("pt-BR", { month: "long" }).slice(1) +
-                 String(dataObj.getFullYear()).slice(-2); // Formata "Abril25"
+async function checkDuplicate(matricula, data) {
+  let dataObj = new Date(data.split("/").reverse().join("-")); // Convertendo dd/mm/aaaa para Date
+  let mesAno = dataObj.toLocaleString("pt-BR", { month: "long" }).charAt(0).toUpperCase() +
+               dataObj.toLocaleString("pt-BR", { month: "long" }).slice(1) +
+               String(dataObj.getFullYear()).slice(-2); // Formata "Abril25"
     
-    let url = `https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec`;
-    let params = new URLSearchParams({
-        action: "check",
-        matricula: matricula,
-        data: data,
-        aba: mesAno, // Nome correto da aba
-        nocache: new Date().getTime() // Evita cache
-    });
+    
+  let url = `https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec`;
+  let params = new URLSearchParams({
+      action: "check",
+      matricula: matricula,
+      data: data,
+      aba: mesAno, // Nome correto da aba
+      nocache: new Date().getTime() // Evita cache
+  });
+
+  const response = await fetch(`${url}?${params}`);
+  const data = await response.json();
+  return data.duplicate; // Retorna o valor booleano
+}
 
     fetch(`${url}?${params}`)
         .then(response => response.json())
