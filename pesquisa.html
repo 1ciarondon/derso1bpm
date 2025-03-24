@@ -43,7 +43,7 @@
         window.employeeList = {};
 
         // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
-       // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
+   // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
 function standardizeMatricula(matricula) {
   if (!matricula) {
     console.error("Matrícula não fornecida.");
@@ -58,17 +58,18 @@ function standardizeMatricula(matricula) {
 }
 
 function filtrarTabela() {
-    const matricula = document.getElementById("matricula").value;
+    const matricula = document.getElementById("matricula").value.trim(); // .trim() remove espaços extras
     const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
     tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
-    
+
+    // Verifique se a matrícula foi fornecida
+    if (!matricula) {
+        alert("Por favor, insira uma matrícula.");
+        return; // Se a matrícula estiver vazia, não executa a filtragem
+    }
+
     // Certifique-se de que a matrícula seja válida antes de chamar standardizeMatricula
     const matriculaPadronizada = standardizeMatricula(matricula);
-    
-    if (!matriculaPadronizada) {
-      alert("Por favor, insira uma matrícula válida.");
-      return;  // Sai da função se a matrícula não for válida
-    }
 
     // Filtra os dados
     const resultados = dados.filter(d => d.matricula === matriculaPadronizada);
@@ -86,6 +87,7 @@ function filtrarTabela() {
       alert("Nenhuma solicitação encontrada para a matrícula informada.");
     }
 }
+
         // Carrega a lista de funcionários (action=lista)
         function loadEmployeeList() {
             const listURL = SCRIPT_URL + "?action=lista";
