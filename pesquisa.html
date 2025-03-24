@@ -36,44 +36,45 @@
     </table>
 
     <script>
-        
         // URL do Apps Script (use a URL publicada que termina em /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
         
         // Lista global de funcionários (será carregada via GET action=lista)
-    window.employeeList = {};
+        window.employeeList = {};
 
-          // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
-    function standardizeMatricula(matricula) {
-      let num = matricula.replace(/\D/g, '');
-      if (!num.startsWith("1000")) {
-        num = "1000" + num;
-      }
-      return num;
-    }
-         // Carrega a lista de funcionários (action=lista)
-    function loadEmployeeList() {
-      const listURL = SCRIPT_URL + "?action=lista";
-      fetch(listURL)
-        .then(response => response.json())
-        .then(data => {
-          window.employeeList = data;
-          console.log("Lista carregada:", data);
-          console.log("Total funcionários: " + Object.keys(data).length);
-        })
-        .catch(error => {
-          console.error("Erro ao carregar a lista:", error);
-          window.employeeList = {};
-        });
-    }
-        
+        // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
+        function standardizeMatricula(matricula) {
+            let num = matricula.replace(/\D/g, '');
+            if (!num.startsWith("1000")) {
+                num = "1000" + num;
+            }
+            return num;
+        }
+
+        // Carrega a lista de funcionários (action=lista)
+        function loadEmployeeList() {
+            const listURL = SCRIPT_URL + "?action=lista";
+            fetch(listURL)
+                .then(response => response.json())
+                .then(data => {
+                    window.employeeList = data;
+                    console.log("Lista carregada:", data);
+                    console.log("Total funcionários: " + Object.keys(data).length);
+                })
+                .catch(error => {
+                    console.error("Erro ao carregar a lista:", error);
+                    window.employeeList = {};
+                });
+        }
+
+        // Função para filtrar a tabela com base na matrícula
         function filtrarTabela() {
-            const matricula = document.getElementById("matricula").value;
+            const matricula = standardizeMatricula(document.getElementById("matricula").value);
             const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
             tbody.innerHTML = "";
-            
-            const resultados = dados.filter(d => d.matricula === matricula);
-            
+
+            const resultados = Object.values(window.employeeList).filter(d => standardizeMatricula(d.matricula) === matricula);
+
             resultados.forEach(dado => {
                 const row = tbody.insertRow();
                 row.insertCell(0).textContent = dado.email;
@@ -82,6 +83,9 @@
                 row.insertCell(3).textContent = dado.data;
             });
         }
+
+        // Carregar a lista de funcionários assim que a página carregar
+        window.onload = loadEmployeeList;
     </script>
 </body>
 </html>
