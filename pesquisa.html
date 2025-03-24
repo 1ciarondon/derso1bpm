@@ -42,23 +42,26 @@
         // Lista global de funcionários (será carregada via GET action=lista)
         window.employeeList = {};
 
-        // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
-   // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
+        // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000" no início, se necessário
 function standardizeMatricula(matricula) {
   if (!matricula) {
     console.error("Matrícula não fornecida.");
     return '';  // Retorna um valor vazio ou algum valor padrão
   }
   
-  let num = matricula.replace(/\D/g, ''); // Remove caracteres não numéricos
+  // Remove todos os caracteres não numéricos
+  let num = matricula.replace(/\D/g, '');
+  
+  // Adiciona "1000" no início, se não começar com "1000"
   if (!num.startsWith("1000")) {
     num = "1000" + num;
   }
+  
   return num;
 }
 
 function filtrarTabela() {
-    const matricula = document.getElementById("matricula").value.trim(); // .trim() remove espaços extras
+    const matricula = document.getElementById("matricula").value.trim(); // Remove espaços extras
     const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
     tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
 
@@ -68,9 +71,11 @@ function filtrarTabela() {
         return; // Se a matrícula estiver vazia, não executa a filtragem
     }
 
-    // Certifique-se de que a matrícula seja válida antes de chamar standardizeMatricula
+    // Certifique-se de que a matrícula seja padronizada antes de filtrar
     const matriculaPadronizada = standardizeMatricula(matricula);
-
+    
+    console.log("Matrícula padronizada:", matriculaPadronizada);  // Para verificar a saída
+    
     // Filtra os dados
     const resultados = dados.filter(d => d.matricula === matriculaPadronizada);
     
@@ -87,6 +92,7 @@ function filtrarTabela() {
       alert("Nenhuma solicitação encontrada para a matrícula informada.");
     }
 }
+
 
         // Carrega a lista de funcionários (action=lista)
         function loadEmployeeList() {
