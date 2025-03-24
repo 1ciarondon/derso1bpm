@@ -43,14 +43,49 @@
         window.employeeList = {};
 
         // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
-        function standardizeMatricula(matricula) {
-            let num = matricula.replace(/\D/g, '');
-            if (!num.startsWith("1000")) {
-                num = "1000" + num;
-            }
-            return num;
-        }
+       // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
+function standardizeMatricula(matricula) {
+  if (!matricula) {
+    console.error("Matrícula não fornecida.");
+    return '';  // Retorna um valor vazio ou algum valor padrão
+  }
+  
+  let num = matricula.replace(/\D/g, ''); // Remove caracteres não numéricos
+  if (!num.startsWith("1000")) {
+    num = "1000" + num;
+  }
+  return num;
+}
 
+function filtrarTabela() {
+    const matricula = document.getElementById("matricula").value;
+    const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
+    tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
+    
+    // Certifique-se de que a matrícula seja válida antes de chamar standardizeMatricula
+    const matriculaPadronizada = standardizeMatricula(matricula);
+    
+    if (!matriculaPadronizada) {
+      alert("Por favor, insira uma matrícula válida.");
+      return;  // Sai da função se a matrícula não for válida
+    }
+
+    // Filtra os dados
+    const resultados = dados.filter(d => d.matricula === matriculaPadronizada);
+    
+    // Preenche a tabela com os resultados encontrados
+    resultados.forEach(dado => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = dado.email;
+        row.insertCell(1).textContent = dado.nome;
+        row.insertCell(2).textContent = dado.folga;
+        row.insertCell(3).textContent = dado.data;
+    });
+
+    if (resultados.length === 0) {
+      alert("Nenhuma solicitação encontrada para a matrícula informada.");
+    }
+}
         // Carrega a lista de funcionários (action=lista)
         function loadEmployeeList() {
             const listURL = SCRIPT_URL + "?action=lista";
