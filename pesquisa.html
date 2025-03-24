@@ -43,58 +43,58 @@
         window.employeeList = {};
 
         // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000" no início, se necessário
-function standardizeMatricula(matricula) {
-  if (!matricula) {
-    console.error("Matrícula não fornecida.");
-    return '';  // Retorna um valor vazio ou algum valor padrão
-  }
-  
-  // Remove todos os caracteres não numéricos
-  let num = matricula.replace(/\D/g, '');
-  
-  // Adiciona "1000" no início, se não começar com "1000"
-  if (!num.startsWith("1000")) {
-    num = "1000" + num;
-  }
-  
-  return num;
-}
+        function standardizeMatricula(matricula) {
+            if (!matricula) {
+                console.error("Matrícula não fornecida.");
+                return '';  // Retorna um valor vazio ou algum valor padrão
+            }
+            
+            // Remove todos os caracteres não numéricos
+            let num = matricula.replace(/\D/g, '');
+            
+            // Adiciona "1000" no início, se não começar com "1000"
+            if (!num.startsWith("1000")) {
+                num = "1000" + num;
+            }
+            
+            return num;
+        }
 
-function filtrarTabela() {
-    const matricula = document.getElementById("matricula").value.trim(); // Remove espaços extras
-    const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-    tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
+        // Função para filtrar a tabela com base na matrícula
+        function filtrarTabela() {
+            const matricula = document.getElementById("matricula").value.trim(); // Remove espaços extras
+            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
+            tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
 
-    // Verifique se a matrícula foi fornecida
-    if (!matricula) {
-        alert("Por favor, insira uma matrícula.");
-        return; // Se a matrícula estiver vazia, não executa a filtragem
-    }
+            // Verifique se a matrícula foi fornecida
+            if (!matricula) {
+                alert("Por favor, insira uma matrícula.");
+                return; // Se a matrícula estiver vazia, não executa a filtragem
+            }
 
-    // Certifique-se de que a matrícula seja padronizada antes de filtrar
-    const matriculaPadronizada = standardizeMatricula(matricula);
-    
-    console.log("Matrícula padronizada:", matriculaPadronizada);  // Para verificar a saída
-    
-    // Filtra os dados
-    const resultados = dados.filter(d => d.matricula === matriculaPadronizada);
-    
-    // Preenche a tabela com os resultados encontrados
-    resultados.forEach(dado => {
-        const row = tbody.insertRow();
-        row.insertCell(0).textContent = dado.email;
-        row.insertCell(1).textContent = dado.nome;
-        row.insertCell(2).textContent = dado.folga;
-        row.insertCell(3).textContent = dado.data;
-    });
+            // Certifique-se de que a matrícula seja padronizada antes de filtrar
+            const matriculaPadronizada = standardizeMatricula(matricula);
+            console.log("Matrícula padronizada:", matriculaPadronizada);  // Para verificar a saída
 
-    if (resultados.length === 0) {
-      alert("Nenhuma solicitação encontrada para a matrícula informada.");
-    }
-}
+            // Filtra os dados da lista de funcionários com a matrícula padronizada
+            const resultados = Object.values(window.employeeList).filter(d => standardizeMatricula(d.matricula) === matriculaPadronizada);
 
+            // Preenche a tabela com os resultados encontrados
+            resultados.forEach(dado => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = dado.email;
+                row.insertCell(1).textContent = dado.nome;
+                row.insertCell(2).textContent = dado.folga;
+                row.insertCell(3).textContent = dado.data;
+            });
 
-        // Carrega a lista de funcionários (action=lista)
+            // Caso não encontre nenhum resultado, avise o usuário
+            if (resultados.length === 0) {
+                alert("Nenhuma solicitação encontrada para a matrícula informada.");
+            }
+        }
+
+        // Carregar a lista de funcionários assim que a página carregar
         function loadEmployeeList() {
             const listURL = SCRIPT_URL + "?action=lista";
             fetch(listURL)
@@ -108,23 +108,6 @@ function filtrarTabela() {
                     console.error("Erro ao carregar a lista:", error);
                     window.employeeList = {};
                 });
-        }
-
-        // Função para filtrar a tabela com base na matrícula
-        function filtrarTabela() {
-            const matricula = standardizeMatricula(document.getElementById("matricula").value);
-            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-            tbody.innerHTML = "";
-
-            const resultados = Object.values(window.employeeList).filter(d => standardizeMatricula(d.matricula) === matricula);
-
-            resultados.forEach(dado => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = dado.email;
-                row.insertCell(1).textContent = dado.nome;
-                row.insertCell(2).textContent = dado.folga;
-                row.insertCell(3).textContent = dado.data;
-            });
         }
 
         // Carregar a lista de funcionários assim que a página carregar
