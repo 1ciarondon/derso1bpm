@@ -36,11 +36,26 @@
     </table>
 
     <script>
-        // URL do Apps Script (use a URL publicada que termina em /exec)
+        // URL do Apps Script para carregar a lista de funcionários (use a URL publicada que termina em /exec)
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
         
+        // URL da planilha de solicitações (adicionada agora)
+        const SOLICITACAO_URL = "https://docs.google.com/spreadsheets/d/1vOrq9VA3kXSgCXgRG2TUkbnF6oDfk4bHxSpBsW6AvY8/edit?gid=1129420292#gid=1129420292";
+
         // Lista global de funcionários (será carregada via GET action=lista)
         window.employeeList = {};
+
+        // Obtém o mês atual
+        function getCurrentMonth() {
+            const now = new Date();
+            const month = now.getMonth();  // 0 para Janeiro, 11 para Dezembro
+            const year = now.getFullYear();
+            const monthNames = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", 
+                "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            return `${monthNames[month]}${year.toString().slice(2)}`;
+        }
 
         // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000" no início, se necessário
         function standardizeMatricula(matricula) {
@@ -58,6 +73,24 @@
             }
             
             return num;
+        }
+
+        // Função para carregar dados da planilha com base no mês
+        function loadSolicitacoesList() {
+            const monthSheet = getCurrentMonth(); // Obtém a guia correspondente ao mês
+            const listURL = `${SOLICITACAO_URL}?action=solicitacoes&month=${monthSheet}`;
+            
+            fetch(listURL)
+                .then(response => response.json())
+                .then(data => {
+                    window.employeeList = data;
+                    console.log("Lista carregada:", data);
+                    console.log("Total de solicitações: " + Object.keys(data).length);
+                })
+                .catch(error => {
+                    console.error("Erro ao carregar as solicitações:", error);
+                    window.employeeList = {};
+                });
         }
 
         // Função para filtrar a tabela com base na matrícula
@@ -94,24 +127,14 @@
             }
         }
 
-        // Carregar a lista de funcionários assim que a página carregar
-        function loadEmployeeList() {
-            const listURL = SCRIPT_URL + "?action=lista";
-            fetch(listURL)
-                .then(response => response.json())
-                .then(data => {
-                    window.employeeList = data;
-                    console.log("Lista carregada:", data);
-                    console.log("Total funcionários: " + Object.keys(data).length);
-                })
-                .catch(error => {
-                    console.error("Erro ao carregar a lista:", error);
-                    window.employeeList = {};
-                });
-        }
+        // Adiciona a padronização da matrícula ao clicar fora da caixa de entrada ou ao pressionar o botão
+        document.getElementById("matricula").addEventListener("blur", function() {
+            const matriculaInput = document.getElementById("matricula");
+            matriculaInput.value = standardizeMatricula(matriculaInput.value);
+        });
 
-        // Carregar a lista de funcionários assim que a página carregar
-        window.onload = loadEmployeeList;
+        // Carregar a lista de solicitações assim que a página carregar
+        window.onload = loadSolicitacoesList;
     </script>
 </body>
 </html>
