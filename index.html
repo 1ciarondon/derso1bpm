@@ -128,46 +128,49 @@
     
     // Calcula o período de solicitação para um determinado mês (0–11)
     // Ex: Se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
-    function getPeriod(year, month) {
-      let firstMonday = new Date(year, month, 1);
-      while (firstMonday.getDay() !== 1) {
-        firstMonday.setDate(firstMonday.getDate() + 1);
-      }
-      let lastDay = new Date(year, month + 1, 0);
-      let lastFriday = new Date(lastDay);
-      while (lastFriday.getDay() !== 5) {
-        lastFriday.setDate(lastFriday.getDate() - 1);
-      }
-      let penultimateFriday = new Date(lastFriday);
-      penultimateFriday.setDate(penultimateFriday.getDate() - 7);
-      return { start: firstMonday, end: penultimateFriday };
-    }
+function getPeriod() {
+    // Definir o próximo mês
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
     
-    // Inicializa o formulário: se estiver fora do período ativo, exibe mensagem; senão, mantém o formulário.
-    // O período ativo é calculado para o mês atual, para solicitações do próximo mês.
-    function initializeForm() {
-      const formularioDiv = document.getElementById("formulario");
-      const today = new Date();
-      const period = getPeriod(today.getFullYear(), today.getMonth());
-      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
-      
-      if (today < period.start || today > period.end) {
-        let mensagem = "";
-        if (today < period.start) {
-          mensagem = <h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>;
-        } else if (today > period.end) {
-          const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-          const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
-          const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
-          mensagem = <h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                      As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>;
-        }
-        formularioDiv.innerHTML = mensagem;
-        return;
-      }
+    // Obter o primeiro dia do próximo mês
+    const firstDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
+    
+    // Encontrar a primeira segunda-feira do próximo mês
+    const firstMonday = new Date(firstDayNextMonth);
+    firstMonday.setDate(firstDayNextMonth.getDate() + (1 - firstDayNextMonth.getDay() + 7) % 7);
+    
+    // Encontrar a penúltima sexta-feira do próximo mês
+    const lastDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
+    const lastFriday = new Date(lastDayNextMonth);
+    lastFriday.setDate(lastDayNextMonth.getDate() - (lastDayNextMonth.getDay() + 2) % 7);
+    
+    // Retornar as datas
+    return { start: firstMonday, end: lastFriday };
+}
+
+function initializeForm() {
+    const today = new Date();
+    const { start, end } = getPeriod();
+
+    // Verificar se a data atual está dentro do período permitido
+    if (today < start) {
+        const startDate = start.toLocaleDateString();
+        alert(`O período de solicitação começará em ${startDate}`);
+        // Bloquear o formulário até a data de início
+        return false;
+    } else if (today > end) {
+        const nextStartDate = new Date(end);
+        nextStartDate.setMonth(nextStartDate.getMonth() + 1);
+        alert(`O período de solicitação já terminou. O próximo período começará em ${nextStartDate.toLocaleDateString()}`);
+        // Bloquear o formulário até o próximo período
+        return false;
+    } else {
+        // Período válido, liberar o formulário
+        return true;
     }
+}
+
     
     // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
     function standardizeMatricula(matricula) {
