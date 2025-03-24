@@ -126,8 +126,7 @@
       });
     }
     
-    // Calcula o período de solicitação para um determinado mês (0–11)
-    // Ex: Se hoje for março de 2025, as solicitações para abril serão feitas no período da primeira segunda de março à penúltima sexta de março.
+// Calcula o período de solicitação para um determinado mês (0–11)
 function getPeriod() {
     // Definir o próximo mês
     const nextMonth = new Date();
@@ -150,36 +149,59 @@ function getPeriod() {
 }
 
 function initializeForm() {
-    const today = new Date();
-    const { start, end } = getPeriod();
+  const formularioDiv = document.getElementById("formulario");
+  const today = new Date();
+  const period = getPeriod(); // Não precisa de parâmetros aqui
+  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
+  
+  const submitButton = document.querySelector("button[type='submit']");
+  
+  if (today < period.start || today > period.end) {
+    let mensagem = "";
+    if (today < period.start) {
+      mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+    } else if (today > period.end) {
+      const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const nextPeriod = getPeriod(); // Novo cálculo para o próximo mês
+      const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
+      mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                  As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+    }
+    formularioDiv.innerHTML = mensagem;
+    
+    // Desabilita o botão de envio
+    submitButton.disabled = true;
+    return;
+  }
 
-    // Verificar se a data atual está dentro do período permitido
-    if (today < start) {
-        const startDate = start.toLocaleDateString();
+  // Habilita o botão de envio se estiver no período
+  submitButton.disabled = false;
+}
+
+function validateForm() {
+    const today = new Date();
+    const period = getPeriod(); // Obtém o período atual para as solicitações
+
+    // Verifica se a data atual está dentro do período permitido
+    if (today < period.start) {
+        const startDate = period.start.toLocaleDateString();
         alert(`O período de solicitação começará em ${startDate}`);
-        // Bloquear o formulário até a data de início
-        return false;
-    } else if (today > end) {
-        const nextStartDate = new Date(end);
+        return false; // Bloqueia o envio
+    } else if (today > period.end) {
+        const nextStartDate = new Date(period.end);
         nextStartDate.setMonth(nextStartDate.getMonth() + 1);
         alert(`O período de solicitação já terminou. O próximo período começará em ${nextStartDate.toLocaleDateString()}`);
-        // Bloquear o formulário até o próximo período
-        return false;
+        return false; // Bloqueia o envio
     } else {
-        // Período válido, liberar o formulário
-        return true;
+        return true; // Período válido, permite o envio
     }
 }
 
-    
-    // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
-    function standardizeMatricula(matricula) {
-      let num = matricula.replace(/\D/g, '');
-      if (!num.startsWith("1000")) {
-        num = "1000" + num;
-      }
-      return num;
-    }
+// Chama o `initializeForm` ao carregar a página para verificar o status do formulário
+initializeForm();
+
     
     // Carrega a lista de funcionários (action=lista)
     function loadEmployeeList() {
