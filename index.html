@@ -148,8 +148,18 @@ function getPeriod() {
     return { start: firstMonday, end: lastFriday };
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    initializeForm();
+});
+
 function initializeForm() {
   const formularioDiv = document.getElementById("formulario");
+  
+  if (!formularioDiv) {
+    console.error('Elemento com ID "formulario" não encontrado.');
+    return;  // Evita que o código continue se o elemento não for encontrado
+  }
+
   const today = new Date();
   const period = getPeriod(); // Não precisa de parâmetros aqui
   const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -179,6 +189,7 @@ function initializeForm() {
   // Habilita o botão de envio se estiver no período
   submitButton.disabled = false;
 }
+
 
 function validateForm() {
     const today = new Date();
