@@ -44,7 +44,7 @@
             return fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
                 .then(response => response.json())
                 .then(data => {
-                    return data; // Retorna os dados para que possam ser usados no preenchimento da tabela
+                    return data.result; // Acessa diretamente o campo "result"
                 })
                 .catch(error => {
                     console.error('Erro ao carregar as solicitações:', error);
@@ -79,16 +79,16 @@
             loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
                 if (solicitacoesList.length === 0) {
                     alert("Nenhuma solicitação encontrada para a matrícula informada.");
+                } else {
+                    // Preenche a tabela com os dados encontrados
+                    solicitacoesList.forEach(dado => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = dado.D || "N/A"; // Coluna de E-mail
+                        row.insertCell(1).textContent = dado.A || "N/A"; // Coluna de Nome
+                        row.insertCell(2).textContent = dado.E || "N/A"; // Coluna de Folga
+                        row.insertCell(3).textContent = dado.F || "N/A"; // Coluna de Data
+                    });
                 }
-
-                // Preenche a tabela com os dados encontrados
-                solicitacoesList.forEach(dado => {
-                    const row = tbody.insertRow();
-                    row.insertCell(0).textContent = dado.email || "N/A"; // Coluna de E-mail
-                    row.insertCell(1).textContent = dado.nome || "N/A"; // Coluna de Nome
-                    row.insertCell(2).textContent = dado.folga || "N/A"; // Coluna de Folga
-                    row.insertCell(3).textContent = dado.data || "N/A"; // Coluna de Data
-                });
             });
         }
 
