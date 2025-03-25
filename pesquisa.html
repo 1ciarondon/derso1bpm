@@ -39,25 +39,16 @@
         // URL do Apps Script para carregar as solicitações
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-        // Lista global de solicitações
-        let solicitacoesList = [];
-
         // Função para carregar as solicitações da API
         function loadSolicitacoesList(matricula) {
-            fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
+            return fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
                 .then(response => response.json())
                 .then(data => {
-                    solicitacoesList = data.map(dateStr => {
-                        const date = new Date(dateStr); // Converte a string para um objeto Date
-                        const day = String(date.getDate()).padStart(2, '0');
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const year = date.getFullYear();
-                        return `${day}/${month}/${year}`; // Formata a data
-                    });
-                    console.log(solicitacoesList); // Exibe as datas formatadas no console
+                    return data; // Retorna os dados para que possam ser usados no preenchimento da tabela
                 })
                 .catch(error => {
                     console.error('Erro ao carregar as solicitações:', error);
+                    return []; // Caso haja erro, retorna uma lista vazia
                 });
         }
 
@@ -85,25 +76,20 @@
             console.log("Matrícula padronizada:", matriculaPadronizada);
 
             // Carregar a lista de solicitações
-            loadSolicitacoesList(matriculaPadronizada);
+            loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
+                if (solicitacoesList.length === 0) {
+                    alert("Nenhuma solicitação encontrada para a matrícula informada.");
+                }
 
-            // Preenche a tabela com os dados encontrados
-            // Exemplo de dados fictícios para a tabela (deve ser substituído pelos dados reais)
-            const resultados = [
-                { email: "exemplo@dominio.com", nome: "João da Silva", folga: "Sim", data: solicitacoesList.join(", ") }
-            ];
-
-            resultados.forEach(dado => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = dado.email;
-                row.insertCell(1).textContent = dado.nome;
-                row.insertCell(2).textContent = dado.folga;
-                row.insertCell(3).textContent = dado.data;
+                // Preenche a tabela com os dados encontrados
+                solicitacoesList.forEach(dado => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = dado.email || "N/A"; // Coluna de E-mail
+                    row.insertCell(1).textContent = dado.nome || "N/A"; // Coluna de Nome
+                    row.insertCell(2).textContent = dado.folga || "N/A"; // Coluna de Folga
+                    row.insertCell(3).textContent = dado.data || "N/A"; // Coluna de Data
+                });
             });
-
-            if (resultados.length === 0) {
-                alert("Nenhuma solicitação encontrada para a matrícula informada.");
-            }
         }
 
         // Evento para padronizar a matrícula ao sair do campo de entrada
