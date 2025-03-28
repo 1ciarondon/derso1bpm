@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Solicitações</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -15,6 +28,11 @@
             padding: 8px;
             text-align: left;
         }
+        #loading {
+            display: none;
+            font-size: 16px;
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -22,7 +40,8 @@
     <label for="matricula">Matrícula:</label>
     <input type="text" id="matricula">
     <button onclick="filtrarTabela()">Buscar</button>
-    
+    <p id="loading">🔄 Buscando dados...</p>
+
     <table id="tabela">
         <thead>
             <tr>
@@ -36,67 +55,68 @@
     </table>
 
     <script>
-        // URL do Apps Script para carregar as solicitações
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-        // Função para carregar as solicitações da API
         function loadSolicitacoesList(matricula) {
             return fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
                 .then(response => response.json())
-                .then(data => {
-                    return data.result; // Acessa diretamente o campo "result"
-                })
+                .then(data => data.result)
                 .catch(error => {
                     console.error('Erro ao carregar as solicitações:', error);
-                    return []; // Caso haja erro, retorna uma lista vazia
+                    return [];
                 });
         }
 
-        // Função para padronizar a matrícula
         function standardizeMatricula(matricula) {
-            let num = matricula.replace(/\D/g, ''); // Remove caracteres não numéricos
-            if (!num.startsWith("1000")) {
-                num = "1000" + num;
-            }
-            return num;
+            let num = matricula.replace(/\D/g, '');
+            return num.startsWith("1000") ? num : "1000" + num;
         }
 
-        // Função para filtrar a tabela com base na matrícula
         function filtrarTabela() {
-            const matricula = document.getElementById("matricula").value.trim(); // Remove espaços extras
+            const matriculaInput = document.getElementById("matricula");
+            const matricula = matriculaInput.value.trim();
             const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-            tbody.innerHTML = ""; // Limpa a tabela antes de adicionar os resultados
+            const loadingText = document.getElementById("loading");
 
+            tbody.innerHTML = "";
             if (!matricula) {
                 alert("Por favor, insira uma matrícula.");
                 return;
             }
 
             const matriculaPadronizada = standardizeMatricula(matricula);
-            console.log("Matrícula padronizada:", matriculaPadronizada);
+            matriculaInput.value = matriculaPadronizada;
+            loadingText.style.display = "block";
 
-            // Carregar a lista de solicitações
             loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
+                loadingText.style.display = "none";
                 if (solicitacoesList.length === 0) {
                     alert("Nenhuma solicitação encontrada para a matrícula informada.");
                 } else {
-                    // Preenche a tabela com os dados encontrados
                     solicitacoesList.forEach(dado => {
                         const row = tbody.insertRow();
-                        row.insertCell(0).textContent = dado.D || "N/A"; // Coluna de E-mail
-                        row.insertCell(1).textContent = dado.A || "N/A"; // Coluna de Nome
-                        row.insertCell(2).textContent = dado.E || "N/A"; // Coluna de Folga
-                        row.insertCell(3).textContent = dado.F || "N/A"; // Coluna de Data
+                        row.insertCell(0).textContent = dado.D || "N/A";
+                        row.insertCell(1).textContent = dado.A || "N/A";
+                        row.insertCell(2).textContent = dado.E || "N/A";
+                        row.insertCell(3).textContent = dado.F || "N/A";
                     });
                 }
             });
         }
 
-        // Evento para padronizar a matrícula ao sair do campo de entrada
         document.getElementById("matricula").addEventListener("blur", function() {
-            const matriculaInput = document.getElementById("matricula");
-            matriculaInput.value = standardizeMatricula(matriculaInput.value);
+            this.value = standardizeMatricula(this.value);
         });
+
+        document.getElementById("matricula").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                filtrarTabela();
+            }
+        });
+
+        window.onload = function () {
+            document.getElementById("matricula").focus();
+        };
     </script>
 </body>
 </html>
