@@ -54,69 +54,71 @@
         <tbody></tbody>
     </table>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
+   <script>
+    // Adiciona o CORS Anywhere à URL do Google Apps Script
+    const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+    const SCRIPT_URL = CORS_PROXY + "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-        function loadSolicitacoesList(matricula) {
-            return fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
-                .then(response => response.json())
-                .then(data => data.result)
-                .catch(error => {
-                    console.error('Erro ao carregar as solicitações:', error);
-                    return [];
-                });
-        }
-
-        function standardizeMatricula(matricula) {
-            let num = matricula.replace(/\D/g, '');
-            return num.startsWith("1000") ? num : "1000" + num;
-        }
-
-        function filtrarTabela() {
-            const matriculaInput = document.getElementById("matricula");
-            const matricula = matriculaInput.value.trim();
-            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-            const loadingText = document.getElementById("loading");
-
-            tbody.innerHTML = "";
-            if (!matricula) {
-                alert("Por favor, insira uma matrícula.");
-                return;
-            }
-
-            const matriculaPadronizada = standardizeMatricula(matricula);
-            matriculaInput.value = matriculaPadronizada;
-            loadingText.style.display = "block";
-
-            loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
-                loadingText.style.display = "none";
-                if (solicitacoesList.length === 0) {
-                    alert("Nenhuma solicitação encontrada para a matrícula informada.");
-                } else {
-                    solicitacoesList.forEach(dado => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = dado.D || "N/A";
-                        row.insertCell(1).textContent = dado.A || "N/A";
-                        row.insertCell(2).textContent = dado.E || "N/A";
-                        row.insertCell(3).textContent = dado.F || "N/A";
-                    });
-                }
+    function loadSolicitacoesList(matricula) {
+        return fetch(`${SCRIPT_URL}?action=solicitacoes&matricula=${matricula}`)
+            .then(response => response.json())
+            .then(data => data.result)
+            .catch(error => {
+                console.error('Erro ao carregar as solicitações:', error);
+                return [];
             });
+    }
+
+    function standardizeMatricula(matricula) {
+        let num = matricula.replace(/\D/g, '');
+        return num.startsWith("1000") ? num : "1000" + num;
+    }
+
+    function filtrarTabela() {
+        const matriculaInput = document.getElementById("matricula");
+        const matricula = matriculaInput.value.trim();
+        const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
+        const loadingText = document.getElementById("loading");
+
+        tbody.innerHTML = "";
+        if (!matricula) {
+            alert("Por favor, insira uma matrícula.");
+            return;
         }
 
-        document.getElementById("matricula").addEventListener("blur", function() {
-            this.value = standardizeMatricula(this.value);
-        });
+        const matriculaPadronizada = standardizeMatricula(matricula);
+        matriculaInput.value = matriculaPadronizada;
+        loadingText.style.display = "block";
 
-        document.getElementById("matricula").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                filtrarTabela();
+        loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
+            loadingText.style.display = "none";
+            if (solicitacoesList.length === 0) {
+                alert("Nenhuma solicitação encontrada para a matrícula informada.");
+            } else {
+                solicitacoesList.forEach(dado => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = dado.D || "N/A";
+                    row.insertCell(1).textContent = dado.A || "N/A";
+                    row.insertCell(2).textContent = dado.E || "N/A";
+                    row.insertCell(3).textContent = dado.F || "N/A";
+                });
             }
         });
+    }
 
-        window.onload = function () {
-            document.getElementById("matricula").focus();
-        };
-    </script>
+    document.getElementById("matricula").addEventListener("blur", function() {
+        this.value = standardizeMatricula(this.value);
+    });
+
+    document.getElementById("matricula").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            filtrarTabela();
+        }
+    });
+
+    window.onload = function () {
+        document.getElementById("matricula").focus();
+    };
+</script>
 </body>
 </html>
