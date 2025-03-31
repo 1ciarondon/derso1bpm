@@ -168,27 +168,26 @@ function initializeForm() {
   
   const submitButton = document.querySelector("button[type='submit']");
   
- if (today < period.start || today > period.end) {
-    let mensagem = "";
-    const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Data do próximo mês
-    const requestedMonthNext = monthNames[nextMonthDate.getMonth()]; // Nome do próximo mês
-    
-    if (today < period.start) {
-      mensagem = `<h3>O período de solicitações para ${requestedMonthNext} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-    } else if (today > period.end) {
-      const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      const nextPeriod = getPeriod(); // Novo cálculo para o próximo mês
-      const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
-      mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                  As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-    }
-
-    formularioDiv.innerHTML = mensagem;
-
-    // Desabilita o botão de envio
-    submitButton.disabled = true;
-    return;
+if (today < period.start || today > period.end) {
+  let mensagem = "";
+  const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Data do próximo mês
+  const requestedMonthNext = monthNames[nextMonthDate.getMonth()]; // Nome do próximo mês
+  
+  if (today < period.start) {
+    mensagem = `<h3>O período de solicitações para ${requestedMonthNext} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+  } else if (today > period.end) {
+    const nextPeriod = getPeriod(); // Novo cálculo para o próximo mês
+    const requestedMonthNext = monthNames[nextPeriod.start.getMonth()]; // Corrigido para pegar o mês correto do próximo período
+    mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
   }
+
+  formularioDiv.innerHTML = mensagem;
+
+  // Desabilita o botão de envio
+  submitButton.disabled = true;
+  return;
+}
 
   // Habilita o botão de envio se estiver no período
   submitButton.disabled = false;
