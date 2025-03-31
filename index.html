@@ -96,273 +96,173 @@
       font-weight: bold;
     }
   </style>
-  <script>
-    // URL do Apps Script (use a URL publicada que termina em /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
-    
-    // Lista global de funcionários (será carregada via GET action=lista)
-    window.employeeList = {};
-    
-    // Array de provedores para sugestões de e-mail
-    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-    
-    // Atualiza o datalist de provedores após o "@" ser digitado
-    function updateEmailDatalist() {
-      const emailInput = document.getElementById("email");
-      const datalist = document.getElementById("emailProviders");
-      const value = emailInput.value;
-      const atIndex = value.indexOf("@");
-      if (atIndex === -1) {
-        datalist.innerHTML = "";
-        return;
-      }
-      const domainPart = value.slice(atIndex + 1).toLowerCase();
-      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+<script>
+  // URL do Apps Script (use a URL publicada que termina em /exec)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
+  
+  // Lista global de funcionários (será carregada via GET action=lista)
+  window.employeeList = {};
+  
+  // Array de provedores para sugestões de e-mail
+  const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+  
+  // Atualiza o datalist de provedores após o "@" ser digitado
+  function updateEmailDatalist() {
+    const emailInput = document.getElementById("email");
+    const datalist = document.getElementById("emailProviders");
+    const value = emailInput.value;
+    const atIndex = value.indexOf("@");
+    if (atIndex === -1) {
       datalist.innerHTML = "";
-      filtered.forEach(provider => {
-        const option = document.createElement("option");
-        option.value = provider;
-        datalist.appendChild(option);
-      });
+      return;
     }
-    
-// Calcula o período de solicitação para um determinado mês (0–11)
-function getPeriod() {
-    // Definir o próximo mês
+    const domainPart = value.slice(atIndex + 1).toLowerCase();
+    const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+    datalist.innerHTML = "";
+    filtered.forEach(provider => {
+      const option = document.createElement("option");
+      option.value = provider;
+      datalist.appendChild(option);
+    });
+  }
+
+  // Calcula o período de solicitação para um determinado mês (0–11)
+  function getPeriod() {
     const nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);
-    
-    // Obter o primeiro dia do próximo mês
     const firstDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
-    
-    // Encontrar a primeira segunda-feira do próximo mês
     const firstMonday = new Date(firstDayNextMonth);
     firstMonday.setDate(firstDayNextMonth.getDate() + (1 - firstDayNextMonth.getDay() + 7) % 7);
     
-    // Encontrar a penúltima sexta-feira do próximo mês
     const lastDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
     const lastFriday = new Date(lastDayNextMonth);
     lastFriday.setDate(lastDayNextMonth.getDate() - (lastDayNextMonth.getDay() + 2) % 7);
     
-    // Retornar as datas
     return { start: firstMonday, end: lastFriday };
-}
+  }
 
-document.addEventListener('DOMContentLoaded', function () {
+  // Inicializa o formulário
+  document.addEventListener('DOMContentLoaded', function () {
     initializeForm();
-});
+    loadEmployeeList();
+    setDateLimits();
+    document.getElementById("matricula").addEventListener("blur", checkMatricula);
+    document.getElementById("email").addEventListener("input", updateEmailDatalist);
+  });
 
-function initializeForm() {
-  const formularioDiv = document.getElementById("formulario");
-  
-  if (!formularioDiv) {
-    console.error('Elemento com ID "formulario" não encontrado.');
-    return;  // Evita que o código continue se o elemento não for encontrado
-  }
+  function initializeForm() {
+    const formularioDiv = document.getElementById("formulario");
+    if (!formularioDiv) {
+      console.error('Elemento com ID "formulario" não encontrado.');
+      return;
+    }
 
-  const today = new Date();
-  const period = getPeriod(); // Não precisa de parâmetros aqui
-  const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-  const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
-  
-  const submitButton = document.querySelector("button[type='submit']");
-  
-if (today < period.start || today > period.end) {
-  let mensagem = "";
-  const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Data do próximo mês
-  const requestedMonthNext = monthNames[nextMonthDate.getMonth()]; // Nome do próximo mês
-  
-  if (today < period.start) {
-    mensagem = `<h3>O período de solicitações para ${requestedMonthNext} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-  } else if (today > period.end) {
-    const nextPeriod = getPeriod(); // Novo cálculo para o próximo mês
-    const requestedMonthNext = monthNames[nextPeriod.start.getMonth()]; // Corrigido para pegar o mês correto do próximo período
-    mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-  }
-
-  formularioDiv.innerHTML = mensagem;
-
-  // Desabilita o botão de envio
-  submitButton.disabled = true;
-  return;
-}
-
-  // Habilita o botão de envio se estiver no período
-  submitButton.disabled = false;
-}
-
-
-function validateForm() {
     const today = new Date();
-    const period = getPeriod(); // Obtém o período atual para as solicitações
+    const period = getPeriod();
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
+    const submitButton = document.querySelector("button[type='submit']");
 
-    // Verifica se a data atual está dentro do período permitido
-    if (today < period.start) {
-        const startDate = period.start.toLocaleDateString();
-        alert(`O período de solicitação começará em ${startDate}`);
-        return false; // Bloqueia o envio
-    } else if (today > period.end) {
-        const nextStartDate = new Date(period.end);
-        nextStartDate.setMonth(nextStartDate.getMonth() + 1);
-        alert(`O período de solicitação já terminou. O próximo período começará em ${nextStartDate.toLocaleDateString()}`);
-        return false; // Bloqueia o envio
-    } else {
-        return true; // Período válido, permite o envio
-    }
-}
+    if (today < period.start || today > period.end) {
+      let mensagem = "";
+      const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const requestedMonthNext = monthNames[nextMonthDate.getMonth()];
 
-// Chama o `initializeForm` ao carregar a página para verificar o status do formulário
-initializeForm();
-
-    
-    // Carrega a lista de funcionários (action=lista)
-    function loadEmployeeList() {
-      const listURL = SCRIPT_URL + "?action=lista";
-      fetch(listURL)
-        .then(response => response.json())
-        .then(data => {
-          window.employeeList = data;
-          console.log("Lista carregada:", data);
-          console.log("Total funcionários: " + Object.keys(data).length);
-        })
-        .catch(error => {
-          console.error("Erro ao carregar a lista:", error);
-          window.employeeList = {};
-        });
-    }
-    
-    // Preenche o campo "Nome" com base na matrícula digitada
-    function checkMatricula() {
-      const matriculaInput = document.getElementById("matricula");
-      const nomeInput = document.getElementById("nome");
-      const errorMsg = document.getElementById("matriculaError");
-      let standardized = standardizeMatricula(matriculaInput.value);
-      matriculaInput.value = standardized;
-      if (window.employeeList && window.employeeList[standardized]) {
-        nomeInput.value = window.employeeList[standardized];
-        errorMsg.textContent = "";
-      } else {
-        nomeInput.value = "";
-        errorMsg.textContent = "Matrícula não encontrada!";
+      if (today < period.start) {
+        mensagem = `<h3>O período de solicitações para ${requestedMonthNext} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+      } else if (today > period.end) {
+        const nextPeriod = getPeriod();
+        const requestedMonthNext = monthNames[nextPeriod.start.getMonth()];
+        mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                    As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
       }
+
+      formularioDiv.innerHTML = mensagem;
+      submitButton.disabled = true;
+      return;
     }
+
+    submitButton.disabled = false;
+  }
+
+  // Validação do formulário antes de submeter
+  async function submitForm(event) {
+    event.preventDefault();
+    const form = document.getElementById("dersoForm");
+    const formData = new FormData(form);
+
+    let timestamp = getFormattedTimestamp();
+    formData.set("timestamp", timestamp);
+
+    let dataValue = document.getElementById("data").value;
+    let dataBR = formatDateToBR(dataValue);
+    formData.set("data", dataBR);
+
+    let matricula = standardizeMatricula(document.getElementById("matricula").value);
     
-    // Configura o campo de data para aceitar somente datas do próximo mês
-    function setDateLimits() {
-      const dateInput = document.getElementById("data");
-      let today = new Date();
-      let nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      let lastDayNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-      dateInput.min = nextMonth.toISOString().split("T")[0];
-      dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
+    let folgaValue = getFolgaValue();
+    if (!folgaValue) {
+      document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+      return;
     }
-    
-    // Converte data de "yyyy-mm-dd" para "dd/MM/yyyy"
-    function formatDateToBR(dateStr) {
-      let parts = dateStr.split("-");
-      return parts[2] + "/" + parts[1] + "/" + parts[0];
+    formData.set("folga", folgaValue);
+
+    let duplicate = await checkDuplicate(matricula, dataBR);
+    if (duplicate) {
+      document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
+      return;
+    } else {
+      document.getElementById("duplicateError").textContent = "";
     }
-    
-    // Retorna o valor selecionado para "Folga"
-    function getFolgaValue() {
-      let selected = document.querySelector("input[name='folga']:checked");
-      return selected ? selected.value : "";
-    }
-    
-    // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
-    function getFormattedTimestamp() {
-      let now = new Date();
-      let datePart = now.toLocaleDateString('pt-BR');
-      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false });
-      return datePart + " " + timePart;
-    }
-    
-    // Verifica duplicidade: mesma matrícula + mesma data (formato "dd/MM/yyyy")
- function checkDuplicate(matricula, data) {
-    let dataObj = new Date(data.split("/").reverse().join("-")); // Convertendo dd/mm/aaaa para Date
+
+    fetch(SCRIPT_URL, { method: "POST", body: formData })
+      .then(response => {
+        alert("Solicitação enviada com sucesso!");
+        form.reset();
+        document.getElementById("duplicateError").textContent = "";
+      })
+      .catch(error => {
+        alert("Erro ao enviar solicitação!");
+        console.error("Erro no envio:", error);
+      });
+  }
+
+  // Funções auxiliares para data e duplicidade
+  function formatDateToBR(dateStr) {
+    let parts = dateStr.split("-");
+    return parts[2] + "/" + parts[1] + "/" + parts[0];
+  }
+
+  function getFormattedTimestamp() {
+    let now = new Date();
+    let datePart = now.toLocaleDateString('pt-BR');
+    let timePart = now.toLocaleTimeString('pt-BR', { hour12: false });
+    return datePart + " " + timePart;
+  }
+
+  async function checkDuplicate(matricula, data) {
+    let dataObj = new Date(data.split("/").reverse().join("-"));
     let mesAno = dataObj.toLocaleString("pt-BR", { month: "long" }).charAt(0).toUpperCase() +
                  dataObj.toLocaleString("pt-BR", { month: "long" }).slice(1) +
-                 String(dataObj.getFullYear()).slice(-2); // Formata "Abril25"
+                 String(dataObj.getFullYear()).slice(-2);
     
-  let url = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
+    let url = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
     let params = new URLSearchParams({
-        action: "check",
-        matricula: matricula,
-        data: data,
-        aba: mesAno, // Nome correto da aba
-        nocache: new Date().getTime() // Evita cache
+      action: "check",
+      matricula: matricula,
+      data: data,
+      aba: mesAno,
+      nocache: new Date().getTime()
     });
 
-   fetch(`${url}?${params}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Resposta da API:", data);
-            if (data.duplicate) {
-                alert("Matrícula já registrada nesta data.");
-            }
-        })
-        .catch(error => console.error("Erro ao analisar JSON:", error));
-}
-   
-    // Submete o formulário com validação: se duplicado, exibe mensagem na página
-    async function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
-      
-      // Gera o timestamp e adiciona
-      let timestamp = getFormattedTimestamp();
-      formData.set("timestamp", timestamp);
-      
-      // Converte a data para "dd/MM/yyyy" e adiciona
-      let dataValue = document.getElementById("data").value;
-      let dataBR = formatDateToBR(dataValue);
-      formData.set("data", dataBR);
-      
-      // Padroniza a matrícula e adiciona
-      let matricula = standardizeMatricula(document.getElementById("matricula").value);
-      
-      // Verifica se a opção de folga foi selecionada
-      let folgaValue = getFolgaValue();
-      if (!folgaValue) {
-        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-        return;
-      }
-      formData.set("folga", folgaValue);
-      
-      // Verifica duplicidade: mesma matrícula + mesma data
-      let duplicate = await checkDuplicate(matricula, dataBR);
-      if (duplicate) {
-        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
-        return;
-      } else {
-        document.getElementById("duplicateError").textContent = "";
-      }
-      
-      // Envia os dados via POST
-      fetch(SCRIPT_URL, { method: "POST", body: formData })
-        .then(response => {
-          alert("Solicitação enviada com sucesso!");
-          form.reset();
-          document.getElementById("duplicateError").textContent = "";
-        })
-        .catch(error => {
-          alert("Erro ao enviar solicitação!");
-          console.error("Erro no envio:", error);
-        });
+    const response = await fetch(`${url}?${params}`);
+    const dataResponse = await response.json();
+    if (dataResponse.duplicate) {
+      return true;
     }
-    
-    document.addEventListener("DOMContentLoaded", function(){
-      initializeForm();
-      loadEmployeeList();
-      setDateLimits();
-      document.getElementById("matricula").addEventListener("blur", checkMatricula);
-      document.getElementById("email").addEventListener("input", updateEmailDatalist);
-    });
-    
-  </script>
+    return false;
+  }
+</script>
 </head>
 <body>
   <div class="container" id="formulario">
