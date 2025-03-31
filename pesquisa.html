@@ -56,39 +56,42 @@
 
    <script>
     // Adiciona o CORS Anywhere à URL do Google Apps Script
-   const corsUrl = "https://thingproxy.freeboard.io/fetch/";
+   const corsUrl = "https://thingproxy.freeboard.io/fetch/";  // Proxy de CORS
     const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-   function loadSolicitacoesList(matricula) {
-    return fetch(`${corsUrl}${targetUrl}?matricula=${matricula}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Resposta recebida:", data);  // Verifique a resposta aqui
-            if (data && data.result) {
-                return data.result;  // Retorne a lista de solicitações
-            } else {
-                console.error("Dados inválidos recebidos:", data);
+    // Função para carregar as solicitações
+    function loadSolicitacoesList(matricula) {
+        return fetch(`${corsUrl}${targetUrl}?action=solicitacoes&matricula=${matricula}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta recebida:", data);
+                if (data && data.result) {
+                    return data.result;  // Retorne a lista de solicitações
+                } else {
+                    console.error("Dados inválidos recebidos:", data);
+                    return [];
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar as solicitações:', error);
                 return [];
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao carregar as solicitações:', error);
-            return [];
-        });
-}
+            });
+    }
 
+    // Função para padronizar a matrícula
     function standardizeMatricula(matricula) {
         let num = matricula.replace(/\D/g, '');
         return num.startsWith("1000") ? num : "1000" + num;
     }
 
+    // Função para filtrar a tabela com base na matrícula
     function filtrarTabela() {
         const matriculaInput = document.getElementById("matricula");
         const matricula = matriculaInput.value.trim();
         const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
         const loadingText = document.getElementById("loading");
 
-        tbody.innerHTML = "";
+        tbody.innerHTML = "";  // Limpa a tabela antes de adicionar novas linhas
         if (!matricula) {
             alert("Por favor, insira uma matrícula.");
             return;
@@ -96,34 +99,37 @@
 
         const matriculaPadronizada = standardizeMatricula(matricula);
         matriculaInput.value = matriculaPadronizada;
-        loadingText.style.display = "block";
+        loadingText.style.display = "block";  // Exibe a mensagem de carregamento
 
         loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
-            loadingText.style.display = "none";
+            loadingText.style.display = "none";  // Esconde a mensagem de carregamento
             if (solicitacoesList.length === 0) {
                 alert("Nenhuma solicitação encontrada para a matrícula informada.");
             } else {
                 solicitacoesList.forEach(dado => {
                     const row = tbody.insertRow();
-                    row.insertCell(0).textContent = dado.D || "N/A";
-                    row.insertCell(1).textContent = dado.A || "N/A";
-                    row.insertCell(2).textContent = dado.E || "N/A";
-                    row.insertCell(3).textContent = dado.F || "N/A";
+                    row.insertCell(0).textContent = dado.D || "N/A";  // E-mail
+                    row.insertCell(1).textContent = dado.A || "N/A";  // Nome
+                    row.insertCell(2).textContent = dado.E || "N/A";  // Folga
+                    row.insertCell(3).textContent = dado.F || "N/A";  // Data
                 });
             }
         });
     }
 
+    // Adiciona o evento de blur para padronizar a matrícula
     document.getElementById("matricula").addEventListener("blur", function() {
         this.value = standardizeMatricula(this.value);
     });
 
+    // Adiciona o evento para buscar ao pressionar Enter
     document.getElementById("matricula").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             filtrarTabela();
         }
     });
 
+    // Foca no campo de matrícula quando a página carrega
     window.onload = function () {
         document.getElementById("matricula").focus();
     };
