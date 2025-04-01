@@ -55,16 +55,17 @@
     </table>
 
    <script>
-    // URL do proxy CORS
-const corsUrl = "https://derso-1bpm.glitch.me";
+// URL do proxy CORS
+const corsUrl = "https://derso-1bpm.glitch.me/proxy";
 
 // URL do Google Apps Script
 const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-
-    // Função para carregar as solicitações
-   function loadSolicitacoesList(matricula) {
-    return fetch(`${corsUrl}${targetUrl}?action=solicitacoes&matricula=${matricula}`)
+// Função para carregar as solicitações
+function loadSolicitacoesList(matricula) {
+    const url = `${corsUrl}?targetUrl=${encodeURIComponent(targetUrl)}&action=solicitacoes&matricula=${matricula}`;
+    
+    return fetch(url)
         .then(response => response.json())
         .then(data => {
             console.log("Resposta recebida:", data);
@@ -80,6 +81,7 @@ const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-
             return [];
         });
 }
+
 
     // Função para padronizar a matrícula
     function standardizeMatricula(matricula) {
