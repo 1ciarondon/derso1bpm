@@ -126,64 +126,74 @@
     });
   }
 
-  // Calcula o período de solicitação para um determinado mês (0–11)
-  function getPeriod() {
-    const nextMonth = new Date();
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-    const firstDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
-    const firstMonday = new Date(firstDayNextMonth);
-    firstMonday.setDate(firstDayNextMonth.getDate() + (1 - firstDayNextMonth.getDay() + 7) % 7);
-    
-    const lastDayNextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0);
-    const lastFriday = new Date(lastDayNextMonth);
-    lastFriday.setDate(lastDayNextMonth.getDate() - (lastDayNextMonth.getDay() + 2) % 7);
-    
+ // Calcula o período de solicitação para um determinado mês (0–11)
+function getPeriod(referenceDate) {
+    // Definir o mês de referência (um mês antes do solicitado)
+    const refMonth = referenceDate.getMonth() - 1; // Pegamos o mês anterior
+    const refYear = referenceDate.getFullYear();
+
+    // Obter o primeiro dia do mês de referência
+    const firstDay = new Date(refYear, refMonth, 1);
+
+    // Encontrar a primeira segunda-feira do mês de referência
+    const firstMonday = new Date(firstDay);
+    firstMonday.setDate(firstDay.getDate() + ((1 - firstDay.getDay() + 7) % 7));
+
+    // Encontrar a penúltima sexta-feira do mês de referência
+    const lastDay = new Date(refYear, refMonth + 1, 0);
+    const lastFriday = new Date(lastDay);
+    lastFriday.setDate(lastDay.getDate() - ((lastDay.getDay() + 2) % 7));
+
+    // Retornar as datas
     return { start: firstMonday, end: lastFriday };
-  }
+}
 
-  // Inicializa o formulário
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     initializeForm();
-    loadEmployeeList();
-    setDateLimits();
-    document.getElementById("matricula").addEventListener("blur", checkMatricula);
-    document.getElementById("email").addEventListener("input", updateEmailDatalist);
-  });
+});
 
-  function initializeForm() {
+function initializeForm() {
     const formularioDiv = document.getElementById("formulario");
+
     if (!formularioDiv) {
-      console.error('Elemento com ID "formulario" não encontrado.');
-      return;
+        console.error('Elemento com ID "formulario" não encontrado.');
+        return;  // Evita que o código continue se o elemento não for encontrado
     }
 
     const today = new Date();
-    const period = getPeriod();
-    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
+    const requestedMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Próximo mês
+    const period = getPeriod(requestedMonthDate); // Agora usa o mês de referência correto
+
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const requestedMonth = monthNames[requestedMonthDate.getMonth()]; // Nome do próximo mês
+
     const submitButton = document.querySelector("button[type='submit']");
 
     if (today < period.start || today > period.end) {
-      let mensagem = "";
-      const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      const requestedMonthNext = monthNames[nextMonthDate.getMonth()];
+        let mensagem = "";
 
-      if (today < period.start) {
-        mensagem = `<h3>O período de solicitações para ${requestedMonthNext} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-      } else if (today > period.end) {
-        const nextPeriod = getPeriod();
-        const requestedMonthNext = monthNames[nextPeriod.start.getMonth()];
-        mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                    As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-      }
+        if (today < period.start) {
+            mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+        } else if (today > period.end) {
+            const nextRequestedMonthDate = new Date(today.getFullYear(), today.getMonth() + 2, 1);
+            const nextPeriod = getPeriod(nextRequestedMonthDate);
+            const nextRequestedMonth = monthNames[nextRequestedMonthDate.getMonth()];
+            
+            mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
+                        As solicitações para ${nextRequestedMonth} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
+        }
 
-      formularioDiv.innerHTML = mensagem;
-      submitButton.disabled = true;
-      return;
+        formularioDiv.innerHTML = mensagem;
+
+        // Desabilita o botão de envio
+        submitButton.disabled = true;
+        return;
     }
 
+    // Habilita o botão de envio se estiver no período correto
     submitButton.disabled = false;
-  }
+}
 
   // Validação do formulário antes de submeter
   async function submitForm(event) {
