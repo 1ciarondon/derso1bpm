@@ -250,38 +250,48 @@ async function checkDuplicate(matricula, dataValue) {
 }
     
     // Submete o formulário com validação: se duplicado, exibe mensagem na página
-    async function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
-         
-      // Converte a data para "dd/MM/yyyy" e adiciona
-      let dataValue = document.getElementById("data").value;
-      let dataBR = formatDateToBR(dataValue);
-      formData.set("data", dataBR);
-      
-      // Padroniza a matrícula e adiciona
-      let matricula = standardizeMatricula(document.getElementById("matricula").value);
-      
-      // Verifica se a opção de folga foi selecionada
-      let folgaValue = getFolgaValue();
-      if (!folgaValue) {
+   async function submitForm(event) {
+    event.preventDefault();
+    const form = document.getElementById("dersoForm");
+    const formData = new FormData(form);
+    
+    let dataValue = document.getElementById("data").value;
+    let dataBR = formatDateToBR(dataValue);
+    formData.set("data", dataBR);
+    
+    let matricula = standardizeMatricula(document.getElementById("matricula").value);
+    
+    let folgaValue = getFolgaValue();
+    if (!folgaValue) {
         document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
         return;
-      }
-      formData.set("folga", folgaValue);
-
-// Função para obter o valor da folga selecionada
-function getFolgaValue() {
-    let folgaRadios = document.querySelectorAll('input[name="folga"]');
-    for (let radio of folgaRadios) {
-        if (radio.checked) {
-            return radio.value;
-        }
     }
-    return null;
-}
+    formData.set("folga", folgaValue);
 
+    let duplicate = await checkDuplicate(matricula, dataBR);
+    if (duplicate) {
+        document.getElementById("duplicateError").textContent = "Já existe solicitação para essa data com essa matrícula!";
+        return;
+    } else {
+        document.getElementById("duplicateError").textContent = "";
+    }
+
+    fetch(ACTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form))
+    })
+    .then(response => response.text())  
+    .then(data => {
+        console.log("Resposta do servidor:", data);
+        alert("Solicitação enviada com sucesso!");
+        form.reset();
+    })
+    .catch(error => {
+        console.error("Erro no envio:", error);
+        alert("Erro ao enviar solicitação!");
+    });
+}
       
       // Verifica duplicidade: mesma matrícula + mesma data
       let duplicate = await checkDuplicate(matricula, dataBR);
