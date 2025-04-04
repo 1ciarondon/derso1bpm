@@ -149,15 +149,13 @@ const ACTION_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU
     // Inicializa o formulário: se estiver fora do período ativo, exibe mensagem; senão, mantém o formulário.
     // O período ativo é calculado para o mês atual, para solicitações do próximo mês.
     function initializeForm() {
-      const formularioDiv = document.getElementById("formulario");
-      const today = new Date();
-      const period = getPeriod(today.getFullYear(), today.getMonth());
-      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
-      
-     // AQUI O CÓDIGO 
+    const formularioDiv = document.getElementById("formulario");
+    if (formularioDiv) {
+        formularioDiv.style.display = "block"; // Apenas um exemplo para evitar erro
+    } else {
+        console.warn("Div do formulário não encontrada.");
     }
+}
     
     // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
     function standardizeMatricula(matricula) {
@@ -322,28 +320,29 @@ function getFolgaValue() {
     alert("Erro ao enviar solicitação!");
 });
     
-    document.addEventListener("DOMContentLoaded", function () {
-    initializeForm();
-    loadEmployeeList();
-    setDateLimits();
+ document.addEventListener("DOMContentLoaded", function () {
+            initializeForm();
+            loadEmployeeList();
+            setDateLimits();
 
-    let matriculaField = document.getElementById("matricula");
-    let emailField = document.getElementById("email");
+            let matriculaField = document.getElementById("matricula");
+            let emailField = document.getElementById("email");
 
-    if (matriculaField) {
-        matriculaField.addEventListener("blur", checkMatricula);
-    } else {
-        console.error("Campo matrícula não encontrado.");
-    }
+            if (matriculaField) {
+                matriculaField.addEventListener("blur", checkMatricula);
+            } else {
+                console.error("Campo matrícula não encontrado.");
+            }
 
-    if (emailField) {
-        emailField.addEventListener("input", updateEmailDatalist);
-    } else {
-        console.error("Campo email não encontrado.");
-    }
-});
-</script>
-</head>
+            if (emailField) {
+                emailField.addEventListener("input", updateEmailDatalist);
+            } else {
+                console.error("Campo email não encontrado.");
+            }
+        });
+    </script>
+</body>
+</html>
 <body>
   <div class="container" id="formulario">
     <h2>DERSO 1º BPM</h2>
