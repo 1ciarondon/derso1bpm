@@ -6,111 +6,118 @@
     <title>Solicitação de Folga - DERSO</title>
     <style>
         body {
-            background-color: #f7f7f7;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+    background-color: #f7f7f7;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
 
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Adicionado para garantir que o conteúdo não vaze */
+    overflow: hidden;
+}
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-        }
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #555;
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-        }
+.subtitle {
+    text-align: center;
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 15px;
+    line-height: 1.4;
+}
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+.form-group {
+    margin-bottom: 15px;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-        }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+}
 
-        .form-group input,
-        .form-group button,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+.form-group input,
+.form-group button,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* Adicionado para incluir padding e borda na largura */
+    box-sizing: border-box;
+}
 
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
+.radio-group {
+    display: flex;
+    flex-direction: row; /* Alterado para row */
+    flex-wrap: wrap; /* Adicionado para quebrar em várias linhas */
+    align-items: center; /* Alterado para center */
+    justify-content: flex-start; /* Adicionado para alinhar à esquerda */
+}
 
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 16px;
-            color: #555;
-        }
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    margin-right: 15px; /* Adicionado para espaçamento entre os botões */
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 16px;
+    color: #555;
+}
 
-        .radio-group input[type="radio"] {
-            margin-right: 6px;
-        }
+.radio-group input[type="radio"] {
+    margin-right: 6px;
+}
 
-        .button {
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
+.button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
 
-        .button:hover {
-            background-color: #0056b3;
-        }
+.button:hover {
+    background-color: #0056b3;
+}
 
-        .error {
-            color: red;
-            margin-top: 5px;
-        }
+.error {
+    color: red;
+    margin-top: 5px;
+}
 
-        .required-star {
-            color: red;
-            margin-left: 4px;
-        }
+.required-star {
+    color: red;
+    margin-left: 4px;
+}
 
-        .destaque-encerrou {
-            color: red;
-            font-weight: bold;
-        }
+.destaque-encerrou {
+    color: red;
+    font-weight: bold;
+}
 
-        .destaque-iniciara {
-            color: green;
-            font-weight: bold;
-        }
+.destaque-iniciara {
+    color: green;
+    font-weight: bold;
+}
     </style>
    // URL do Apps Script para pesquisa de funcionários
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
