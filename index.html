@@ -322,14 +322,27 @@ function getFolgaValue() {
     alert("Erro ao enviar solicitação!");
 });
     
-    document.addEventListener("DOMContentLoaded", function(){
-      initializeForm();
-      loadEmployeeList();
-      setDateLimits();
-      document.getElementById("matricula").addEventListener("blur", checkMatricula);
-      document.getElementById("email").addEventListener("input", updateEmailDatalist);
-    });
-  </script>
+    document.addEventListener("DOMContentLoaded", function () {
+    initializeForm();
+    loadEmployeeList();
+    setDateLimits();
+
+    let matriculaField = document.getElementById("matricula");
+    let emailField = document.getElementById("email");
+
+    if (matriculaField) {
+        matriculaField.addEventListener("blur", checkMatricula);
+    } else {
+        console.error("Campo matrícula não encontrado.");
+    }
+
+    if (emailField) {
+        emailField.addEventListener("input", updateEmailDatalist);
+    } else {
+        console.error("Campo email não encontrado.");
+    }
+});
+</script>
 </head>
 <body>
   <div class="container" id="formulario">
