@@ -1,4 +1,3 @@
-<script>
    // URL do Apps Script para pesquisa de funcionários
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
 
@@ -191,4 +190,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Script carregado corretamente!");
 });
-        </script>
+   
