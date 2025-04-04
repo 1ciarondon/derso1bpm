@@ -156,20 +156,7 @@ const ACTION_URL = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU
                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
       const requestedMonth = monthNames[(today.getMonth() + 1) % 12];
       
-      if (today < period.start || today > period.end) {
-        let mensagem = "";
-        if (today < period.start) {
-          mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em <span class="destaque-iniciara">${period.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-        } else if (today > period.end) {
-          const nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-          const nextPeriod = getPeriod(nextDate.getFullYear(), nextDate.getMonth());
-          const requestedMonthNext = monthNames[(nextDate.getMonth() + 1) % 12];
-          mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em <span class="destaque-encerrou">${period.end.toLocaleDateString("pt-BR")}</span>.<br>
-                      As solicitações para ${requestedMonthNext} serão iniciadas em <span class="destaque-iniciara">${nextPeriod.start.toLocaleDateString("pt-BR")}</span>.</h3>`;
-        }
-        formularioDiv.innerHTML = mensagem;
-        return;
-      }
+     // AQUI O CÓDIGO 
     }
     
     // Padroniza a matrícula removendo caracteres não numéricos e adicionando "1000"
