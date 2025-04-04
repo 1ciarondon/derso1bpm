@@ -219,13 +219,18 @@ function formatDateToBR(dateString) {
 }
     
        
-    // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
-    function getFormattedTimestamp() {
-      let now = new Date();
-      let datePart = now.toLocaleDateString('pt-BR');
-      let timePart = now.toLocaleTimeString('pt-BR', { hour12: false });
-      return datePart + " " + timePart;
-    }
+    // Função para gerar timestamp formatado
+function getFormattedTimestamp() {
+    let now = new Date();
+    let dd = String(now.getDate()).padStart(2, '0');
+    let mm = String(now.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
+    let yyyy = now.getFullYear();
+    let hh = String(now.getHours()).padStart(2, '0');
+    let min = String(now.getMinutes()).padStart(2, '0');
+    let ss = String(now.getSeconds()).padStart(2, '0');
+
+    return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
+}
     
    // Função para verificar duplicatas usando ACTION_URL
 async function checkDuplicate(matricula, dataValue) {
@@ -249,21 +254,7 @@ async function checkDuplicate(matricula, dataValue) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
-      
-    // Função para gerar timestamp formatado
-function getFormattedTimestamp() {
-    let now = new Date();
-    let dd = String(now.getDate()).padStart(2, '0');
-    let mm = String(now.getMonth() + 1).padStart(2, '0'); // Janeiro = 0
-    let yyyy = now.getFullYear();
-    let hh = String(now.getHours()).padStart(2, '0');
-    let min = String(now.getMinutes()).padStart(2, '0');
-    let ss = String(now.getSeconds()).padStart(2, '0');
-
-    return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
-}
-
-      
+         
       // Converte a data para "dd/MM/yyyy" e adiciona
       let dataValue = document.getElementById("data").value;
       let dataBR = formatDateToBR(dataValue);
@@ -320,27 +311,28 @@ function getFolgaValue() {
     alert("Erro ao enviar solicitação!");
 });
     
- document.addEventListener("DOMContentLoaded", function () {
-            initializeForm();
-            loadEmployeeList();
-            setDateLimits();
+document.addEventListener("DOMContentLoaded", function () {
+    initializeForm();
+    loadEmployeeList();
+    setDateLimits();
 
-            let matriculaField = document.getElementById("matricula");
-            let emailField = document.getElementById("email");
+    let matriculaField = document.getElementById("matricula");
+    let emailField = document.getElementById("email");
 
-            if (matriculaField) {
-                matriculaField.addEventListener("blur", checkMatricula);
-            } else {
-                console.error("Campo matrícula não encontrado.");
-            }
+    if (matriculaField) {
+        matriculaField.addEventListener("blur", checkMatricula);
+    } else {
+        console.error("Campo matrícula não encontrado.");
+    }
 
-            if (emailField) {
-                emailField.addEventListener("input", updateEmailDatalist);
-            } else {
-                console.error("Campo email não encontrado.");
-            }
-        });
-    </script>
+    if (emailField) {
+        emailField.addEventListener("input", updateEmailDatalist);
+    } else {
+        console.error("Campo email não encontrado.");
+    }
+});
+
+   </script>
 </body>
 </html>
 <body>
