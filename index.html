@@ -233,12 +233,7 @@ function formatDateToBR(dateString) {
     return dateString;
 }
     
-    // Retorna o valor selecionado para "Folga"
-    function getFolgaValue() {
-      let selected = document.querySelector("input[name='folga']:checked");
-      return selected ? selected.value : "";
-    }
-    
+       
     // Gera o timestamp no formato "dd/MM/yyyy HH:mm:ss" (sem vírgula)
     function getFormattedTimestamp() {
       let now = new Date();
@@ -320,16 +315,7 @@ function getFolgaValue() {
       } else {
         document.getElementById("duplicateError").textContent = "";
       }
-
-
-
-// Função para enviar o formulário usando ACTION_URL
-async function submitForm(event) {
-    event.preventDefault();
-    const form = document.getElementById("dersoForm");
-    const formData = new FormData(form);
-
-      
+     
        // Envia os dados via POST para ACTION_URL
     fetch(ACTION_URL, { method: "POST", body: formData })
         .then(response => {
