@@ -304,17 +304,23 @@ function getFolgaValue() {
       }
      
        // Envia os dados via POST para ACTION_URL
-    fetch(ACTION_URL, { method: "POST", body: formData })
-        .then(response => {
-            alert("Solicitação enviada com sucesso!");
-            form.reset();
-            document.getElementById("duplicateError").textContent = "";
-        })
-        .catch(error => {
-            alert("Erro ao enviar solicitação!");
-            console.error("Erro no envio:", error);
-        });
-}
+    fetch(ACTION_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams(new FormData(form))
+})
+.then(response => response.text())  // Convertendo para texto primeiro
+.then(data => {
+    console.log("Resposta do servidor:", data);
+    alert("Solicitação enviada com sucesso!");
+    form.reset();
+})
+.catch(error => {
+    console.error("Erro no envio:", error);
+    alert("Erro ao enviar solicitação!");
+});
     
     document.addEventListener("DOMContentLoaded", function(){
       initializeForm();
