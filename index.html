@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Solicitação de Folga - DERSO</title>
     <style>
-  body {
+ body {
     background-color: #f7f7f7;
     font-family: Arial, sans-serif;
     margin: 0;
@@ -13,13 +13,17 @@
 }
 
 .container {
-    max-width: 600px;
+    width: 95%; /* Alterado para porcentagem */
+    max-width: 600px; /* Mantido para largura máxima */
     margin: 30px auto;
     background-color: #fff;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    box-sizing: border-box; /* Adicionado */
+    display: flex; /* Adicionado */
+    flex-direction: column; /* Adicionado */
 }
 
 h2 {
@@ -37,7 +41,8 @@ h2 {
 }
 
 .form-group {
-    margin-bottom: 20px; /* Aumentado o espaçamento vertical */
+    margin-bottom: 20px;
+    width: 100%; /* Adicionado */
 }
 
 .form-group label {
@@ -51,7 +56,7 @@ h2 {
 .form-group button,
 .form-group select {
     width: 100%;
-    padding: 10px; /* Aumentado o padding para melhor aparência */
+    padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -87,12 +92,14 @@ h2 {
     color: #fff;
     border: none;
     cursor: pointer;
-    padding: 12px 20px; /* Aumentado o padding para melhor aparência */
+    padding: 12px 20px;
     font-size: 16px;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-    display: block; /* Adicionado para centralizar */
-    margin: 20px auto 0; /* Adicionado para centralizar */
+    display: block;
+    margin: 20px auto 0;
+    width: 100%; /* Adicionado */
+    box-sizing: border-box; /* Adicionado */
 }
 
 .button:hover {
@@ -120,19 +127,33 @@ h2 {
 }
 
 /* Media queries para responsividade */
-@media (max-width: 600px) {
+@media (max-width: 768px) { /* Alterado para um ponto de interrupção maior */
     .container {
-        margin: 10px; /* Reduzido a margem em telas menores */
-        padding: 10px; /* Reduzido o padding em telas menores */
+        margin: 20px auto; /* Ajustado a margem */
+        padding: 15px; /* Ajustado o padding */
     }
 
     .radio-group {
-        flex-direction: column; /* Alterado para coluna em telas menores */
-        align-items: flex-start; /* Alinhado à esquerda em telas menores */
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .radio-group label {
-        margin-right: 0; /* Removido a margem direita em telas menores */
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 480px) { /* Adicionado um ponto de interrupção menor */
+    .container {
+        margin: 10px auto; /* Ajustado a margem */
+        padding: 10px; /* Ajustado o padding */
+    }
+
+    .form-group input,
+    .form-group select,
+    .button {
+        padding: 8px; /* Ajustado o padding */
+        font-size: 14px; /* Ajustado o tamanho da fonte */
     }
 }
     </style>
