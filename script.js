@@ -1,8 +1,8 @@
    // URL do Apps Script para pesquisa de funcionários
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7gr6dyCUsi1QCbLlJaFVGxe8EYLPRF8XC-PCm8He3YL6AmM5qjTKpOyqyvrtPmd5iQg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
 
 // URL do Apps Script para ações (verificação de duplicatas e envio)
-const ACTION_URL = "https://script.google.com/macros/s/AKfycbz7gr6dyCUsi1QCbLlJaFVGxe8EYLPRF8XC-PCm8He3YL6AmM5qjTKpOyqyvrtPmd5iQg/exec";
+const ACTION_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
 
 // Lista global de funcionários (será carregada via GET action=lista)
 window.employeeList = {};
