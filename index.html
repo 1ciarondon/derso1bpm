@@ -278,9 +278,44 @@
                 });
         }
 
+        function verificarDisponibilidade() {
+    // Defina aqui as datas de abertura e fechamento no formato: "AAAA-MM-DDTHH:MM"
+    const dataAbertura = new Date("2025-04-07T08:00");
+    const dataFechamento = new Date("2025-04-25T13:00");
+    const agora = new Date();
+
+    const formulario = document.getElementById("formulario");
+    const subtitulo = document.getElementById("subtitle");
+
+    if (agora >= dataAbertura && agora <= dataFechamento) {
+        formulario.style.display = "block";
+    } else {
+        formulario.innerHTML = `
+            <h2>DERSO 1º BPM</h2>
+            <p class="subtitle" style="color:red;font-weight:bold;">
+                O período de envio de solicitações está fechado.<br>
+                Abertura: ${formatarDataHora(dataAbertura)}<br>
+                Encerramento: ${formatarDataHora(dataFechamento)}
+            </p>
+        `;
+    }
+}
+
+function formatarDataHora(data) {
+    return data.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+
         document.addEventListener("DOMContentLoaded", function () {
             loadEmployeeList();
             setDateLimits();
+            verificarDisponibilidade();
 
             const matriculaField = document.getElementById("matricula");
             const emailField = document.getElementById("email");
