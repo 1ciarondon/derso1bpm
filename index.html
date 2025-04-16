@@ -308,8 +308,8 @@ function initializeForm() {
   const utcNow = new Date(localNow.getTime() + localNow.getTimezoneOffset() * 60000 - 4 * 60 * 60000);
 
   // 📌 DATAS DE ABERTURA E FECHAMENTO MANUAIS (ajuste conforme desejar)
-  const start = new Date("2025-04-10T09:00:00-04:00");  // Data e hora de início do formulário
-  const end = new Date("2025-04-20T13:00:00-04:00");    // Data e hora de encerramento
+  const start = new Date("2025-04-01T09:00:00-04:00");  // Data e hora de início do formulário
+  const end = new Date("2025-04-21T13:00:00-04:00");    // Data e hora de encerramento
 
   const monthNames = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -337,9 +337,6 @@ function initializeForm() {
     formularioDiv.innerHTML = mensagem;
     return;
   }
-
-  // Aqui segue o carregamento normal do formulário (HTML visível)
-}
 
   // Aqui você continua o carregamento normal do formulário
 }
