@@ -33,14 +33,24 @@
             font-size: 16px;
             color: blue;
         }
+        #mensagem {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h2>Consultar a Solicitação</h2>
+    
     <label for="matricula">Matrícula:</label>
-    <input type="text" id="matricula">
+    <input type="text" id="matricula" placeholder="Ex: 1234"><br>
+    
+    <label for="guia">Guia (aba):</label>
+    <input type="text" id="guia" placeholder="Ex: Abril2025"><br>
+
     <button onclick="filtrarTabela()">Buscar</button>
     <p id="loading">🔄 Buscando dados...</p>
+    <p id="mensagem"></p>
 
     <table id="tabela">
         <thead>
@@ -54,90 +64,87 @@
         <tbody></tbody>
     </table>
 
-   <script>
-// URL do proxy CORS
-const corsUrl = "https://derso-1bpm.glitch.me/proxy";
+    <script>
+        const corsUrl = "https://derso-1bpm.glitch.me/proxy";
+        const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
 
-// URL do Google Apps Script
-const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
-
-// Função para carregar as solicitações
-function loadSolicitacoesList(matricula) {
-    const url = `${corsUrl}?targetUrl=${encodeURIComponent(targetUrl)}&action=solicitacoes&matricula=${matricula}`;
-    
-    return fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            console.log("Resposta recebida:", data);
-            if (data && data.result) {
-                return data.result;  // Retorne a lista de solicitações
-            } else {
-                console.error("Dados inválidos recebidos:", data);
-                return [];
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao carregar as solicitações:', error);
-            return [];
-        });
-}
-
-
-    // Função para padronizar a matrícula
-    function standardizeMatricula(matricula) {
-        let num = matricula.replace(/\D/g, '');
-        return num.startsWith("1000") ? num : "1000" + num;
-    }
-
-    // Função para filtrar a tabela com base na matrícula
-    function filtrarTabela() {
-        const matriculaInput = document.getElementById("matricula");
-        const matricula = matriculaInput.value.trim();
-        const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-        const loadingText = document.getElementById("loading");
-
-        tbody.innerHTML = "";  // Limpa a tabela antes de adicionar novas linhas
-        if (!matricula) {
-            alert("Por favor, insira uma matrícula.");
-            return;
+        function standardizeMatricula(matricula) {
+            let num = matricula.replace(/\D/g, '');
+            return num.startsWith("1000") ? num : "1000" + num;
         }
 
-        const matriculaPadronizada = standardizeMatricula(matricula);
-        matriculaInput.value = matriculaPadronizada;
-        loadingText.style.display = "block";  // Exibe a mensagem de carregamento
+        function loadSolicitacoesList(matricula, guia) {
+            const url = `${corsUrl}?targetUrl=${encodeURIComponent(targetUrl)}&action=solicitacoes&matricula=${matricula}&sheet=${guia}`;
 
-        loadSolicitacoesList(matriculaPadronizada).then(solicitacoesList => {
-            loadingText.style.display = "none";  // Esconde a mensagem de carregamento
-            if (solicitacoesList.length === 0) {
-                alert("Nenhuma solicitação encontrada para a matrícula informada.");
-            } else {
-                solicitacoesList.forEach(dado => {
-                    const row = tbody.insertRow();
-                    row.insertCell(0).textContent = dado.D || "N/A";  // E-mail
-                    row.insertCell(1).textContent = dado.A || "N/A";  // Nome
-                    row.insertCell(2).textContent = dado.E || "N/A";  // Folga
-                    row.insertCell(3).textContent = dado.F || "N/A";  // Data
+            return fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.result) {
+                        return data.result;
+                    } else {
+                        console.error("Resposta inválida:", data);
+                        return [];
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro na requisição:", error);
+                    return [];
                 });
-            }
-        });
-    }
-
-    // Adiciona o evento de blur para padronizar a matrícula
-    document.getElementById("matricula").addEventListener("blur", function() {
-        this.value = standardizeMatricula(this.value);
-    });
-
-    // Adiciona o evento para buscar ao pressionar Enter
-    document.getElementById("matricula").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            filtrarTabela();
         }
-    });
 
-    // Foca no campo de matrícula quando a página carrega
-    window.onload = function () {
-        document.getElementById("matricula").focus();
-    };
-</script>
+        function filtrarTabela() {
+            const matriculaInput = document.getElementById("matricula");
+            const guiaInput = document.getElementById("guia");
+            const matricula = matriculaInput.value.trim();
+            const guia = guiaInput.value.trim();
+            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
+            const loadingText = document.getElementById("loading");
+            const mensagem = document.getElementById("mensagem");
+
+            tbody.innerHTML = "";
+            mensagem.textContent = "";
+
+            if (!matricula || !guia) {
+                mensagem.textContent = "Preencha a matrícula e o nome da guia.";
+                return;
+            }
+
+            const matriculaPadronizada = standardizeMatricula(matricula);
+            matriculaInput.value = matriculaPadronizada;
+            loadingText.style.display = "block";
+
+            loadSolicitacoesList(matriculaPadronizada, guia).then(solicitacoesList => {
+                loadingText.style.display = "none";
+
+                if (solicitacoesList.length === 0) {
+                    mensagem.textContent = "Nenhuma solicitação encontrada.";
+                } else {
+                    solicitacoesList.forEach(dado => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).textContent = dado.D || "N/A";
+                        row.insertCell(1).textContent = dado.A || "N/A";
+                        row.insertCell(2).textContent = dado.E || "N/A";
+                        row.insertCell(3).textContent = dado.F || "N/A";
+                    });
+                }
+            });
+        }
+
+        document.getElementById("matricula").addEventListener("blur", function () {
+            this.value = standardizeMatricula(this.value);
+        });
+
+        document.getElementById("matricula").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") filtrarTabela();
+        });
+
+        document.getElementById("guia").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") filtrarTabela();
+        });
+
+        window.onload = function () {
+            document.getElementById("matricula").focus();
+        };
+    </script>
 </body>
 </html>
