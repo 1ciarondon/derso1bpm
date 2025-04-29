@@ -84,6 +84,7 @@
                     } else {
                         console.error("Resposta inválida:", data);
                         return [];
+                        console.log("Resposta da API:", data);
                     }
                 })
                 .catch(error => {
@@ -113,21 +114,22 @@
             matriculaInput.value = matriculaPadronizada;
             loadingText.style.display = "block";
 
-            loadSolicitacoesList(matriculaPadronizada, guia).then(solicitacoesList => {
-                loadingText.style.display = "none";
+           loadSolicitacoesList(matriculaPadronizada, guia).then(solicitacoesList => {
+    loadingText.style.display = "none";
 
-                if (solicitacoesList.length === 0) {
-                    mensagem.textContent = "Nenhuma solicitação encontrada.";
-                } else {
-                    solicitacoesList.forEach(dado => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = dado.D || "N/A";
-                        row.insertCell(1).textContent = dado.A || "N/A";
-                        row.insertCell(2).textContent = dado.E || "N/A";
-                        row.insertCell(3).textContent = dado.F || "N/A";
-                    });
-                }
-            });
+    if (solicitacoesList.length === 0) {
+        mensagem.textContent = "Nenhuma solicitação encontrada.";
+    } else {
+        solicitacoesList.forEach(dado => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = dado["E-MAIL"] || "N/A";
+            row.insertCell(1).textContent = dado["NOME"] || "N/A";
+            row.insertCell(2).textContent = dado["FOLGA"] || "N/A";
+            row.insertCell(3).textContent = dado["DATA"] || "N/A";
+        });
+    }
+});
+
         }
 
         document.getElementById("matricula").addEventListener("blur", function () {
