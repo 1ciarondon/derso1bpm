@@ -1,177 +1,98 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Solicitações</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        input, select, button {
-            padding: 8px;
-            margin: 5px;
-            font-size: 16px;
-        }
-        button {
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        #loading {
-            display: none;
-            font-size: 16px;
-            color: blue;
-        }
-        #mensagem {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <title>Pesquisa por Matrícula</title>
 </head>
 <body>
-    <h2>Consultar a Solicitação</h2>
-    
-    <label for="matricula">Matrícula:</label>
-    <input type="text" id="matricula" placeholder="Ex: 1234"><br>
-    
-    <label for="guia">Guia (aba):</label>
-    <select id="guia">
+    <h1>Pesquisa de Solicitações por Matrícula</h1>
+
+    <label for="aba-select">Escolha uma aba:</label>
+    <select id="aba-select">
         <option value="">Carregando guias...</option>
-    </select><br>
+    </select>
 
-    <button onclick="filtrarTabela()">Buscar</button>
-    <p id="loading">🔄 Buscando dados...</p>
-    <p id="mensagem"></p>
+    <br><br>
 
-    <table id="tabela">
+    <label for="matricula">Matrícula:</label>
+    <input type="text" id="matricula" placeholder="Digite a matrícula">
+
+    <button onclick="pesquisar()">Pesquisar</button>
+
+    <h2>Resultados:</h2>
+    <table id="resultados" border="1">
         <thead>
             <tr>
-                <th>E-mail</th>
+                <th>Data</th>
                 <th>Nome</th>
                 <th>Folga</th>
-                <th>Data</th>
+                <th>Data de Solicitação</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+        </tbody>
     </table>
 
     <script>
-        const corsUrl = "https://derso-1bpm.glitch.me/proxy";
-        const targetUrl = "https://script.google.com/macros/s/AKfycbwsIMa4U7n1wnT1kU_WU-sAZv-RfyteZEif6Lf6T-5M/exec";
+        // Função para carregar as abas disponíveis
+        async function carregarAbasDisponiveis() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzUw-VpS5FjjoLqDVeU8JZQO8Bd3R1k7be6r8rrZTcu3sfDZdJklw/exec?action=abas');
+                const data = await response.json();
 
-        function standardizeMatricula(matricula) {
-            let num = matricula.replace(/\D/g, '');
-            return num.startsWith("1000") ? num : "1000" + num;
-        }
-
-        function loadSolicitacoesList(matricula, guia) {
-            const url = `${corsUrl}?targetUrl=${encodeURIComponent(targetUrl)}&action=solicitacoes&matricula=${matricula}&sheet=${guia}`;
-            return fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.result) {
-                        return data.result;
-                    } else {
-                        console.error("Resposta inválida:", data);
-                        return [];
-                    }
-                })
-                .catch(error => {
-                    console.error("Erro na requisição:", error);
-                    return [];
+                const select = document.getElementById('aba-select');
+                select.innerHTML = ''; // Limpar as opções antes de adicionar
+                const abas = data.abas || [];
+                abas.forEach(aba => {
+                    const option = document.createElement('option');
+                    option.value = aba;
+                    option.textContent = aba;
+                    select.appendChild(option);
                 });
+            } catch (error) {
+                alert('Erro ao carregar guias. Tente novamente.');
+            }
         }
 
-        function carregarAbasDisponiveis() {
-            const selectGuia = document.getElementById("guia");
-            const url = `${corsUrl}?targetUrl=${encodeURIComponent(targetUrl)}&action=abas`;
+        // Função para pesquisar as solicitações
+        async function pesquisar() {
+            const matricula = document.getElementById('matricula').value.trim();
+            const aba = document.getElementById('aba-select').value;
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    selectGuia.innerHTML = "";
-                    if (data && data.abas && data.abas.length > 0) {
-                        data.abas.forEach(aba => {
-                            const option = document.createElement("option");
-                            option.value = aba;
-                            option.textContent = aba;
-                            selectGuia.appendChild(option);
-                        });
-                    } else {
-                        selectGuia.innerHTML = "<option value=''>Nenhuma guia encontrada</option>";
-                    }
-                })
-                .catch(error => {
-                    console.error("Erro ao carregar guias:", error);
-                    selectGuia.innerHTML = "<option value=''>Erro ao carregar guias</option>";
-                });
-        }
-
-        function filtrarTabela() {
-            const matriculaInput = document.getElementById("matricula");
-            const guiaSelect = document.getElementById("guia");
-            const matricula = matriculaInput.value.trim();
-            const guia = guiaSelect.value;
-            const tbody = document.getElementById("tabela").getElementsByTagName("tbody")[0];
-            const loadingText = document.getElementById("loading");
-            const mensagem = document.getElementById("mensagem");
-
-            tbody.innerHTML = "";
-            mensagem.textContent = "";
-
-            if (!matricula || !guia) {
-                mensagem.textContent = "Preencha a matrícula e selecione uma guia.";
+            if (!matricula) {
+                alert('Por favor, insira a matrícula.');
                 return;
             }
 
-            const matriculaPadronizada = standardizeMatricula(matricula);
-            matriculaInput.value = matriculaPadronizada;
-            loadingText.style.display = "block";
+            if (!aba) {
+                alert('Por favor, selecione uma aba.');
+                return;
+            }
 
-            loadSolicitacoesList(matriculaPadronizada, guia).then(solicitacoesList => {
-                loadingText.style.display = "none";
+            try {
+                const response = await fetch(`https://script.google.com/macros/s/AKfycbzUw-VpS5FjjoLqDVeU8JZQO8Bd3R1k7be6r8rrZTcu3sfDZdJklw/exec?action=solicitacoes&matricula=${matricula}&aba=${aba}`);
+                const data = await response.json();
 
-                if (solicitacoesList.length === 0) {
-                    mensagem.textContent = "Nenhuma solicitação encontrada.";
-                } else {
-                    solicitacoesList.forEach(dado => {
-                        const row = tbody.insertRow();
-                        row.insertCell(0).textContent = dado["E-MAIL"] || "N/A";
-                        row.insertCell(1).textContent = dado["NOME"] || "N/A";
-                        row.insertCell(2).textContent = dado["FOLGA"] || "N/A";
-                        row.insertCell(3).textContent = dado["DATA"] || "N/A";
+                const resultados = document.getElementById('resultados').getElementsByTagName('tbody')[0];
+                resultados.innerHTML = ''; // Limpar resultados anteriores
+
+                if (data.solicitacoes && data.solicitacoes.length > 0) {
+                    data.solicitacoes.forEach(solicitacao => {
+                        const row = resultados.insertRow();
+                        row.innerHTML = `<td>${solicitacao.data}</td><td>${solicitacao.nome}</td><td>${solicitacao.folga}</td><td>${solicitacao.dataSolicitacao}</td>`;
                     });
+                } else {
+                    const row = resultados.insertRow();
+                    row.innerHTML = '<td colspan="4">Nenhuma solicitação encontrada.</td>';
                 }
-            });
+            } catch (error) {
+                alert('Erro ao realizar a pesquisa. Tente novamente.');
+            }
         }
 
-        document.getElementById("matricula").addEventListener("blur", function () {
-            this.value = standardizeMatricula(this.value);
-        });
-
-        document.getElementById("matricula").addEventListener("keypress", function (event) {
-            if (event.key === "Enter") filtrarTabela();
-        });
-
-        document.getElementById("guia").addEventListener("keypress", function (event) {
-            if (event.key === "Enter") filtrarTabela();
-        });
-
-        window.onload = function () {
-            carregarAbasDisponiveis();
-            document.getElementById("matricula").focus();
-        };
+        // Carregar as abas disponíveis assim que a página for carregada
+        window.onload = carregarAbasDisponiveis;
     </script>
 </body>
 </html>
