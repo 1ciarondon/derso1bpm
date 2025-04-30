@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa por Matrícula</title>
+    <title>Pesquisa de Solicitações</title>
 </head>
 <body>
     <h1>Pesquisa de Solicitações por Matrícula</h1>
@@ -35,64 +35,40 @@
     </table>
 
     <script>
-        // Função para carregar as abas disponíveis
-       
-       // Função para carregar as abas disponíveis
-async function carregarAbasDisponiveis() {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
-        
-        // Verifica o status da resposta antes de tentar convertê-la para JSON
-        if (!response.ok) {
-            throw new Error('Erro ao carregar as abas: ' + response.statusText);
+        async function carregarAbasDisponiveis() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
+                const data = await response.json();
+                
+                const select = document.getElementById('aba-select');
+                select.innerHTML = ''; // Limpar as opções
+                const abas = data.abas || [];
+                abas.forEach(aba => {
+                    const option = document.createElement('option');
+                    option.value = aba;
+                    option.textContent = aba;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                alert('Erro ao carregar abas: ' + error);
+            }
         }
 
-        // Registra o conteúdo da resposta bruta para depuração
-        const responseText = await response.text();  // Captura a resposta como texto
-        console.log("Resposta bruta: ", responseText);  // Exibe a resposta bruta no console
-
-        // Converte a resposta para JSON
-        const data = JSON.parse(responseText);  // Aqui você usa JSON.parse para garantir o formato
-
-        console.log("Dados da resposta em JSON: ", data);  // Exibe os dados já em formato JSON
-
-        // Preenche as opções do select com as abas
-        const select = document.getElementById('aba-select');
-        select.innerHTML = ''; // Limpar as opções antes de adicionar
-        const abas = data.abas || [];
-        abas.forEach(aba => {
-            const option = document.createElement('option');
-            option.value = aba;
-            option.textContent = aba;
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Erro ao carregar as abas: ', error);
-        alert('Erro ao carregar guias. Tente novamente.');
-    }
-}
-
-        // Função para pesquisar as solicitações
         async function pesquisar() {
             const matricula = document.getElementById('matricula').value.trim();
             const aba = document.getElementById('aba-select').value;
 
-            if (!matricula) {
-                alert('Por favor, insira a matrícula.');
-                return;
-            }
-
-            if (!aba) {
-                alert('Por favor, selecione uma aba.');
+            if (!matricula || !aba) {
+                alert('Por favor, insira a matrícula e selecione uma aba.');
                 return;
             }
 
             try {
-                const response = await fetch(`https://script.google.com/macros/s/AKfycbzUw-VpS5FjjoLqDVeU8JZQO8Bd3R1k7be6r8rrZTcu3sfDZdJklw/exec?action=solicitacoes&matricula=${matricula}&aba=${aba}`);
+                const response = await fetch(`https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=solicitacoes&matricula=${matricula}&aba=${aba}`);
                 const data = await response.json();
 
                 const resultados = document.getElementById('resultados').getElementsByTagName('tbody')[0];
-                resultados.innerHTML = ''; // Limpar resultados anteriores
+                resultados.innerHTML = ''; // Limpar resultados
 
                 if (data.solicitacoes && data.solicitacoes.length > 0) {
                     data.solicitacoes.forEach(solicitacao => {
@@ -108,7 +84,7 @@ async function carregarAbasDisponiveis() {
             }
         }
 
-        // Carregar as abas disponíveis assim que a página for carregada
+        // Carregar as abas disponíveis quando a página for carregada
         window.onload = carregarAbasDisponiveis;
     </script>
 </body>
