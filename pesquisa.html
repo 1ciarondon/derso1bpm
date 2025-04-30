@@ -36,24 +36,27 @@
 
     <script>
         // Função para carregar as abas disponíveis
+       
         async function carregarAbasDisponiveis() {
-            try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
-                const data = await response.json();
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
+        const data = await response.json();
+        console.log(data);  // Verifique o formato de dados aqui
 
-                const select = document.getElementById('aba-select');
-                select.innerHTML = ''; // Limpar as opções antes de adicionar
-                const abas = data.abas || [];
-                abas.forEach(aba => {
-                    const option = document.createElement('option');
-                    option.value = aba;
-                    option.textContent = aba;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                alert('Erro ao carregar guias. Tente novamente.');
-            }
-        }
+        const select = document.getElementById('aba-select');
+        select.innerHTML = ''; // Limpar as opções antes de adicionar
+        const abas = data.abas || [];
+        abas.forEach(aba => {
+            const option = document.createElement('option');
+            option.value = aba;
+            option.textContent = aba;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        alert('Erro ao carregar guias. Tente novamente.');
+    }
+}
+
 
         // Função para pesquisar as solicitações
         async function pesquisar() {
