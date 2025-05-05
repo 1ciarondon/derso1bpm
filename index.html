@@ -274,10 +274,10 @@
       return `${dd}/${mm}/${yyyy}`;
     }
 
-    function getFormattedTimestamp() {
-      const now = new Date();
-      return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" });
-    }
+  function getFormattedTimestamp() {
+  const now = new Date();
+  return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" }).replace(',', '');  // Remove a vírgula
+}
 
     function submitForm(event) {
       event.preventDefault();
