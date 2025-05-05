@@ -303,32 +303,37 @@
 function initializeForm() {
   const formularioDiv = document.getElementById("formulario");
 
-  // ⏰ Ajuste de horário para UTC-4 (Porto Velho)
-  const localNow = new Date();
-  const utcNow = new Date(localNow.getTime() + localNow.getTimezoneOffset() * 60000 - 4 * 60 * 60000);
+  // 🕒 Obtemos a hora atual de Porto Velho
+  const nowPortoVelho = new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" });
+  const now = new Date(nowPortoVelho); // Transforma para objeto Date
 
-  // 📌 DATAS DE ABERTURA E FECHAMENTO MANUAIS (ajuste conforme desejar)
-  const start = new Date("2025-05-05T08:00:00-04:00");  // Data e hora de início do formulário
-  const end = new Date("2025-04-21T13:00:00-04:00");    // Data e hora de encerramento
+  // 📆 Datas de abertura e fechamento
+  const start = new Date("2025-05-05T08:00:00-04:00");
+  const end = new Date("2025-05-21T13:00:00-04:00");
 
+  // 📅 Nomes dos meses em português
   const monthNames = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
   const requestedMonth = monthNames[start.getMonth()];
 
-  if (utcNow < start || utcNow > end) {
+  // ⏳ Fora do período válido?
+  if (now < start || now > end) {
     let mensagem = "";
 
-    if (utcNow < start) {
-      mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em 
+    if (now < start) {
+      // Ainda não começou
+      mensagem = `
+        <h3>O período de solicitações para ${requestedMonth} iniciará em 
         <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
     } else {
-      const nextStart = new Date(start);
-      nextStart.setMonth(nextStart.getMonth() + 1);
-
+      // Já encerrou - calcula o próximo mês com segurança
+      const nextStart = new Date(start.getFullYear(), start.getMonth() + 1, start.getDate(), start.getHours(), start.getMinutes(), start.getSeconds());
       const nextMonth = monthNames[nextStart.getMonth()];
-      mensagem = `<h3>O período de solicitações para ${requestedMonth} encerrou em 
+
+      mensagem = `
+        <h3>O período de solicitações para ${requestedMonth} encerrou em 
         <span class="destaque-encerrou">${end.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.<br>
         As solicitações para ${nextMonth} iniciarão em 
         <span class="destaque-iniciara">${nextStart.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
@@ -337,9 +342,6 @@ function initializeForm() {
     formularioDiv.innerHTML = mensagem;
     return;
   }
-
-  // Aqui você continua o carregamento normal do formulário
-}
 
         document.addEventListener("DOMContentLoaded", function () {
             loadEmployeeList();
