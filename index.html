@@ -208,24 +208,36 @@
     const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
     window.employeeList = {};
 
-    function updateEmailDatalist() {
-      const emailInput = document.getElementById("email");
-      const datalist = document.getElementById("emailProviders");
-      const value = emailInput.value;
-      const atIndex = value.indexOf("@");
-      if (atIndex === -1) {
-        datalist.innerHTML = "";
-        return;
-      }
-      const domainPart = value.slice(atIndex + 1).toLowerCase();
-      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-      datalist.innerHTML = "";
-      filtered.forEach(provider => {
-        const option = document.createElement("option");
-        option.value = provider;
-        datalist.appendChild(option);
-      });
-    }
+  function updateEmailDatalist() {
+  const emailInput = document.getElementById("email");
+  const datalist = document.getElementById("emailProviders");
+  const value = emailInput.value;
+  const atIndex = value.indexOf("@");
+  
+  // Se o "@" não foi digitado ainda, não faz sentido sugerir nada.
+  if (atIndex === -1) {
+    datalist.innerHTML = "";
+    return;
+  }
+
+  const domainPart = value.slice(atIndex + 1).toLowerCase();
+
+  // Filtra os provedores conforme o domínio que o usuário começou a digitar
+  const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+  
+  // Se não houver sugestões, o datalist ficará vazio.
+  if (filtered.length === 0) {
+    datalist.innerHTML = "";
+    return;
+  }
+
+  datalist.innerHTML = "";  // Limpa a lista de sugestões antes de adicionar novas
+  filtered.forEach(provider => {
+    const option = document.createElement("option");
+    option.value = provider;
+    datalist.appendChild(option);
+  });
+}
 
     function standardizeMatricula(matricula) {
       let num = matricula.replace(/\D/g, '');
