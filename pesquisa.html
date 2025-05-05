@@ -122,7 +122,7 @@
     <div id="error-message" class="error"></div>
     <div id="no-results-message" class="no-results" style="display: none;">Nenhuma solicitação encontrada.</div>
 
-    <script>
+   <script>
         // Função para carregar abas
         async function carregarAbasDisponiveis() {
             try {
@@ -135,12 +135,12 @@
 
                 const data = await response.json();
                 console.log('Resposta da API:', data); // Depuração da resposta da API
-                
+
                 // Verificar se os dados retornados contêm as abas
                 const select = document.getElementById('aba-select');
                 select.innerHTML = ''; // Limpar as opções
 
-                if (data.abas && Array.isArray(data.abas)) {
+                if (data && data.abas && Array.isArray(data.abas)) {
                     const abas = data.abas;
                     abas.forEach(aba => {
                         const option = document.createElement('option');
