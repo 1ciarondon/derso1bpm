@@ -4,6 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Solicitações</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        select, input, button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #ff6347;
+        }
+
+        .message {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <h1>Pesquisa de Solicitações por Matrícula</h1>
@@ -18,7 +101,9 @@
     <label for="matricula">Matrícula:</label>
     <input type="text" id="matricula" placeholder="Digite a matrícula">
 
-    <button onclick="pesquisar()">Pesquisar</button>
+    <button id="pesquisar-btn" onclick="pesquisar()">Pesquisar</button>
+
+    <div class="loading" id="loading" style="display: none;">Carregando...</div>
 
     <h2>Resultados:</h2>
     <table id="resultados" border="1">
@@ -34,61 +119,88 @@
         </tbody>
     </table>
 
+    <div id="error-message" class="error"></div>
+    <div id="no-results-message" class="no-results" style="display: none;">Nenhuma solicitação encontrada.</div>
+
     <script>
-       async function carregarAbasDisponiveis() {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
-        const data = await response.json();
+        // Função para carregar abas
+        async function carregarAbasDisponiveis() {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=abas');
+                const data = await response.json();
 
-        console.log("Resposta da API:", data); // Verifique o que está sendo retornado
+                const select = document.getElementById('aba-select');
+                select.innerHTML = ''; // Limpar as opções
 
-        const select = document.getElementById('aba-select');
-        select.innerHTML = ''; // Limpar as opções
+                const abas = data.abas || [];
+                abas.forEach(aba => {
+                    const option = document.createElement('option');
+                    option.value = aba;
+                    option.textContent = aba;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar abas:', error);
+                alert('Erro ao carregar abas. Tente novamente.');
+            }
+        }
 
-        const abas = data.abas || [];
-        abas.forEach(aba => {
-            const option = document.createElement('option');
-            option.value = aba;
-            option.textContent = aba;
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Erro ao carregar abas:', error);
-        alert('Erro ao carregar abas. Tente novamente.');
-    }
-}
-
+        // Função de pesquisa
         async function pesquisar() {
             const matricula = document.getElementById('matricula').value.trim();
             const aba = document.getElementById('aba-select').value;
+            const errorMessage = document.getElementById('error-message');
+            const noResultsMessage = document.getElementById('no-results-message');
+            const resultados = document.getElementById('resultados').getElementsByTagName('tbody')[0];
+            const loadingMessage = document.getElementById('loading');
+            const pesquisarBtn = document.getElementById('pesquisar-btn');
 
-            if (!matricula || !aba) {
-                alert('Por favor, insira a matrícula e selecione uma aba.');
+            // Validação de matrícula
+            if (!matricula || isNaN(matricula)) {
+                alert('Por favor, insira uma matrícula válida.');
                 return;
             }
 
+            // Verificar se a aba foi selecionada
+            if (!aba) {
+                alert('Por favor, selecione uma aba.');
+                return;
+            }
+
+            // Exibir a mensagem de carregamento
+            loadingMessage.style.display = 'block';
+            pesquisarBtn.disabled = true;
+
             try {
+                // Realizando a requisição para a API
                 const response = await fetch(`https://script.google.com/macros/s/AKfycbwWHmTwVEGOv3_y5GbGG1WkVlRMTjcWhg8xtkf5TgvhbESxhRUOyiJH3Mluu6-lQayoEQ/exec?action=solicitacoes&matricula=${matricula}&aba=${aba}`);
                 const data = await response.json();
 
-                const resultados = document.getElementById('resultados').getElementsByTagName('tbody')[0];
-                resultados.innerHTML = ''; // Limpar resultados
+                // Limpar resultados e mensagem de erro
+                resultados.innerHTML = '';
+                errorMessage.innerHTML = '';
+                noResultsMessage.style.display = 'none';
 
                 if (data.solicitacoes && data.solicitacoes.length > 0) {
+                    // Inserir os dados na tabela
                     data.solicitacoes.forEach(solicitacao => {
                         const row = resultados.insertRow();
                         row.innerHTML = `<td>${solicitacao.data}</td><td>${solicitacao.nome}</td><td>${solicitacao.folga}</td><td>${solicitacao.dataSolicitacao}</td>`;
                     });
                 } else {
-                    const row = resultados.insertRow();
-                    row.innerHTML = '<td colspan="4">Nenhuma solicitação encontrada.</td>';
+                    noResultsMessage.style.display = 'block';
                 }
             } catch (error) {
-                alert('Erro ao realizar a pesquisa. Tente novamente.');
+                console.error('Erro ao realizar a pesquisa:', error);
+                errorMessage.textContent = 'Erro ao realizar a pesquisa. Tente novamente.';
+            } finally {
+                // Esconder a mensagem de carregamento e reabilitar o botão
+                loadingMessage.style.display = 'none';
+                pesquisarBtn.disabled = false;
             }
         }
 
-        // Carregar as abas disponíveis quando a página for carregada
+        // Carregar as abas quando a página for carregada
         window.onload = carregarAbasDisponiveis;
     </script>
 </body>
