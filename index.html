@@ -321,7 +321,7 @@ function initializeForm() {
     let mensagem = "";
 
     if (utcNow < start) {
-      mensagem = `<h3>O período de solicitações para ${requestedMont} iniciará em 
+      mensagem = `<h3>O período de solicitações para ${requestedMonth} iniciará em 
         <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
     } else {
       const nextStart = new Date(start);
