@@ -2,399 +2,353 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Solicitação de Folga - DERSO</title>
-    <style>
-        body {
-            background-color: #f7f7f7;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 95%;
-            max-width: 600px;
-            margin: 30px auto;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #555;
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group button,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-            margin-right: 15px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 16px;
-            color: #555;
-        }
-
-        .radio-group input[type="radio"] {
-            margin-right: 6px;
-        }
-
-        .button {
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            display: block;
-            margin: 20px auto 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-
-        .error {
-            color: red;
-            margin-top: 5px;
-        }
-
-        .required-star {
-            color: red;
-            margin-left: 4px;
-        }
-
-        .destaque-encerrou {
-            color: red;
-            font-weight: bold;
-        }
-
-        .destaque-iniciara {
-            color: green;
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 20px auto;
-                padding: 15px;
-            }
-
-            .radio-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .radio-group label {
-                margin-right: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                margin: 10px auto;
-                padding: 10px;
-            }
-
-            .form-group input,
-            .form-group select,
-            .button {
-                padding: 8px;
-                font-size: 14px;
-            }
-        }
-    </style>
-
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
-        const ACTION_URL = SCRIPT_URL;
-
-        window.employeeList = {};
-        const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-
-        function updateEmailDatalist() {
-            const emailInput = document.getElementById("email");
-            const datalist = document.getElementById("emailProviders");
-            const value = emailInput.value;
-            const atIndex = value.indexOf("@");
-            if (atIndex === -1) {
-                datalist.innerHTML = "";
-                return;
-            }
-            const domainPart = value.slice(atIndex + 1).toLowerCase();
-            const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-            datalist.innerHTML = "";
-            filtered.forEach(provider => {
-                const option = document.createElement("option");
-                option.value = provider;
-                datalist.appendChild(option);
-            });
-        }
-
-        function standardizeMatricula(matricula) {
-            let num = matricula.replace(/\D/g, '');
-            if (!num.startsWith("1000")) {
-                num = "1000" + num;
-            }
-            return num;
-        }
-
-        function loadEmployeeList() {
-            fetch(SCRIPT_URL + "?action=lista")
-                .then(response => response.json())
-                .then(data => {
-                    window.employeeList = data;
-                })
-                .catch(error => {
-                    console.error("Erro ao carregar a lista:", error);
-                    window.employeeList = {};
-                });
-        }
-
-        function checkMatricula() {
-            const matriculaInput = document.getElementById("matricula");
-            const nomeInput = document.getElementById("nome");
-            const errorMsg = document.getElementById("matriculaError");
-            let standardized = standardizeMatricula(matriculaInput.value);
-            matriculaInput.value = standardized;
-            if (window.employeeList && window.employeeList[standardized]) {
-                nomeInput.value = window.employeeList[standardized];
-                errorMsg.textContent = "";
-            } else {
-                nomeInput.value = "";
-                errorMsg.textContent = "Matrícula não encontrada!";
-            }
-        }
-
-        function setDateLimits() {
-            const dateInput = document.getElementById("data");
-            let today = new Date();
-            let nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-            let lastDayNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-            dateInput.min = nextMonth.toISOString().split("T")[0];
-            dateInput.max = lastDayNextMonth.toISOString().split("T")[0];
-        }
-
-        function formatDateToBR(dateString) {
-            if (!dateString) return "";
-            let parts = dateString.split("-");
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-
-        function getFormattedTimestamp() {
-            let now = new Date();
-            let dd = String(now.getDate()).padStart(2, '0');
-            let mm = String(now.getMonth() + 1).padStart(2, '0');
-            let yyyy = now.getFullYear();
-            let hh = String(now.getHours()).padStart(2, '0');
-            let min = String(now.getMinutes()).padStart(2, '0');
-            let ss = String(now.getSeconds()).padStart(2, '0');
-            return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
-        }
-
-        function submitForm(event) {
-            event.preventDefault();
-            const form = document.getElementById("dersoForm");
-            const formData = new FormData(form);
-
-            const dataValue = document.getElementById("data").value;
-            const dataBR = formatDateToBR(dataValue);
-            formData.set("data", dataBR);
-
-            const timestamp = getFormattedTimestamp();
-            formData.append("timestamp", timestamp);
-
-            const folgaValue = document.querySelector('input[name="folga"]:checked');
-            if (!folgaValue) {
-                document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-                return;
-            }
-            formData.set("folga", folgaValue.value);
-
-            fetch(ACTION_URL, {
-                method: "POST",
-                body: new URLSearchParams(formData)
-            })
-                .then(response => response.text())
-                .then(data => {
-                    alert("Solicitação enviada com sucesso!");
-                    form.reset();
-                })
-                .catch(error => {
-                    console.error("Erro no envio:", error);
-                    alert("Erro ao enviar solicitação!");
-                });
-        }
-
-        function getPeriod(year, month) {
-  // Primeira segunda-feira do mês às 09h UTC-4
-  const firstMonday = new Date(year, month, 1);
-  while (firstMonday.getDay() !== 1) {
-    firstMonday.setDate(firstMonday.getDate() + 1);
-  }
-  firstMonday.setHours(9, 0, 0, 0); // 09:00 da manhã
-
-  // Penúltima sexta-feira do mês às 13h UTC-4
-  const lastDay = new Date(year, month + 1, 0);
-  let fridays = [];
-
-  for (let d = new Date(year, month, 1); d <= lastDay; d.setDate(d.getDate() + 1)) {
-    if (d.getDay() === 5) fridays.push(new Date(d));
-  }
-
-  const penultimateFriday = fridays.length >= 2 ? fridays[fridays.length - 2] : fridays[0];
-  penultimateFriday.setHours(13, 0, 0, 0); // 13:00 da tarde
-
-  return { start: firstMonday, end: penultimateFriday };
-}
-
-function initializeForm() {
-  const formularioDiv = document.getElementById("formulario");
-
-  // 🕒 Obtemos a hora atual de Porto Velho
-  const nowPortoVelho = new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" });
-  const now = new Date(nowPortoVelho); // Transforma para objeto Date
-
-  // 📆 Datas de abertura e fechamento
-  const start = new Date("2025-05-05T08:00:00-04:00");
-  const end = new Date("2025-05-21T13:00:00-04:00");
-
-  // 📅 Nomes dos meses em português
-  const monthNames = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-  ];
-  const requestedMonth = monthNames[start.getMonth()];
-
-  // ⏳ Fora do período válido?
-  if (now < start || now > end) {
-    let mensagem = "";
-
-    if (now < start) {
-      // Ainda não começou
-      mensagem = `
-        <h3>O período de solicitações para ${requestedMonth} iniciará em 
-        <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
-    } else {
-      // Já encerrou - calcula o próximo mês com segurança
-      const nextStart = new Date(start.getFullYear(), start.getMonth() + 1, start.getDate(), start.getHours(), start.getMinutes(), start.getSeconds());
-      const nextMonth = monthNames[nextStart.getMonth()];
-
-      mensagem = `
-        <h3>O período de solicitações para ${requestedMonth} encerrou em 
-        <span class="destaque-encerrou">${end.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.<br>
-        As solicitações para ${nextMonth} iniciarão em 
-        <span class="destaque-iniciara">${nextStart.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+  <meta charset="UTF-8">
+  <title>Solicitação de Folga - DERSO</title>
+  <style>
+    /* ... (seu CSS permanece inalterado) ... */
+    body {
+      background-color: #f7f7f7;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
-    formularioDiv.innerHTML = mensagem;
-    return;
-  }
+    .container {
+      width: 95%;
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            loadEmployeeList();
-            setDateLimits();
-            initializeForm();
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
 
-            const matriculaField = document.getElementById("matricula");
-            const emailField = document.getElementById("email");
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
 
-            if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
-            if (emailField) emailField.addEventListener("input", updateEmailDatalist);
-        });
-    </script>
+    .form-group {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group button,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+      margin-right: 15px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 16px;
+      color: #555;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 6px;
+    }
+
+    .button {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      display: block;
+      margin: 20px auto 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      margin-top: 5px;
+    }
+
+    .required-star {
+      color: red;
+      margin-left: 4px;
+    }
+
+    .destaque-encerrou {
+      color: red;
+      font-weight: bold;
+    }
+
+    .destaque-iniciara {
+      color: green;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px auto;
+        padding: 15px;
+      }
+
+      .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .radio-group label {
+        margin-right: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 10px auto;
+        padding: 10px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .button {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container" id="formulario">
-        <h2>DERSO 1º BPM</h2>
-        <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
-        <form id="dersoForm" onsubmit="submitForm(event)">
-            <div class="form-group">
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" list="emailProviders" required>
-                <datalist id="emailProviders"></datalist>
-            </div>
-            <div class="form-group">
-                <label for="matricula">Matrícula:</label>
-                <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-                <div id="matriculaError" class="error"></div>
-            </div>
-            <div class="form-group">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" readonly required>
-            </div>
-            <div class="form-group">
-                <label>Folga<span class="required-star">*</span>:</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="folga" value="24H">24H</label>
-                    <label><input type="radio" name="folga" value="48H">48H</label>
-                    <label><input type="radio" name="folga" value="72H">72H</label>
-                    <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
-                    <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
-                    <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
-                </div>
-                <div id="duplicateError" class="error"></div>
-            </div>
-            <div class="form-group">
-                <label for="data">Data:</label>
-                <input type="date" id="data" name="data" required>
-            </div>
-            <button type="submit" class="button">Enviar Solicitação</button>
-        </form>
-    </div>
+  <div class="container" id="formulario">
+    <h2>DERSO 1º BPM</h2>
+    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
+    <form id="dersoForm" onsubmit="submitForm(event)">
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+        <datalist id="emailProviders"></datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+        <div id="matriculaError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" readonly required>
+      </div>
+
+      <div class="form-group">
+        <label>Folga<span class="required-star">*</span>:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="folga" value="24H">24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
+        </div>
+        <div id="duplicateError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+      </div>
+
+      <button type="submit" class="button">Enviar Solicitação</button>
+    </form>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    window.employeeList = {};
+
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) {
+        datalist.innerHTML = "";
+        return;
+      }
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+      datalist.innerHTML = "";
+      filtered.forEach(provider => {
+        const option = document.createElement("option");
+        option.value = provider;
+        datalist.appendChild(option);
+      });
+    }
+
+    function standardizeMatricula(matricula) {
+      let num = matricula.replace(/\D/g, '');
+      return num.startsWith("1000") ? num : "1000" + num;
+    }
+
+    function loadEmployeeList() {
+      fetch(SCRIPT_URL + "?action=lista")
+        .then(response => response.json())
+        .then(data => window.employeeList = data)
+        .catch(error => {
+          console.error("Erro ao carregar a lista:", error);
+          window.employeeList = {};
+        });
+    }
+
+    function checkMatricula() {
+      const matriculaInput = document.getElementById("matricula");
+      const nomeInput = document.getElementById("nome");
+      const errorMsg = document.getElementById("matriculaError");
+      const standardized = standardizeMatricula(matriculaInput.value);
+      matriculaInput.value = standardized;
+
+      if (window.employeeList[standardized]) {
+        nomeInput.value = window.employeeList[standardized];
+        errorMsg.textContent = "";
+      } else {
+        nomeInput.value = "";
+        errorMsg.textContent = "Matrícula não encontrada!";
+      }
+    }
+
+    function setDateLimits() {
+      const dateInput = document.getElementById("data");
+      if (!dateInput) return;
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+      dateInput.min = nextMonth.toISOString().split("T")[0];
+      dateInput.max = lastDay.toISOString().split("T")[0];
+    }
+
+    function formatDateToBR(dateString) {
+      if (!dateString) return "";
+      const [yyyy, mm, dd] = dateString.split("-");
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
+    function getFormattedTimestamp() {
+      const now = new Date();
+      return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" });
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const formData = new FormData(form);
+
+      const dataValue = document.getElementById("data").value;
+      formData.set("data", formatDateToBR(dataValue));
+      formData.append("timestamp", getFormattedTimestamp());
+
+      const folgaValue = document.querySelector('input[name="folga"]:checked');
+      if (!folgaValue) {
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+        return;
+      }
+      formData.set("folga", folgaValue.value);
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      })
+        .then(response => response.text())
+        .then(() => {
+          alert("Solicitação enviada com sucesso!");
+          form.reset();
+          document.getElementById("email").focus();
+        })
+        .catch(error => {
+          console.error("Erro ao enviar:", error);
+          alert("Erro ao enviar solicitação!");
+        });
+    }
+
+    function getPeriod(year, month) {
+      const firstMonday = new Date(year, month, 1);
+      while (firstMonday.getDay() !== 1) firstMonday.setDate(firstMonday.getDate() + 1);
+      firstMonday.setHours(9, 0, 0, 0);
+      const fridays = [];
+      const lastDay = new Date(year, month + 1, 0);
+      for (let d = new Date(year, month, 1); d <= lastDay; d.setDate(d.getDate() + 1)) {
+        if (d.getDay() === 5) fridays.push(new Date(d));
+      }
+      const penultimateFriday = fridays[fridays.length - 2] || fridays[0];
+      penultimateFriday.setHours(13, 0, 0, 0);
+      return { start: firstMonday, end: penultimateFriday };
+    }
+
+    function initializeForm() {
+      const formularioDiv = document.getElementById("formulario");
+      const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
+      const { start, end } = getPeriod(now.getFullYear(), now.getMonth());
+      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      const monthName = monthNames[now.getMonth()];
+
+      if (now < start || now > end) {
+        const msg = now < start
+          ? `<h3>O período de solicitações para ${monthName} iniciará em <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`
+          : `<h3>O período de solicitações para ${monthName} encerrou em <span class="destaque-encerrou">${end.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+        formularioDiv.innerHTML = msg;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadEmployeeList();
+      setDateLimits();
+      initializeForm();
+      document.getElementById("matricula").addEventListener("blur", checkMatricula);
+      document.getElementById("email").addEventListener("input", updateEmailDatalist);
+      document.getElementById("dersoForm").addEventListener("submit", submitForm);
+    });
+  </script>
 </body>
 
 </html>
