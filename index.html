@@ -326,19 +326,31 @@
     }
 
     function initializeForm() {
-      const formularioDiv = document.getElementById("formulario");
-      const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
-      const { start, end } = getPeriod(now.getFullYear(), now.getMonth());
-      const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      const monthName = monthNames[now.getMonth()];
+    const formularioDiv = document.getElementById("formulario");
 
-      if (now < start || now > end) {
+    // Definir a data atual ajustada para o fuso horário de Porto Velho
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
+
+    // Calcular o início e fim do período de solicitação
+    const { start, end } = getPeriod(now.getFullYear(), now.getMonth());
+
+    // Definir os nomes dos meses
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+    // Agora pegamos o próximo mês (com a lógica que trata o rollover de dezembro para janeiro)
+    const targetMonthIndex = (now.getMonth() + 1) % 12; // O próximo mês
+    const monthName = monthNames[targetMonthIndex]; // Nome do próximo mês
+
+    // Verificar se estamos dentro do período de solicitações
+    if (now < start || now > end) {
         const msg = now < start
-          ? `<h3>O período de solicitações para ${monthName} iniciará em <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`
-          : `<h3>O período de solicitações para ${monthName} encerrou em <span class="destaque-encerrou">${end.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+            ? `<h3>O período de solicitações para ${monthName} iniciará em <span class="destaque-iniciara">${start.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`
+            : `<h3>O período de solicitações para ${monthName} encerrou em <span class="destaque-encerrou">${end.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+        
+        // Atualizar o conteúdo da div com a mensagem
         formularioDiv.innerHTML = msg;
-      }
     }
+}
 
   document.addEventListener("DOMContentLoaded", () => {
   loadEmployeeList();
