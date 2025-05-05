@@ -340,14 +340,19 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadEmployeeList();
-      setDateLimits();
-      initializeForm();
-      document.getElementById("matricula").addEventListener("blur", checkMatricula);
-      document.getElementById("email").addEventListener("input", updateEmailDatalist);
-      document.getElementById("dersoForm").addEventListener("submit", submitForm);
-    });
+  document.addEventListener("DOMContentLoaded", () => {
+  loadEmployeeList();
+  setDateLimits();
+  initializeForm();
+
+  const matriculaField = document.getElementById("matricula");
+  const emailField = document.getElementById("email");
+  const form = document.getElementById("dersoForm");
+
+  if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
+  if (emailField) emailField.addEventListener("input", updateEmailDatalist);
+  if (form) form.addEventListener("submit", submitForm);
+});
   </script>
 </body>
 
