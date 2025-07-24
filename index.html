@@ -214,24 +214,20 @@
             const value = emailInput.value;
             const atIndex = value.indexOf("@");
 
-            // Se o "@" não foi digitado ainda, não faz sentido sugerir nada.
             if (atIndex === -1) {
                 datalist.innerHTML = "";
                 return;
             }
 
             const domainPart = value.slice(atIndex + 1).toLowerCase();
-
-            // Filtra os provedores conforme o domínio que o usuário começou a digitar
             const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
 
-            // Se não houver sugestões, o datalist ficará vazio.
             if (filtered.length === 0) {
                 datalist.innerHTML = "";
                 return;
             }
 
-            datalist.innerHTML = ""; // Limpa a lista de sugestões antes de adicionar novas
+            datalist.innerHTML = "";
             filtered.forEach(provider => {
                 const option = document.createElement("option");
                 option.value = provider;
@@ -288,7 +284,7 @@
 
         function getFormattedTimestamp() {
             const now = new Date();
-            return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" }).replace(',', ''); // Remove a vírgula
+            return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" }).replace(',', '');
         }
 
         function submitForm(event) {
@@ -323,12 +319,10 @@
                 });
         }
 
-        // --- INÍCIO DA MUDANÇA ---
         function initializeForm() {
             const formularioDiv = document.getElementById("formulario");
             const urlAppsScript = SCRIPT_URL;
 
-            // Faz a requisição para o Apps Script com a ação 'datas'
             fetch(urlAppsScript + '?action=datas')
                 .then(response => {
                     if (!response.ok) {
@@ -342,14 +336,10 @@
                         return;
                     }
 
-                    // Converte as datas do JSON para objetos Date
                     const abertura = new Date(data.abertura);
                     const encerramento = new Date(data.fechamento);
-
-                    // Define o fuso horário para Porto Velho
                     const agora = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
 
-                    // Verifica se está fora do período permitido
                     if (agora < abertura || agora > encerramento) {
                         const msg = agora < abertura
                             ? `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`
@@ -363,7 +353,6 @@
                     formularioDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde.</h3>';
                 });
         }
-        // --- FIM DA MUDANÇA ---
 
         document.addEventListener("DOMContentLoaded", () => {
             loadEmployeeList();
