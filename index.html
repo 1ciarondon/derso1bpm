@@ -204,7 +204,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeOjaIv5T3P1sbwvIjhq4trHQhHgyUifcEsU-SNDWwcHez-eItnn6WKkIs2CIuphy3lQ/exec";
         const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
         window.employeeList = {};
 
@@ -326,7 +326,7 @@
         // --- INÍCIO DA MUDANÇA ---
         function initializeForm() {
             const formularioDiv = document.getElementById("formulario");
-            const urlAppsScript = "https://script.google.com/macros/s/AKfycbxeOjaIv5T3P1sbwvIjhq4trHQhHgyUifcEsU-SNDWwcHez-eItnn6WKkIs2CIuphy3lQ/exec";
+            const urlAppsScript = SCRIPT_URL;
 
             // Faz a requisição para o Apps Script com a ação 'datas'
             fetch(urlAppsScript + '?action=datas')
