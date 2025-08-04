@@ -2,374 +2,427 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Solicitação de Folga - DERSO</title>
-  <style>
-    /* ... (seu CSS permanece inalterado) ... */
-    body {
-      background-color: #f7f7f7;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+  <meta charset="UTF-8">
+  <title>Solicitação de Folga - DERSO</title>
+  <style>
+    /* ... (seu CSS permanece inalterado) ... */
+    body {
+      background-color: #f7f7f7;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-    .container {
-      width: 95%;
-      max-width: 600px;
-      margin: 30px auto;
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-    }
+    .container {
+      width: 95%;
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
 
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 10px;
-    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
 
-    .subtitle {
-      text-align: center;
-      color: #555;
-      margin-bottom: 20px;
-      font-size: 15px;
-      line-height: 1.4;
-    }
+    .subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
 
-    .form-group {
-      margin-bottom: 20px;
-      width: 100%;
-    }
+    .form-group {
+      margin-bottom: 20px;
+      width: 100%;
+    }
 
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: #555;
-      font-weight: bold;
-    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: bold;
+    }
 
-    .form-group input,
-    .form-group button,
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
+    .form-group input,
+    .form-group button,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
 
-    .radio-group {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-start;
-    }
+    .radio-group {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
 
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 8px;
-      margin-right: 15px;
-      cursor: pointer;
-      white-space: nowrap;
-      font-size: 16px;
-      color: #555;
-    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+      margin-right: 15px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 16px;
+      color: #555;
+    }
 
-    .radio-group input[type="radio"] {
-      margin-right: 6px;
-    }
+    .radio-group input[type="radio"] {
+      margin-right: 6px;
+    }
 
-    .button {
-      background-color: #007BFF;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-      display: block;
-      margin: 20px auto 0;
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .button {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      display: block;
+      margin: 20px auto 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-    .button:hover {
-      background-color: #0056b3;
-    }
+    .button:hover {
+      background-color: #0056b3;
+    }
 
-    .error {
-      color: red;
-      margin-top: 5px;
-    }
+    .error {
+      color: red;
+      margin-top: 5px;
+    }
 
-    .required-star {
-      color: red;
-      margin-left: 4px;
-    }
+    .required-star {
+      color: red;
+      margin-left: 4px;
+    }
 
-    .destaque-encerrou {
-      color: red;
-      font-weight: bold;
-    }
+    .destaque-encerrou {
+      color: red;
+      font-weight: bold;
+    }
 
-    .destaque-iniciara {
-      color: green;
-      font-weight: bold;
-    }
+    .destaque-iniciara {
+      color: green;
+      font-weight: bold;
+    }
 
-    @media (max-width: 768px) {
-      .container {
-        margin: 20px auto;
-        padding: 15px;
-      }
+    @media (max-width: 768px) {
+      .container {
+        margin: 20px auto;
+        padding: 15px;
+      }
 
-      .radio-group {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-      .radio-group label {
-        margin-right: 0;
-      }
-    }
+      .radio-group label {
+        margin-right: 0;
+      }
+    }
 
-    @media (max-width: 480px) {
-      .container {
-        margin: 10px auto;
-        padding: 10px;
-      }
+    @media (max-width: 480px) {
+      .container {
+        margin: 10px auto;
+        padding: 10px;
+      }
 
-      .form-group input,
-      .form-group select,
-      .button {
-        padding: 8px;
-        font-size: 14px;
-      }
-    }
-  </style>
+      .form-group input,
+      .form-group select,
+      .button {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="container" id="formulario">
-    <h2>DERSO 1º BPM</h2>
-    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
-    <form id="dersoForm">
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
-        <datalist id="emailProviders"></datalist>
-      </div>
+  <div class="container" id="formulario">
+    <h2>DERSO 1º BPM</h2>
+    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
+    <form id="dersoForm" style="display: none;">
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+        <datalist id="emailProviders"></datalist>
+      </div>
 
-      <div class="form-group">
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-        <div id="matriculaError" class="error"></div>
-      </div>
+      <div class="form-group">
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+        <div id="matriculaError" class="error"></div>
+      </div>
 
-      <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" readonly required>
-      </div>
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" readonly required>
+      </div>
 
-      <div class="form-group">
-        <label>Folga<span class="required-star">*</span>:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="folga" value="24H">24H</label>
-          <label><input type="radio" name="folga" value="48H">48H</label>
-          <label><input type="radio" name="folga" value="72H">72H</label>
-          <label><input type="radio" name="folga" value="1ª FOLGA">1ª FOLGA</label>
-          <label><input type="radio" name="folga" value="2ª FOLGA">2ª FOLGA</label>
-          <label><input type="radio" name="folga" value="EXPEDIENTE">EXPEDIENTE</label>
+      <div class="form-group">
+        <label>Folga<span class="required-star">*</span>:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="folga" value="24H">24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>
+        </div>
+        <div id="duplicateError" class="error"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+      </div>
+
+      <button type="submit" class="button">Enviar Solicitação</button>
+    </form>
+    <div id="statusMessage" class="info-message">
         </div>
-        <div id="duplicateError" class="error"></div>
-      </div>
+  </div>
 
-      <div class="form-group">
-        <label for="data">Data:</label>
-        <input type="date" id="data" name="data" required>
-      </div>
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    window.employeeList = {};
 
-      <button type="submit" class="button">Enviar Solicitação</button>
-    </form>
-  </div>
-
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykc9e6mbm4bGIoZcD4B2IzBpPUAICbC4w4JZ7AHriyg0L900gUUGArsilReZBIC6NwUA/exec";
-    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-    window.employeeList = {};
-
-  function updateEmailDatalist() {
-  const emailInput = document.getElementById("email");
-  const datalist = document.getElementById("emailProviders");
-  const value = emailInput.value;
-  const atIndex = value.indexOf("@");
-
-  // Se o "@" não foi digitado ainda, não faz sentido sugerir nada.
-  if (atIndex === -1) {
-    datalist.innerHTML = "";
-    return;
-  }
-
-  const domainPart = value.slice(atIndex + 1).toLowerCase();
-
-  // Filtra os provedores conforme o domínio que o usuário começou a digitar
-  const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-
-  // Se não houver sugestões, o datalist ficará vazio.
-  if (filtered.length === 0) {
-    datalist.innerHTML = "";
-    return;
-  }
-
-  datalist.innerHTML = "";  // Limpa a lista de sugestões antes de adicionar novas
-  filtered.forEach(provider => {
-    const option = document.createElement("option");
-    option.value = provider;
-    datalist.appendChild(option);
-  });
-}
-
-    function standardizeMatricula(matricula) {
-      let num = matricula.replace(/\D/g, '');
-      return num.startsWith("1000") ? num : "1000" + num;
-    }
-
-    function loadEmployeeList() {
-      fetch(SCRIPT_URL + "?action=lista")
-        .then(response => response.json())
-        .then(data => window.employeeList = data)
-        .catch(error => {
-          console.error("Erro ao carregar a lista:", error);
-          window.employeeList = {};
+    function updateEmailDatalist() {
+        const emailInput = document.getElementById("email");
+        const datalist = document.getElementById("emailProviders");
+        const value = emailInput.value;
+        const atIndex = value.indexOf("@");
+        if (atIndex === -1) {
+            datalist.innerHTML = "";
+            return;
+        }
+        const domainPart = value.slice(atIndex + 1).toLowerCase();
+        const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+        if (filtered.length === 0) {
+            datalist.innerHTML = "";
+            return;
+        }
+        datalist.innerHTML = "";
+        filtered.forEach(provider => {
+            const option = document.createElement("option");
+            // CORREÇÃO: Sugere o e-mail completo
+            option.value = value.slice(0, atIndex + 1) + provider;
+            datalist.appendChild(option);
         });
     }
 
-    function checkMatricula() {
-      const matriculaInput = document.getElementById("matricula");
-      const nomeInput = document.getElementById("nome");
-      const errorMsg = document.getElementById("matriculaError");
-      const standardized = standardizeMatricula(matriculaInput.value);
-      matriculaInput.value = standardized;
+    function standardizeMatricula(matricula) {
+      let num = matricula.replace(/\D/g, '');
+      return num.startsWith("1000") ? num : "1000" + num;
+    }
 
-      if (window.employeeList[standardized]) {
-        nomeInput.value = window.employeeList[standardized];
-        errorMsg.textContent = "";
-      } else {
-        nomeInput.value = "";
-        errorMsg.textContent = "Matrícula não encontrada!";
-      }
+    function loadEmployeeList() {
+        fetch(SCRIPT_URL + "?action=lista")
+            .then(response => {
+                if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error("Erro do script ao carregar lista:", data.error);
+                    document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+                    return;
+                }
+                window.employeeList = data;
+            })
+            .catch(error => {
+                console.error("Erro fatal ao carregar a lista:", error);
+                document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+                window.employeeList = {};
+            });
     }
 
-    function setDateLimits() {
-      const dateInput = document.getElementById("data");
-      if (!dateInput) return;
-      const today = new Date();
-      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-      dateInput.min = nextMonth.toISOString().split("T")[0];
-      dateInput.max = lastDay.toISOString().split("T")[0];
-    }
+    function checkMatricula() {
+      const matriculaInput = document.getElementById("matricula");
+      const nomeInput = document.getElementById("nome");
+      const errorMsg = document.getElementById("matriculaError");
+      const standardized = standardizeMatricula(matriculaInput.value);
+      matriculaInput.value = standardized;
 
-    function formatDateToBR(dateString) {
-      if (!dateString) return "";
-      const [yyyy, mm, dd] = dateString.split("-");
-      return `${dd}/${mm}/${yyyy}`;
-    }
+      if (window.employeeList[standardized]) {
+        nomeInput.value = window.employeeList[standardized];
+        errorMsg.textContent = "";
+      } else {
+        nomeInput.value = "";
+        errorMsg.textContent = "Matrícula não encontrada!";
+      }
+    }
 
-  function getFormattedTimestamp() {
-  const now = new Date();
-  return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" }).replace(',', '');  // Remove a vírgula
-}
+    function setDateLimits() {
+      const dateInput = document.getElementById("data");
+      if (!dateInput) return;
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+      dateInput.min = nextMonth.toISOString().split("T")[0];
+      dateInput.max = lastDay.toISOString().split("T")[0];
+    }
 
-    function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
+    function formatDateToBR(dateString) {
+      if (!dateString) return "";
+      const [yyyy, mm, dd] = dateString.split("-");
+      return `${dd}/${mm}/${yyyy}`;
+    }
+  
+    function getFormattedTimestamp() {
+      const now = new Date();
+      return now.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" }).replace(',', '');
+    }
 
-      const dataValue = document.getElementById("data").value;
-      formData.set("data", formatDateToBR(dataValue));
-      formData.append("timestamp", getFormattedTimestamp());
-
+    function submitForm(event) {
+      event.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const formData = new FormData(form);
+      const dataValue = document.getElementById("data").value;
+      formData.set("data", formatDateToBR(dataValue));
+      
       const folgaValue = document.querySelector('input[name="folga"]:checked');
       if (!folgaValue) {
-        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-        return;
+          document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+          return;
       }
       formData.set("folga", folgaValue.value);
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: new URLSearchParams(formData)
-      })
-        .then(response => response.text())
-        .then(() => {
-          alert("Solicitação enviada com sucesso!");
-          form.reset();
-          document.getElementById("email").focus();
-        })
-        .catch(error => {
-          console.error("Erro ao enviar:", error);
-          alert("Erro ao enviar solicitação!");
-        });
-    }
-
-    function getPeriod(year, month) {
-      const firstMonday = new Date(year, month, 1);
-      while (firstMonday.getDay() !== 1) firstMonday.setDate(firstMonday.getDate() + 1);
-      firstMonday.setHours(9, 0, 0, 0);
-      const fridays = [];
-      const lastDay = new Date(year, month + 1, 0);
-      for (let d = new Date(year, month, 1); d <= lastDay; d.setDate(d.getDate() + 1)) {
-        if (d.getDay() === 5) fridays.push(new Date(d));
+      // Validação de Matrícula (se o nome não foi preenchido, a matrícula é inválida)
+      const nomeInput = document.getElementById("nome");
+      if (nomeInput.value.trim() === "") {
+          document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
+          document.getElementById("matricula").focus();
+          return;
       }
-      const penultimateFriday = fridays[fridays.length - 2] || fridays[0];
-      penultimateFriday.setHours(13, 0, 0, 0);
-      return { start: firstMonday, end: penultimateFriday };
+
+      const submitBtn = document.querySelector(".button");
+      submitBtn.disabled = true;
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      })
+        .then(response => response.json()) // CORREÇÃO: Usar .json()
+        .then(data => {
+            if (data.success) {
+                alert("Solicitação enviada com sucesso!");
+                form.reset();
+                document.getElementById("email").focus();
+            } else {
+                alert("Erro ao enviar solicitação: " + data.error);
+            }
+        })
+        .catch(error => {
+          console.error("Erro ao enviar:", error);
+          alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+        });
+    }
+
+    function getPeriod(year, month) {
+      const firstMonday = new Date(year, month, 1);
+      while (firstMonday.getDay() !== 1) firstMonday.setDate(firstMonday.getDate() + 1);
+      firstMonday.setHours(9, 0, 0, 0);
+      const fridays = [];
+      const lastDay = new Date(year, month + 1, 0);
+      for (let d = new Date(year, month, 1); d <= lastDay; d.setDate(d.getDate() + 1)) {
+        if (d.getDay() === 5) fridays.push(new Date(d));
+      }
+      const penultimateFriday = fridays[fridays.length - 2] || fridays[0];
+      penultimateFriday.setHours(13, 0, 0, 0);
+      return { start: firstMonday, end: penultimateFriday };
+    }
+
+   function initializeForm() {
+        const formularioDiv = document.getElementById("formulario");
+        const statusMessageDiv = document.getElementById("statusMessage");
+        const formDiv = document.getElementById("dersoForm");
+        
+        fetch(SCRIPT_URL + '?action=datas')
+            .then(response => {
+                if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error("Erro do script ao carregar datas:", data.error);
+                    statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
+                    return;
+                }
+                const formatarDataParaISO = (dataStr) => {
+                    const partes = dataStr.split(' ');
+                    if (partes.length < 2) return dataStr;
+                    const [dia, mes, ano] = partes[0].split('/');
+                    const hora = partes[1];
+                    return `${ano}-${mes}-${dia}T${hora}:00`;
+                };
+                const aberturaString = formatarDataParaISO(data.abertura);
+                const encerramentoString = formatarDataParaISO(data.fechamento);
+                const abertura = new Date(aberturaString);
+                const encerramento = new Date(encerramentoString);
+                const agora = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
+                
+                if (isNaN(abertura.getTime()) || isNaN(encerramento.getTime())) {
+                    statusMessageDiv.innerHTML = '<h3>Erro: As datas de abertura/fechamento da planilha não estão em um formato válido. Verifique as células B2, C2, B3, C3 da guia "Datas Planilha".</h3>';
+                    return;
+                }
+                
+                if (agora < abertura || agora > encerramento) {
+                    const msg = agora < abertura ?
+                        `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
+                        `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+                    statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
+                    formDiv.style.display = "none";
+                } else {
+                    formDiv.style.display = "block";
+                    statusMessageDiv.style.display = "none"; // Esconde a mensagem se o formulário estiver aberto
+                }
+            })
+            .catch(error => {
+                console.error('Erro fatal ao carregar as datas:', error);
+                statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
+            });
     }
 
-   function initializeForm() {
-  const formularioDiv = document.getElementById("formulario");
+  document.addEventListener("DOMContentLoaded", () => {
+    loadEmployeeList();
+    setDateLimits();
+    initializeForm();
 
-  // Defina manualmente as datas de abertura e fechamento
-    const abertura = new Date("2025-08-04T09:00:00-04:00"); // exemplo: 04 de agosto de 2025 às 9h (horário de Porto Velho)
-  const encerramento = new Date("2025-08-22T23:50:00-04:00"); // exemplo: 22 de agosto de 2025 às 23:50h
+    const matriculaField = document.getElementById("matricula");
+    const emailField = document.getElementById("email");
+    const form = document.getElementById("dersoForm");
 
-  const agora = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
-
-  // Verifica se está fora do período permitido
-  if (agora < abertura || agora > encerramento) {
-    const msg = agora < abertura
-      ? `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`
-      : `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
-
-    formularioDiv.innerHTML = msg;
-  }
-}
-
-  document.addEventListener("DOMContentLoaded", () => {
-  loadEmployeeList();
-  setDateLimits();
-  initializeForm();
-
-  const matriculaField = document.getElementById("matricula");
-  const emailField = document.getElementById("email");
-  const form = document.getElementById("dersoForm");
-
-  if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
-  if (emailField) emailField.addEventListener("input", updateEmailDatalist);
-  if (form) form.addEventListener("submit", submitForm);
-});
-  </script>
+    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
+    if (emailField) emailField.addEventListener("input", updateEmailDatalist);
+    if (form) form.addEventListener("submit", submitForm);
+  });
+  </script>
 </body>
-
 </html>
