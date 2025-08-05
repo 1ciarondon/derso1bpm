@@ -292,52 +292,53 @@
     }
     
     function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
-      const dataValue = document.getElementById("data").value;
-      formData.set("data", formatDateToBR(dataValue));
-      
-      const folgaValue = document.querySelector('input[name="folga"]:checked');
-      if (!folgaValue) {
-        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-        return;
-      }
-      formData.set("folga", folgaValue.value);
+  event.preventDefault();
+  const form = document.getElementById("dersoForm");
+  const formData = new FormData(form);
+  const dataValue = document.getElementById("data").value;
+  formData.set("data", formatDateToBR(dataValue));
+  
+  const folgaValue = document.querySelector('input[name="folga"]:checked');
+  if (!folgaValue) {
+    document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+    return;
+  }
+  formData.set("folga", folgaValue.value);
+  document.getElementById("duplicateError").textContent = ""; // Limpa a mensagem anterior
 
-      const nomeInput = document.getElementById("nome");
-      if (nomeInput.value.trim() === "") {
-        document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
-        document.getElementById("matricula").focus();
-        return;
-      }
+  const nomeInput = document.getElementById("nome");
+  if (nomeInput.value.trim() === "") {
+    document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
+    document.getElementById("matricula").focus();
+    return;
+  }
 
-      const submitBtn = document.querySelector(".button");
-      submitBtn.disabled = true;
+  const submitBtn = document.querySelector(".button");
+  submitBtn.disabled = true;
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: new URLSearchParams(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Solicitação enviada com sucesso!");
-          form.reset();
-          document.getElementById("email").focus();
-        } else {
-          alert("Erro ao enviar solicitação: " + data.error);
-        }
-      })
-      .catch(error => {
-        console.error("Erro ao enviar:", error);
-        alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-      });
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: new URLSearchParams(formData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert("Solicitação enviada com sucesso!");
+      form.reset();
+      document.getElementById("email").focus();
+    } else {
+      // Exibe a mensagem de erro diretamente no formulário
+      document.getElementById("duplicateError").textContent = data.error;
     }
-
+  })
+  .catch(error => {
+    console.error("Erro ao enviar:", error);
+    alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
+  })
+  .finally(() => {
+    submitBtn.disabled = false;
+  });
+}
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const statusMessageDiv = document.getElementById("statusMessage");
