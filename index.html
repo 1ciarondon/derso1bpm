@@ -153,7 +153,39 @@
 
     .destaque-encerrou {
         color: #e53935;
-        font-weight:
+        font-weight: bold;
+    }
+
+    .destaque-iniciara {
+        color: #43a047; /* Verde moderno */
+        font-weight: bold;
+    }
+
+    /* Ajustes para telas pequenas */
+    @media (max-width: 576px) {
+        .container {
+            padding: 20px;
+        }
+        h2 {
+            font-size: 20px;
+        }
+        .subtitle {
+            font-size: 13px;
+        }
+        .form-group input:not([type="radio"]),
+        .form-group select {
+            font-size: 14px;
+        }
+        .button {
+            font-size: 14px;
+            padding: 12px 15px;
+        }
+        .radio-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
 </head>
 
 <body>
