@@ -1,3 +1,13 @@
+Olá! Sinto muito pela confusão. Entendi perfeitamente o que você precisa. O problema de "espaço demais" é causado pelas margens e preenchimentos do CSS.
+
+Para deixar o formulário com uma aparência mais compacta e elegante, como a que você deseja, eu ajustei os valores de margin (margem) e padding (preenchimento) no CSS. Os campos de formulário e os títulos agora terão um espaçamento menor entre si.
+
+A principal mudança foi reduzir a margem inferior de cada grupo de campos (.form-group), do subtítulo e do botão.
+
+Aqui está o código HTML completo e corrigido, com as alterações de CSS para reduzir o espaçamento:
+
+HTML
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -14,10 +24,10 @@
     .container {
       width: 95%;
       max-width: 600px;
-      margin: 30px auto;
+      margin: 20px auto; /* Reduzida a margem superior */
       background-color: #fff;
       border-radius: 8px;
-      padding: 20px;
+      padding: 15px; /* Reduzido o preenchimento interno */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       box-sizing: border-box;
@@ -28,19 +38,19 @@
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 8px; /* Reduzida a margem inferior */
     }
 
     .subtitle {
       text-align: center;
       color: #555;
-      margin-bottom: 20px;
+      margin-bottom: 15px; /* Reduzida a margem inferior */
       font-size: 15px;
       line-height: 1.4;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 12px; /* **PRINCIPAL MUDANÇA: Reduzida a margem entre os campos** */
       width: 100%;
     }
 
@@ -74,7 +84,7 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      margin-bottom: 8px;
+      margin-bottom: 6px; /* Reduzida a margem inferior */
       margin-right: 15px;
       cursor: pointer;
       white-space: nowrap;
@@ -96,7 +106,7 @@
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 20px auto 0;
+      margin: 15px auto 0; /* Reduzida a margem superior */
       width: 100%;
       box-sizing: border-box;
     }
@@ -127,8 +137,8 @@
 
     @media (max-width: 768px) {
       .container {
-        margin: 20px auto;
-        padding: 15px;
+        margin: 15px auto;
+        padding: 12px;
       }
 
       .radio-group {
@@ -143,8 +153,8 @@
 
     @media (max-width: 480px) {
       .container {
-        margin: 10px auto;
-        padding: 10px;
+        margin: 8px auto;
+        padding: 8px;
       }
 
       .form-group input,
