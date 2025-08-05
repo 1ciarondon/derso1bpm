@@ -3,189 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <title>Solicitação de Folga - DERSO</title>
-<style>
-    /* Estilo para todo o corpo da página */
+  <style>
     body {
-        background-color: #f0f2f5; /* Fundo cinza claro, cor padrão de muitas interfaces modernas */
-        font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        display: flex; /* Centraliza o formulário verticalmente e horizontalmente */
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh; /* Altura mínima de 100% da tela */
+      background-color: #f7f7f7;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Contêiner principal do formulário */
     .container {
-        width: 95%;
-        max-width: 500px; /* Reduzimos a largura para um visual mais focado */
-        background-color: #fff;
-        border-radius: 12px; /* Borda mais arredondada */
-        padding: 30px; /* Mais padding para dar 'respiro' */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra mais suave e destacada */
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Títulos e subtítulos */
-    h2, .subtitle {
-        text-align: center;
-        margin-bottom: 5px;
-        line-height: 1.2;
+      width: 95%;
+      max-width: 600px;
+      margin: 10px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     h2 {
-        color: #1a1a1a;
-        font-size: 24px;
-        font-weight: 600; /* Negrito mais suave */
-        margin-bottom: 5px;
+      text-align: center;
+      color: #333;
+      margin-bottom: 0px;
+      font-size: 16px;
     }
 
     .subtitle {
-        color: #5a5a5a;
-        font-size: 15px;
-        margin-bottom: 25px; /* Espaço maior entre o subtítulo e o primeiro campo */
+      text-align: center;
+      color: #555;
+      margin-bottom: 2px;
+      font-size: 13px;
+      line-height: 1.2;
     }
 
-    /* Grupos de campos do formulário */
+    /* ESTILOS PARA COMPACTAR OS CAMPOS */
     .form-group {
-        margin-bottom: 20px; /* Mais espaço entre os grupos */
-        width: 100%;
+      margin-bottom: 5px; /* Margem entre os blocos de campos (e-mail, matrícula, nome) */
+      width: 100%;
     }
 
     .form-group label {
-        display: block;
-        margin-bottom: 8px; /* Espaço entre o rótulo e o campo */
-        color: #4a4a4a;
-        font-weight: 500; /* Peso da fonte para os rótulos */
-        font-size: 14px;
+      display: block;
+      margin-bottom: 2px; /* Espaço entre o rótulo e o campo de input */
+      color: #555;
+      font-weight: bold;
+      font-size: 13px;
     }
 
-    /* Inputs e Selects */
-    .form-group input:not([type="radio"]),
+    .form-group input,
+    .form-group button,
     .form-group select {
-        width: 100%;
-        padding: 12px 15px; /* Padding generoso */
-        font-size: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px; /* Borda arredondada para os campos */
-        box-sizing: border-box;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      padding: 6px; /* Padding do campo, mantém usabilidade mas é compacto */
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
 
-    .form-group input:not([type="radio"]):focus,
-    .form-group select:focus {
-        border-color: #007bff; /* Borda azul ao focar */
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); /* Sombra suave ao focar */
-    }
-    
-    /* Estilo para o campo Nome (readonly) */
-    input[readonly] {
-        background-color: #f7f7f7;
-        cursor: not-allowed;
-    }
-
-    /* Estilo para a matrí­cula com placeholder */
-    input[id="matricula"]::placeholder {
-        color: #aaa;
-    }
-
-    /* Estilo para os botões de rádio */
     .radio-group {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 20px; /* Espaçamento entre os itens */
-        margin-top: 10px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 5px; /* Espaço acima do grupo de rádio */
     }
 
     .radio-group label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        user-select: none; /* Impede que o texto seja selecionado */
-        color: #5a5a5a;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 2px;
+      margin-right: 15px; /* Espaço entre as opções de rádio */
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 13px;
+      color: #555;
     }
 
-    /* Estilo do botão de Enviar */
+    .radio-group input[type="radio"] {
+      margin-right: 3px;
+    }
+
     .button {
-        background-color: #007bff; /* Azul primário */
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        padding: 14px 20px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      display: block;
+      margin: 10px auto 0; /* Margem superior para separar do último campo */
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .button:hover {
-        background-color: #0056b3; /* Azul mais escuro no hover */
-        transform: translateY(-2px); /* Efeito sutil de levantar */
+      background-color: #0056b3;
     }
 
-    .button:active {
-        transform: translateY(0); /* Efeito de pressionar */
-    }
-
-    /* Estilos para mensagens de erro e destaque */
     .error {
-        color: #e53935; /* Vermelho mais moderno */
-        margin-top: 5px;
-        font-size: 12px;
-        font-weight: 500;
+      color: red;
+      margin-top: 1px;
+      font-size: 10px;
     }
 
     .required-star {
-        color: #e53935;
-        margin-left: 2px;
+      color: red;
+      margin-left: 1px;
     }
 
     .destaque-encerrou {
-        color: #e53935;
-        font-weight: bold;
+      color: red;
+      font-weight: bold;
     }
 
     .destaque-iniciara {
-        color: #43a047; /* Verde moderno */
-        font-weight: bold;
+      color: green;
+      font-weight: bold;
     }
 
-    /* Ajustes para telas pequenas */
-    @media (max-width: 576px) {
-        .container {
-            padding: 20px;
-        }
-        h2 {
-            font-size: 20px;
-        }
-        .subtitle {
-            font-size: 13px;
-        }
-        .form-group input:not([type="radio"]),
-        .form-group select {
-            font-size: 14px;
-        }
-        .button {
-            font-size: 14px;
-            padding: 12px 15px;
-        }
-        .radio-group {
-            flex-direction: column;
-            gap: 10px;
-        }
+    @media (max-width: 768px) {
+      .container {
+        margin: 8px auto;
+        padding: 8px;
+      }
+      .radio-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .radio-group label {
+        margin-right: 0;
+      }
     }
-</style>
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 4px auto;
+        padding: 4px;
+      }
+      .form-group input,
+      .form-group select,
+      .button {
+        padding: 4px;
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
 
 <body>
