@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Solicitação de Folga - DERSO</title>
- <style>
-<style>
+  <style>
     body {
       background-color: #f7f7f7;
       font-family: Arial, sans-serif;
@@ -41,17 +40,15 @@
       line-height: 1.2;
     }
 
-    /* Alterações aqui para compactar o formulário */
+    /* ESTILOS PARA COMPACTAR OS CAMPOS */
     .form-group {
-      margin-bottom: 5px; /* Redução drástica da margem entre os campos */
-      margin-bottom: 5px; /* Manter a margem inferior para separar os grupos */
+      margin-bottom: 5px; /* Margem entre os blocos de campos (e-mail, matrícula, nome) */
       width: 100%;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 1px; /* Reduzido ao mínimo */
-      margin-bottom: 2px; /* Reduzir a margem entre o rótulo e o campo */
+      margin-bottom: 2px; /* Espaço entre o rótulo e o campo de input */
       color: #555;
       font-weight: bold;
       font-size: 13px;
@@ -61,8 +58,7 @@
     .form-group button,
     .form-group select {
       width: 100%;
-      padding: 4px; /* Redução drástica do padding dos campos */
-      padding: 6px; /* Aumentar um pouco o padding para maior usabilidade, mas manter compacto */
+      padding: 6px; /* Padding do campo, mantém usabilidade mas é compacto */
       font-size: 13px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -75,18 +71,15 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 2px;
-      margin-top: 5px; /* Ajustar a margem superior */
+      margin-top: 5px; /* Espaço acima do grupo de rádio */
     }
 
     .radio-group label {
       display: flex;
       align-items: center;
       gap: 3px;
-      margin-bottom: 2px; /* Reduzido */
-      margin-right: 8px; /* Reduzido */
       margin-bottom: 2px;
-      margin-right: 15px; /* Adicionar um pouco mais de espaço entre as opções de rádio */
+      margin-right: 15px; /* Espaço entre as opções de rádio */
       cursor: pointer;
       white-space: nowrap;
       font-size: 13px;
@@ -102,14 +95,12 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      padding: 6px 10px; /* Reduzido */
-      padding: 8px 10px; /* Ajustar padding para um botão mais visível */
+      padding: 8px 10px;
       font-size: 14px;
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 10px auto 0;
-      margin: 15px auto 0; /* Aumentar a margem superior do botão para separá-lo do último campo */
+      margin: 10px auto 0; /* Margem superior para separar do último campo */
       width: 100%;
       box-sizing: border-box;
     }
@@ -120,7 +111,6 @@
 
     .error {
       color: red;
-      margin-top: 1px; /* Reduzido */
       margin-top: 1px;
       font-size: 10px;
     }
@@ -162,8 +152,6 @@
       .form-group input,
       .form-group select,
       .button {
-        padding: 3px;
-        font-size: 10px;
         padding: 4px;
         font-size: 12px;
       }
@@ -172,242 +160,242 @@
 </head>
 
 <body>
-  <div class="container" id="formulario">
-    <h2>DERSO 1º BPM</h2>
-    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
-    <form id="dersoForm" style="display: none;">
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
-        <datalist id="emailProviders"></datalist>
-      </div>
+  <div class="container" id="formulario">
+    <h2>DERSO 1º BPM</h2>
+    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
+    <form id="dersoForm" style="display: none;">
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+        <datalist id="emailProviders"></datalist>
+      </div>
 
-      <div class="form-group">
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-        <div id="matriculaError" class="error"></div>
-      </div>
+      <div class="form-group">
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+        <div id="matriculaError" class="error"></div>
+      </div>
 
-      <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" readonly required>
-      </div>
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" readonly required>
+      </div>
 
-      <div class="form-group">
-        <label>Folga<span class="required-star">*</span>:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="folga" value="24H">24H</label>
-          <label><input type="radio" name="folga" value="48H">48H</label>
-          <label><input type="radio" name="folga" value="72H">72H</label>
-          <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
-          <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
-          <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>
-        </div>
-        <div id="duplicateError" class="error"></div>
-      </div>
+      <div class="form-group">
+        <label>Folga<span class="required-star">*</span>:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="folga" value="24H">24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>
+        </div>
+        <div id="duplicateError" class="error"></div>
+      </div>
 
-      <div class="form-group">
-        <label for="data">Data:</label>
-        <input type="date" id="data" name="data" required>
-      </div>
+      <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+      </div>
 
-      <button type="submit" class="button">Enviar Solicitação</button>
-    </form>
-    <div id="statusMessage" class="info-message">
-        </div>
-  </div>
+      <button type="submit" class="button">Enviar Solicitação</button>
+    </form>
+    <div id="statusMessage" class="info-message">
+    </div>
+  </div>
 
-  <script>
-    // ATENÇÃO: SUBSTITUA ESTA URL PELA URL DA SUA ÚLTIMA IMPLANTAÇÃO DO APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq5Ubp0X_Z0izvXrhC0o6YNXSDYwMPuWHE4-50fQm_X2OleLZXoDeNurtcGtyKvr0/exec";
-    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-    window.employeeList = {};
+  <script>
+    // ATENÇÃO: SUBSTITUA ESTA URL PELA URL DA SUA ÚLTIMA IMPLANTAÇÃO DO APPS SCRIPT
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq5Ubp0X_Z0izvXrhC0o6YNXSDYwMPWHE4-50fQm_X2OleLZXoDeNurtcGtyKvr0/exec";
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    window.employeeList = {};
 
-    function updateEmailDatalist() {
-      const emailInput = document.getElementById("email");
-      const datalist = document.getElementById("emailProviders");
-      const value = emailInput.value;
-      const atIndex = value.indexOf("@");
-      if (atIndex === -1) {
-        datalist.innerHTML = "";
-        return;
-      }
-      const domainPart = value.slice(atIndex + 1).toLowerCase();
-      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-      if (filtered.length === 0) {
-        datalist.innerHTML = "";
-        return;
-      }
-      datalist.innerHTML = "";
-      filtered.forEach(provider => {
-        const option = document.createElement("option");
-        option.value = value.slice(0, atIndex + 1) + provider;
-        datalist.appendChild(option);
-      });
-    }
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) {
+        datalist.innerHTML = "";
+        return;
+      }
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+      if (filtered.length === 0) {
+        datalist.innerHTML = "";
+        return;
+      }
+      datalist.innerHTML = "";
+      filtered.forEach(provider => {
+        const option = document.createElement("option");
+        option.value = value.slice(0, atIndex + 1) + provider;
+        datalist.appendChild(option);
+      });
+    }
 
-    function standardizeMatricula(matricula) {
-      let num = matricula.replace(/\D/g, '');
-      return num.startsWith("1000") ? num : "1000" + num;
-    }
+    function standardizeMatricula(matricula) {
+      let num = matricula.replace(/\D/g, '');
+      return num.startsWith("1000") ? num : "1000" + num;
+    }
 
-    function loadEmployeeList() {
-      fetch(SCRIPT_URL + "?action=lista")
-        .then(response => {
-          if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
-          return response.json();
-        })
-        .then(data => {
-          if (data.error) {
-            console.error("Erro do script ao carregar lista:", data.error);
-            document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-            return;
-          }
-          window.employeeList = data;
-        })
-        .catch(error => {
-          console.error("Erro fatal ao carregar a lista:", error);
-          document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-          window.employeeList = {};
-        });
-    }
+    function loadEmployeeList() {
+      fetch(SCRIPT_URL + "?action=lista")
+        .then(response => {
+          if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
+          return response.json();
+        })
+        .then(data => {
+          if (data.error) {
+            console.error("Erro do script ao carregar lista:", data.error);
+            document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+            return;
+          }
+          window.employeeList = data;
+        })
+        .catch(error => {
+          console.error("Erro fatal ao carregar a lista:", error);
+          document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+          window.employeeList = {};
+        });
+    }
 
-    function checkMatricula() {
-      const matriculaInput = document.getElementById("matricula");
-      const nomeInput = document.getElementById("nome");
-      const errorMsg = document.getElementById("matriculaError");
-      const standardized = standardizeMatricula(matriculaInput.value);
-      matriculaInput.value = standardized;
+    function checkMatricula() {
+      const matriculaInput = document.getElementById("matricula");
+      const nomeInput = document.getElementById("nome");
+      const errorMsg = document.getElementById("matriculaError");
+      const standardized = standardizeMatricula(matriculaInput.value);
+      matriculaInput.value = standardized;
 
-      if (window.employeeList[standardized]) {
-        nomeInput.value = window.employeeList[standardized];
-        errorMsg.textContent = "";
-      } else {
-        nomeInput.value = "";
-        errorMsg.textContent = "Matrícula não encontrada!";
-      }
-    }
+      if (window.employeeList[standardized]) {
+        nomeInput.value = window.employeeList[standardized];
+        errorMsg.textContent = "";
+      } else {
+        nomeInput.value = "";
+        errorMsg.textContent = "Matrícula não encontrada!";
+      }
+    }
 
-    function setDateLimits() {
-      const dateInput = document.getElementById("data");
-      if (!dateInput) return;
-      const today = new Date();
-      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-      dateInput.min = nextMonth.toISOString().split("T")[0];
-      dateInput.max = lastDay.toISOString().split("T")[0];
-    }
+    function setDateLimits() {
+      const dateInput = document.getElementById("data");
+      if (!dateInput) return;
+      const today = new Date();
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+      dateInput.min = nextMonth.toISOString().split("T")[0];
+      dateInput.max = lastDay.toISOString().split("T")[0];
+    }
 
-    function formatDateToBR(dateString) {
-      if (!dateString) return "";
-      const [yyyy, mm, dd] = dateString.split("-");
-      return `${dd}/${mm}/${yyyy}`;
-    }
+    function formatDateToBR(dateString) {
+      if (!dateString) return "";
+      const [yyyy, mm, dd] = dateString.split("-");
+      return `${dd}/${mm}/${yyyy}`;
+    }
 
-    function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
-      const dataValue = document.getElementById("data").value;
-      formData.set("data", formatDateToBR(dataValue));
+    function submitForm(event) {
+      event.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const formData = new FormData(form);
+      const dataValue = document.getElementById("data").value;
+      formData.set("data", formatDateToBR(dataValue));
 
-      const folgaValue = document.querySelector('input[name="folga"]:checked');
-      if (!folgaValue) {
-        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-        return;
-      }
-      formData.set("folga", folgaValue.value);
-      document.getElementById("duplicateError").textContent = "";
+      const folgaValue = document.querySelector('input[name="folga"]:checked');
+      if (!folgaValue) {
+        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
+        return;
+      }
+      formData.set("folga", folgaValue.value);
+      document.getElementById("duplicateError").textContent = "";
 
-      const nomeInput = document.getElementById("nome");
-      if (nomeInput.value.trim() === "") {
-        document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
-        document.getElementById("matricula").focus();
-        return;
-      }
+      const nomeInput = document.getElementById("nome");
+      if (nomeInput.value.trim() === "") {
+        document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
+        document.getElementById("matricula").focus();
+        return;
+      }
 
-      const submitBtn = document.querySelector(".button");
-      submitBtn.disabled = true;
+      const submitBtn = document.querySelector(".button");
+      submitBtn.disabled = true;
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: new URLSearchParams(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Solicitação enviada com sucesso!");
-          form.reset();
-          document.getElementById("email").focus();
-        } else {
-          document.getElementById("duplicateError").textContent = data.error;
-        }
-      })
-      .catch(error => {
-        console.error("Erro ao enviar:", error);
-        alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-      });
-    }
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Solicitação enviada com sucesso!");
+          form.reset();
+          document.getElementById("email").focus();
+        } else {
+          document.getElementById("duplicateError").textContent = data.error;
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao enviar:", error);
+        alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+      });
+    }
 
-    function initializeForm() {
-      const formularioDiv = document.getElementById("formulario");
-      const statusMessageDiv = document.getElementById("statusMessage");
-      const formDiv = document.getElementById("dersoForm");
+    function initializeForm() {
+      const formularioDiv = document.getElementById("formulario");
+      const statusMessageDiv = document.getElementById("statusMessage");
+      const formDiv = document.getElementById("dersoForm");
 
-      fetch(SCRIPT_URL + '?action=datas')
-        .then(response => {
-          if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
-          return response.json();
-        })
-        .then(data => {
-          if (data.error) {
-            console.error("Erro do script ao carregar datas:", data.error);
-            statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
-            return;
-          }
+      fetch(SCRIPT_URL + '?action=datas')
+        .then(response => {
+          if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
+          return response.json();
+        })
+        .then(data => {
+          if (data.error) {
+            console.error("Erro do script ao carregar datas:", data.error);
+            statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
+            return;
+          }
 
-          const abertura = new Date(data.abertura);
-          const encerramento = new Date(data.fechamento);
-          const agora = new Date();
+          const abertura = new Date(data.abertura);
+          const encerramento = new Date(data.fechamento);
+          const agora = new Date();
 
-          if (isNaN(abertura.getTime()) || isNaN(encerramento.getTime())) {
-            statusMessageDiv.innerHTML = '<h3>Erro: As datas de abertura/fechamento da planilha não estão em um formato válido. Verifique as células B2, C2, B3, C3 da guia "Datas Planilha".</h3>';
-            return;
-          }
+          if (isNaN(abertura.getTime()) || isNaN(encerramento.getTime())) {
+            statusMessageDiv.innerHTML = '<h3>Erro: As datas de abertura/fechamento da planilha não estão em um formato válido. Verifique as células B2, C2, B3, C3 da guia "Datas Planilha".</h3>';
+            return;
+          }
 
-          if (agora < abertura || agora > encerramento) {
-            const msg = agora < abertura ?
-              `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR")}</span>.</h3>` :
-              `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR")}</span>.</h3>`;
-            statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
-            formDiv.style.display = "none";
-          } else {
-            formDiv.style.display = "block";
-            statusMessageDiv.style.display = "none";
-          }
-        })
-        .catch(error => {
-          console.error('Erro fatal ao carregar as datas:', error);
-          statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
-        });
-    }
+          if (agora < abertura || agora > encerramento) {
+            const msg = agora < abertura ?
+              `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR")}</span>.</h3>` :
+              `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR")}</span>.</h3>`;
+            statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
+            formDiv.style.display = "none";
+          } else {
+            formDiv.style.display = "block";
+            statusMessageDiv.style.display = "none";
+          }
+        })
+        .catch(error => {
+          console.error('Erro fatal ao carregar as datas:', error);
+          statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
+        });
+    }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    loadEmployeeList();
-    setDateLimits();
-    initializeForm();
+  document.addEventListener("DOMContentLoaded", () => {
+    loadEmployeeList();
+    setDateLimits();
+    initializeForm();
 
-    const matriculaField = document.getElementById("matricula");
-    const emailField = document.getElementById("email");
-    const form = document.getElementById("dersoForm");
+    const matriculaField = document.getElementById("matricula");
+    const emailField = document.getElementById("email");
+    const form = document.getElementById("dersoForm");
 
-    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
-    if (emailField) emailField.addEventListener("input", updateEmailDatalist);
-    if (form) form.addEventListener("submit", submitForm);
-  });
-  </script>
+    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
+    if (emailField) emailField.addEventListener("input", updateEmailDatalist);
+    if (form) form.addEventListener("submit", submitForm);
+  });
+  </script>
 </body>
 </html>
