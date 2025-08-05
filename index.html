@@ -14,10 +14,10 @@
     .container {
       width: 95%;
       max-width: 600px;
-      margin: 10px auto; /* Reduzido */
+      margin: 10px auto;
       background-color: #fff;
       border-radius: 8px;
-      padding: 10px; /* Reduzido */
+      padding: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       box-sizing: border-box;
@@ -28,36 +28,37 @@
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 2px; /* Reduzido ao mínimo */
+      margin-bottom: 2px;
+      font-size: 16px;
     }
 
     .subtitle {
       text-align: center;
       color: #555;
-      margin-bottom: 5px; /* Reduzido */
-      font-size: 14px; /* Reduzido */
+      margin-bottom: 5px;
+      font-size: 13px;
       line-height: 1.2;
     }
 
     .form-group {
-      margin-bottom: 6px; /* Principal ajuste para o espaço entre os campos */
+      margin-bottom: 5px; /* Redução drástica da margem entre os campos */
       width: 100%;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 2px; /* Reduzido */
+      margin-bottom: 1px; /* Reduzido ao mínimo */
       color: #555;
       font-weight: bold;
-      font-size: 14px; /* Reduzido */
+      font-size: 13px;
     }
 
     .form-group input,
     .form-group button,
     .form-group select {
       width: 100%;
-      padding: 5px; /* Reduzido o padding dos campos */
-      font-size: 14px;
+      padding: 4px; /* Redução drástica do padding dos campos */
+      font-size: 13px;
       border: 1px solid #ccc;
       border-radius: 4px;
       box-sizing: border-box;
@@ -69,18 +70,18 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 2px; /* Reduzido */
+      margin-top: 2px;
     }
 
     .radio-group label {
       display: flex;
       align-items: center;
       gap: 3px;
-      margin-bottom: 3px; /* Reduzido */
-      margin-right: 10px; /* Reduzido */
+      margin-bottom: 2px; /* Reduzido */
+      margin-right: 8px; /* Reduzido */
       cursor: pointer;
       white-space: nowrap;
-      font-size: 14px;
+      font-size: 13px;
       color: #555;
     }
 
@@ -93,12 +94,12 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      padding: 8px 12px;
-      font-size: 14px; /* Reduzido */
+      padding: 6px 10px; /* Reduzido */
+      font-size: 14px;
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 10px auto 0; /* Reduzido */
+      margin: 10px auto 0;
       width: 100%;
       box-sizing: border-box;
     }
@@ -109,13 +110,13 @@
 
     .error {
       color: red;
-      margin-top: 2px;
-      font-size: 10px; /* Reduzido */
+      margin-top: 1px; /* Reduzido */
+      font-size: 10px;
     }
 
     .required-star {
       color: red;
-      margin-left: 2px;
+      margin-left: 1px;
     }
 
     .destaque-encerrou {
@@ -130,7 +131,7 @@
 
     @media (max-width: 768px) {
       .container {
-        margin: 10px auto;
+        margin: 8px auto;
         padding: 8px;
       }
       .radio-group {
@@ -144,13 +145,13 @@
 
     @media (max-width: 480px) {
       .container {
-        margin: 5px auto;
-        padding: 5px;
+        margin: 4px auto;
+        padding: 4px;
       }
       .form-group input,
       .form-group select,
       .button {
-        padding: 4px;
+        padding: 3px;
         font-size: 10px;
       }
     }
