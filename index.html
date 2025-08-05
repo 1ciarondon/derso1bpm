@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Solicitação de Folga - DERSO</title>
-  <style>
+<style>
     body {
       background-color: #f7f7f7;
       font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
       margin: 10px auto;
       background-color: #fff;
       border-radius: 8px;
-      padding: 10px;
+      padding: 20px; /* Aumentado o padding para dar mais espaço interno */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       box-sizing: border-box;
@@ -28,41 +28,54 @@
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 0px;
-      font-size: 16px;
+      margin-bottom: 5px; /* Ajustado para dar um espaço entre o h2 e o subtítulo */
+      font-size: 18px; /* Aumentado o tamanho da fonte do título principal */
     }
 
     .subtitle {
       text-align: center;
       color: #555;
-      margin-bottom: 2px;
-      font-size: 13px;
+      margin-bottom: 20px; /* Adicionado mais margem para separar o cabeçalho dos campos */
+      font-size: 14px; /* Ajustado o tamanho da fonte do subtítulo */
       line-height: 1.2;
     }
 
     /* ESTILOS PARA COMPACTAR OS CAMPOS */
     .form-group {
-      margin-bottom: 5px; /* Margem entre os blocos de campos (e-mail, matrícula, nome) */
+      margin-bottom: 15px; /* Aumentado a margem para um visual mais espaçado e limpo */
       width: 100%;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 2px; /* Espaço entre o rótulo e o campo de input */
+      margin-bottom: 5px; /* Aumentado o espaço entre o rótulo e o campo de input */
       color: #555;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 14px; /* Ajustado o tamanho da fonte do rótulo */
     }
 
     .form-group input,
-    .form-group button,
     .form-group select {
       width: 100%;
-      padding: 6px; /* Padding do campo, mantém usabilidade mas é compacto */
-      font-size: 13px;
+      padding: 10px; /* Aumentado o padding para um visual mais robusto */
+      font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 4px;
       box-sizing: border-box;
+      background-color: #fcfcfc; /* Adicionado um fundo levemente cinza para os inputs */
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #007BFF; /* Destaca a borda ao focar */
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+    }
+    
+    /* Estilo para inputs somente leitura, como o campo Nome */
+    input[readonly] {
+      background-color: #eee;
+      cursor: not-allowed;
     }
 
     .radio-group {
@@ -71,18 +84,18 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 5px; /* Espaço acima do grupo de rádio */
+      margin-top: 5px;
     }
 
     .radio-group label {
       display: flex;
       align-items: center;
       gap: 3px;
-      margin-bottom: 2px;
-      margin-right: 15px; /* Espaço entre as opções de rádio */
+      margin-bottom: 5px; /* Ajustado para manter o espaçamento uniforme */
+      margin-right: 20px; /* Aumentado o espaço entre as opções de rádio */
       cursor: pointer;
       white-space: nowrap;
-      font-size: 13px;
+      font-size: 14px;
       color: #555;
     }
 
@@ -95,12 +108,12 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      padding: 8px 10px;
-      font-size: 14px;
+      padding: 12px 10px; /* Aumentado o padding do botão para um visual mais "clicável" */
+      font-size: 16px;
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 10px auto 0; /* Margem superior para separar do último campo */
+      margin: 15px auto 0; /* Aumentado a margem superior */
       width: 100%;
       box-sizing: border-box;
     }
@@ -111,13 +124,13 @@
 
     .error {
       color: red;
-      margin-top: 1px;
-      font-size: 10px;
+      margin-top: 2px;
+      font-size: 12px;
     }
 
     .required-star {
       color: red;
-      margin-left: 1px;
+      margin-left: 2px;
     }
 
     .destaque-encerrou {
@@ -133,30 +146,10 @@
     @media (max-width: 768px) {
       .container {
         margin: 8px auto;
-        padding: 8px;
-      }
-      .radio-group {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .radio-group label {
-        margin-right: 0;
+        padding: 15px; /* Ajustado para telas menores */
       }
     }
-
-    @media (max-width: 480px) {
-      .container {
-        margin: 4px auto;
-        padding: 4px;
-      }
-      .form-group input,
-      .form-group select,
-      .button {
-        padding: 4px;
-        font-size: 12px;
-      }
-    }
-  </style>
+</style>
 </head>
 
 <body>
