@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Solicitação de Folga - DERSO</title>
+ <style>
 <style>
     body {
       background-color: #f7f7f7;
@@ -40,15 +41,17 @@
       line-height: 1.2;
     }
 
-    /* Alterações para compactar ainda mais */
+    /* Alterações aqui para compactar o formulário */
     .form-group {
-      margin-bottom: 5px; /* Margem entre os grupos de campos */
+      margin-bottom: 5px; /* Redução drástica da margem entre os campos */
+      margin-bottom: 5px; /* Manter a margem inferior para separar os grupos */
       width: 100%;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 1px; /* Espaço mínimo entre o rótulo e o campo de input */
+      margin-bottom: 1px; /* Reduzido ao mínimo */
+      margin-bottom: 2px; /* Reduzir a margem entre o rótulo e o campo */
       color: #555;
       font-weight: bold;
       font-size: 13px;
@@ -58,7 +61,8 @@
     .form-group button,
     .form-group select {
       width: 100%;
-      padding: 6px;
+      padding: 4px; /* Redução drástica do padding dos campos */
+      padding: 6px; /* Aumentar um pouco o padding para maior usabilidade, mas manter compacto */
       font-size: 13px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -71,15 +75,18 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 5px; /* Espaço acima do grupo de rádio */
+      margin-top: 2px;
+      margin-top: 5px; /* Ajustar a margem superior */
     }
 
     .radio-group label {
       display: flex;
       align-items: center;
       gap: 3px;
+      margin-bottom: 2px; /* Reduzido */
+      margin-right: 8px; /* Reduzido */
       margin-bottom: 2px;
-      margin-right: 15px;
+      margin-right: 15px; /* Adicionar um pouco mais de espaço entre as opções de rádio */
       cursor: pointer;
       white-space: nowrap;
       font-size: 13px;
@@ -95,12 +102,14 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      padding: 8px 10px;
+      padding: 6px 10px; /* Reduzido */
+      padding: 8px 10px; /* Ajustar padding para um botão mais visível */
       font-size: 14px;
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 10px auto 0; /* Diminuí a margem superior do botão */
+      margin: 10px auto 0;
+      margin: 15px auto 0; /* Aumentar a margem superior do botão para separá-lo do último campo */
       width: 100%;
       box-sizing: border-box;
     }
@@ -111,6 +120,7 @@
 
     .error {
       color: red;
+      margin-top: 1px; /* Reduzido */
       margin-top: 1px;
       font-size: 10px;
     }
@@ -152,6 +162,8 @@
       .form-group input,
       .form-group select,
       .button {
+        padding: 3px;
+        font-size: 10px;
         padding: 4px;
         font-size: 12px;
       }
@@ -291,14 +303,14 @@
       const [yyyy, mm, dd] = dateString.split("-");
       return `${dd}/${mm}/${yyyy}`;
     }
-    
+
     function submitForm(event) {
       event.preventDefault();
       const form = document.getElementById("dersoForm");
       const formData = new FormData(form);
       const dataValue = document.getElementById("data").value;
       formData.set("data", formatDateToBR(dataValue));
-      
+
       const folgaValue = document.querySelector('input[name="folga"]:checked');
       if (!folgaValue) {
         document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
@@ -339,12 +351,12 @@
         submitBtn.disabled = false;
       });
     }
-    
+
     function initializeForm() {
       const formularioDiv = document.getElementById("formulario");
       const statusMessageDiv = document.getElementById("statusMessage");
       const formDiv = document.getElementById("dersoForm");
-      
+
       fetch(SCRIPT_URL + '?action=datas')
         .then(response => {
           if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
@@ -356,16 +368,16 @@
             statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
             return;
           }
-          
+
           const abertura = new Date(data.abertura);
           const encerramento = new Date(data.fechamento);
           const agora = new Date();
-          
+
           if (isNaN(abertura.getTime()) || isNaN(encerramento.getTime())) {
             statusMessageDiv.innerHTML = '<h3>Erro: As datas de abertura/fechamento da planilha não estão em um formato válido. Verifique as células B2, C2, B3, C3 da guia "Datas Planilha".</h3>';
             return;
           }
-          
+
           if (agora < abertura || agora > encerramento) {
             const msg = agora < abertura ?
               `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR")}</span>.</h3>` :
