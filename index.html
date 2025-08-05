@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Solicitação de Folga - DERSO</title>
-  <style>
+ <style>
     body {
       background-color: #f7f7f7;
       font-family: Arial, sans-serif;
@@ -14,10 +14,10 @@
     .container {
       width: 95%;
       max-width: 600px;
-      margin: 20px auto;
+      margin: 10px auto; /* Reduzido */
       background-color: #fff;
       border-radius: 8px;
-      padding: 12px; /* Reduzido o preenchimento interno */
+      padding: 10px; /* Reduzido */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       box-sizing: border-box;
@@ -28,19 +28,19 @@
     h2 {
       text-align: center;
       color: #333;
-      margin-bottom: 4px; /* Reduzido */
+      margin-bottom: 2px; /* Reduzido ao mínimo */
     }
 
     .subtitle {
       text-align: center;
       color: #555;
-      margin-bottom: 8px; /* Reduzido */
-      font-size: 15px;
-      line-height: 1.4;
+      margin-bottom: 5px; /* Reduzido */
+      font-size: 14px; /* Reduzido */
+      line-height: 1.2;
     }
 
     .form-group {
-      margin-bottom: 8px; /* Principal ajuste para aproximar os campos */
+      margin-bottom: 6px; /* Principal ajuste para o espaço entre os campos */
       width: 100%;
     }
 
@@ -49,13 +49,14 @@
       margin-bottom: 2px; /* Reduzido */
       color: #555;
       font-weight: bold;
+      font-size: 14px; /* Reduzido */
     }
 
     .form-group input,
     .form-group button,
     .form-group select {
       width: 100%;
-      padding: 6px; /* Reduzido o padding dos campos */
+      padding: 5px; /* Reduzido o padding dos campos */
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -68,15 +69,15 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 4px; /* Adicionado um pequeno espaçamento no topo */
+      margin-top: 2px; /* Reduzido */
     }
 
     .radio-group label {
       display: flex;
       align-items: center;
-      gap: 5px;
-      margin-bottom: 4px; /* Reduzido */
-      margin-right: 15px;
+      gap: 3px;
+      margin-bottom: 3px; /* Reduzido */
+      margin-right: 10px; /* Reduzido */
       cursor: pointer;
       white-space: nowrap;
       font-size: 14px;
@@ -84,7 +85,7 @@
     }
 
     .radio-group input[type="radio"] {
-      margin-right: 4px;
+      margin-right: 3px;
     }
 
     .button {
@@ -92,12 +93,12 @@
       color: #fff;
       border: none;
       cursor: pointer;
-      padding: 8px 12px; /* Reduzido o padding do botão */
-      font-size: 16px;
+      padding: 8px 12px;
+      font-size: 14px; /* Reduzido */
       border-radius: 4px;
       transition: background-color 0.3s ease;
       display: block;
-      margin: 12px auto 0; /* Reduzido a margem superior do botão */
+      margin: 10px auto 0; /* Reduzido */
       width: 100%;
       box-sizing: border-box;
     }
@@ -108,8 +109,8 @@
 
     .error {
       color: red;
-      margin-top: 2px; /* Reduzido */
-      font-size: 11px;
+      margin-top: 2px;
+      font-size: 10px; /* Reduzido */
     }
 
     .required-star {
@@ -129,8 +130,8 @@
 
     @media (max-width: 768px) {
       .container {
-        margin: 12px auto;
-        padding: 10px;
+        margin: 10px auto;
+        padding: 8px;
       }
       .radio-group {
         flex-direction: column;
@@ -143,14 +144,14 @@
 
     @media (max-width: 480px) {
       .container {
-        margin: 6px auto;
-        padding: 6px;
+        margin: 5px auto;
+        padding: 5px;
       }
       .form-group input,
       .form-group select,
       .button {
-        padding: 5px;
-        font-size: 11px;
+        padding: 4px;
+        font-size: 10px;
       }
     }
   </style>
