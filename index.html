@@ -234,185 +234,175 @@
     </div>
   </div>
 
-  <script>
-    // ATENÇÃO: SUBSTITUA ESTA URL PELA URL DA SUA ÚLTIMA IMPLANTAÇÃO DO APPS SCRIPT
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGo1MrPbFtzDpofUMrYOUuJZIrtRQ-nI-Z0bGQvtk27low9ckpIAagHC--W4FcuD3HOQ/exec";
-    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-    window.employeeList = {};
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGo1MrPbFtzDpofUMrYOUuJZIrtRQ-nI-Z0bGQvtk27low9ckpIAagHC--W4FcuD3HOQ/exec";
+const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+window.employeeList = {};
 
-    function updateEmailDatalist() {
-      const emailInput = document.getElementById("email");
-      const datalist = document.getElementById("emailProviders");
-      const value = emailInput.value;
-      const atIndex = value.indexOf("@");
-      if (atIndex === -1) {
+function updateEmailDatalist() {
+    const emailInput = document.getElementById("email");
+    const datalist = document.getElementById("emailProviders");
+    const value = emailInput.value;
+    const atIndex = value.indexOf("@");
+    if (atIndex === -1) {
         datalist.innerHTML = "";
         return;
-      }
-      const domainPart = value.slice(atIndex + 1).toLowerCase();
-      const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-      if (filtered.length === 0) {
-        datalist.innerHTML = "";
-        return;
-      }
-      datalist.innerHTML = "";
-      filtered.forEach(provider => {
+    }
+    const domainPart = value.slice(atIndex + 1).toLowerCase();
+    const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
+    datalist.innerHTML = "";
+    filtered.forEach(provider => {
         const option = document.createElement("option");
         option.value = value.slice(0, atIndex + 1) + provider;
         datalist.appendChild(option);
-      });
-    }
+    });
+}
 
-    function standardizeMatricula(matricula) {
-      let num = matricula.replace(/\D/g, '');
-      return num.startsWith("1000") ? num : "1000" + num;
-    }
+function standardizeMatricula(matricula) {
+    let num = matricula.replace(/\D/g, '');
+    return num.startsWith("1000") ? num : "1000" + num;
+}
 
-    function loadEmployeeList() {
-      fetch(SCRIPT_URL + "?action=lista")
+function loadEmployeeList() {
+    fetch(SCRIPT_URL + "?action=lista")
         .then(response => {
-          if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
-          return response.json();
+            if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
+            return response.json();
         })
         .then(data => {
-          if (data.error) {
-            console.error("Erro do script ao carregar lista:", data.error);
-            document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-            return;
-          }
-          window.employeeList = data;
+            if (data.error) {
+                console.error("Erro do script ao carregar lista:", data.error);
+                document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+                return;
+            }
+            window.employeeList = data;
         })
         .catch(error => {
-          console.error("Erro fatal ao carregar a lista:", error);
-          document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-          window.employeeList = {};
+            console.error("Erro fatal ao carregar a lista:", error);
+            document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
+            window.employeeList = {};
         });
-    }
+}
 
-    function checkMatricula() {
-      const matriculaInput = document.getElementById("matricula");
-      const nomeInput = document.getElementById("nome");
-      const errorMsg = document.getElementById("matriculaError");
-      const standardized = standardizeMatricula(matriculaInput.value);
-      matriculaInput.value = standardized;
+function checkMatricula() {
+    const matriculaInput = document.getElementById("matricula");
+    const nomeInput = document.getElementById("nome");
+    const errorMsg = document.getElementById("matriculaError");
+    const standardized = standardizeMatricula(matriculaInput.value);
+    matriculaInput.value = standardized;
 
-      if (window.employeeList[standardized]) {
+    if (window.employeeList[standardized]) {
         nomeInput.value = window.employeeList[standardized];
         errorMsg.textContent = "";
-      } else {
+    } else {
         nomeInput.value = "";
         errorMsg.textContent = "Matrícula não encontrada!";
-      }
     }
+}
 
-    function setDateLimits() {
-      const dateInput = document.getElementById("data");
-      if (!dateInput) return;
-      const today = new Date();
-      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-      const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-      dateInput.min = nextMonth.toISOString().split("T")[0];
-      dateInput.max = lastDay.toISOString().split("T")[0];
-    }
+function setDateLimits() {
+    const dateInput = document.getElementById("data");
+    if (!dateInput) return;
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+    dateInput.min = nextMonth.toISOString().split("T")[0];
+    dateInput.max = lastDay.toISOString().split("T")[0];
+}
 
-    function formatDateToBR(dateString) {
-      if (!dateString) return "";
-      const [yyyy, mm, dd] = dateString.split("-");
-      return `${dd}/${mm}/${yyyy}`;
-    }
+function formatDateToBR(dateString) {
+    if (!dateString) return "";
+    const [yyyy, mm, dd] = dateString.split("-");
+    return `${dd}/${mm}/${yyyy}`;
+}
 
-    function submitForm(event) {
-      event.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const formData = new FormData(form);
-      const dataValue = document.getElementById("data").value;
-      formData.set("data", formatDateToBR(dataValue));
+function submitForm(event) {
+    event.preventDefault();
+    const form = document.getElementById("dersoForm");
+    const formData = new FormData(form);
+    const dataValue = document.getElementById("data").value;
+    formData.set("data", formatDateToBR(dataValue));
 
-      const folgaValue = document.querySelector('input[name="folga"]:checked');
-      if (!folgaValue) {
+    const folgaValue = document.querySelector('input[name="folga"]:checked');
+    if (!folgaValue) {
         document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
         return;
-      }
-      formData.set("folga", folgaValue.value);
-      document.getElementById("duplicateError").textContent = "";
+    }
+    formData.set("folga", folgaValue.value);
+    document.getElementById("duplicateError").textContent = "";
 
-      const nomeInput = document.getElementById("nome");
-      if (nomeInput.value.trim() === "") {
+    const nomeInput = document.getElementById("nome");
+    if (nomeInput.value.trim() === "") {
         document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
         document.getElementById("matricula").focus();
         return;
-      }
+    }
 
-      const submitBtn = document.querySelector(".button");
-      submitBtn.disabled = true;
+    const submitBtn = document.querySelector(".button");
+    submitBtn.disabled = true;
 
-      fetch(SCRIPT_URL, {
+    fetch(SCRIPT_URL, {
         method: "POST",
         body: new URLSearchParams(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
+    })
+    .then(response => response.json())
+    .then(data => {
         if (data.success) {
-          alert("Solicitação enviada com sucesso!");
-          form.reset();
-          document.getElementById("email").focus();
+            alert("Solicitação enviada com sucesso!");
+            form.reset();
+            document.getElementById("email").focus();
         } else {
-          document.getElementById("duplicateError").textContent = data.error;
+            document.getElementById("duplicateError").textContent = data.error;
         }
-      })
-      .catch(error => {
+    })
+    .catch(error => {
         console.error("Erro ao enviar:", error);
         alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
-      })
-      .finally(() => {
+    })
+    .finally(() => {
         submitBtn.disabled = false;
-      });
-    }
+    });
+}
 
-    function initializeForm() {
-      const formularioDiv = document.getElementById("formulario");
-      const statusMessageDiv = document.getElementById("statusMessage");
-      const formDiv = document.getElementById("dersoForm");
+function initializeForm() {
+    const formularioDiv = document.getElementById("formulario");
+    const statusMessageDiv = document.getElementById("statusMessage");
+    const formDiv = document.getElementById("dersoForm");
 
-      fetch(SCRIPT_URL + '?action=datas')
+    fetch(SCRIPT_URL + '?action=datas')
         .then(response => {
-          if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
-          return response.json();
+            if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
+            return response.json();
         })
         .then(data => {
-    if (data.error) {
-        console.error("Erro do script ao carregar datas:", data.error);
-        statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
-        return;
-    }
+            if (data.error) {
+                console.error("Erro do script ao carregar datas:", data.error);
+                statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
+                return;
+            }
 
-    const abertura = new Date(data.abertura);
-    const encerramento = new Date(data.fechamento);
-    const agora = new Date(); // Objeto de data e hora atual do cliente
+            const abertura = new Date(data.abertura);
+            const encerramento = new Date(data.fechamento);
+            const agora = new Date();
 
-    // A data de fechamento da planilha é: 26/08/2025 às 23:50 no fuso de Porto Velho (-04:00).
-    // A data atual é: 26/08/2025 às 10:13:03 no fuso de Porto Velho.
-    // A diferença de fuso horário entre o cliente e o servidor do Google é o que causa o erro.
+            if (agora < abertura || agora > encerramento) {
+                const msg = agora < abertura ?
+                    `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
+                    `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+                statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
+                formDiv.style.display = "none";
+            } else {
+                formDiv.style.display = "block";
+                statusMessageDiv.style.display = "none";
+            }
+        })
+        .catch(error => {
+            console.error('Erro fatal ao carregar as datas:', error);
+            statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
+        });
+}
 
-    // Compara o "agora" do cliente com as datas de abertura e fechamento
-    // Não precisa de ajuste de fuso, pois o "agora" é em UTC.
-    if (agora < abertura || agora > encerramento) {
-        const msg = agora < abertura ?
-          `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
-          `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
-        statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
-        formDiv.style.display = "none";
-    } else {
-        formDiv.style.display = "block";
-        statusMessageDiv.style.display = "none";
-    }
-})
-.catch(error => {
-    console.error('Erro fatal ao carregar as datas:', error);
-    statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
-});
-    
-  document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     loadEmployeeList();
     setDateLimits();
     initializeForm();
@@ -421,11 +411,10 @@
     const emailField = document.getElementById("email");
     const form = document.getElementById("dersoForm");
 
-if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
-if (emailField) emailField.addEventListener("input", updateEmailDatalist);
-if (form) form.addEventListener("submit", submitForm);
+    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
+    if (emailField) emailField.addEventListener("input", updateEmailDatalist);
+    if (form) form.addEventListener("submit", submitForm);
 });
-// Fechamento de `document.addEventListener`
 </script>
 </body>
 </html>
