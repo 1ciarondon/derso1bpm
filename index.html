@@ -380,41 +380,37 @@
           return response.json();
         })
         .then(data => {
-          if (data.error) {
-            console.error("Erro do script ao carregar datas:", data.error);
-            statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
-            return;
-          }
-
-          // Cria os objetos de data a partir das strings ISO recebidas
-          const abertura = new Date(data.abertura);
-          const encerramento = new Date(data.fechamento);
-
-          // Obtém a data e hora atual do cliente, mas no fuso horário de Porto Velho
-          const agoraPVH = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Porto_Velho" }));
-          
-          if (isNaN(abertura.getTime()) || isNaN(encerramento.getTime())) {
-            statusMessageDiv.innerHTML = '<h3>Erro: As datas de abertura/fechamento da planilha não estão em um formato válido. Verifique as células B2, C2, B3, C3 da guia "Datas Planilha".</h3>';
-            return;
-          }
-
-          // Compara a data atual de Porto Velho com as datas de abertura e fechamento
-          if (agoraPVH < abertura || agoraPVH > encerramento) {
-            const msg = agoraPVH < abertura ?
-              `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
-              `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
-            statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
-            formDiv.style.display = "none";
-          } else {
-            formDiv.style.display = "block";
-            statusMessageDiv.style.display = "none";
-          }
-        })
-        .catch(error => {
-          console.error('Erro fatal ao carregar as datas:', error);
-          statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
-        });
+    if (data.error) {
+        console.error("Erro do script ao carregar datas:", data.error);
+        statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
+        return;
     }
+
+    const abertura = new Date(data.abertura);
+    const encerramento = new Date(data.fechamento);
+    const agora = new Date(); // Objeto de data e hora atual do cliente
+
+    // A data de fechamento da planilha é: 26/08/2025 às 23:50 no fuso de Porto Velho (-04:00).
+    // A data atual é: 26/08/2025 às 10:13:03 no fuso de Porto Velho.
+    // A diferença de fuso horário entre o cliente e o servidor do Google é o que causa o erro.
+
+    // Compara o "agora" do cliente com as datas de abertura e fechamento
+    // Não precisa de ajuste de fuso, pois o "agora" é em UTC.
+    if (agora < abertura || agora > encerramento) {
+        const msg = agora < abertura ?
+          `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
+          `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
+        statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
+        formDiv.style.display = "none";
+    } else {
+        formDiv.style.display = "block";
+        statusMessageDiv.style.display = "none";
+    }
+})
+.catch(error => {
+    console.error('Erro fatal ao carregar as datas:', error);
+    statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
+});
     
   document.addEventListener("DOMContentLoaded", () => {
     loadEmployeeList();
