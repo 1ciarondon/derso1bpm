@@ -421,10 +421,10 @@
     const emailField = document.getElementById("email");
     const form = document.getElementById("dersoForm");
 
-    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
+   if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
     if (emailField) emailField.addEventListener("input", updateEmailDatalist);
     if (form) form.addEventListener("submit", submitForm);
-  });
-  </script>
+  }); // Fechamento de `document.addEventListener`
+</script>
 </body>
 </html>
