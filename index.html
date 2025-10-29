@@ -3,205 +3,277 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="theme-color" content="#007bff">
-  <title>Solicitação de DERSO</title>
+  <title>Solicitação de Folga - DERSO 1º BPM</title>
+
   <style>
     :root {
-      --azul-principal: #007bff;
-      --azul-escuro: #004d99;
-      --erro: #dc3545;
+      --azul-principal: #0047b3;
+      --azul-escuro: #002b66;
+      --erro: #d9534f;
       --sucesso: #28a745;
-      --cinza-claro: #f7f7f7;
+      --cinza-claro: #f2f4f8;
+      --cinza-texto: #4a4a4a;
+      --fundo-escuro: #121212;
+      --fundo-card-escuro: #1e1e1e;
+      --texto-claro: #e5e5e5;
+      --borda-escura: #333;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--fundo-escuro);
+        color: var(--texto-claro);
+      }
+      .container {
+        background-color: var(--fundo-card-escuro);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      }
+      input, select {
+        background-color: #2a2a2a !important;
+        color: var(--texto-claro);
+        border-color: var(--borda-escura);
+      }
+      input[readonly] {
+        background-color: #333 !important;
+      }
+      .button {
+        background-color: var(--azul-principal);
+      }
+      .info-message.success {
+        background-color: #0f5132;
+        color: #d1e7dd;
+      }
+      .info-message.error {
+        background-color: #842029;
+        color: #f8d7da;
+      }
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--cinza-claro);
+      background-color: #ffffff;
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      color: #333;
       margin: 0;
-      padding: 15px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0;
+      background-color: var(--azul-principal);
+      box-shadow: 0 0 6px rgba(0, 71, 179, 0.6);
+      transition: width 0.4s ease;
+      z-index: 9999;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 500px;
+      background-color: var(--cinza-claro);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.4s, box-shadow 0.4s;
     }
 
     h2 {
       color: var(--azul-escuro);
       text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
     }
 
-    form {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    .subtitle {
+      text-align: center;
+      color: var(--cinza-texto);
+      font-size: 15px;
+      margin-bottom: 25px;
     }
 
-    label {
-      font-weight: bold;
+    label, legend {
       display: block;
-      margin-top: 15px;
+      margin-bottom: 8px;
+      color: #4a4a4a;
+      font-weight: 500;
+      font-size: 14px;
     }
 
-    input, select {
+    input:not([type="radio"]), select {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      padding: 12px 15px;
+      font-size: 15px;
       border: 1px solid #ccc;
       border-radius: 8px;
       box-sizing: border-box;
-      transition: all 0.2s ease;
+      transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
     }
 
-    input:focus, select:focus {
+    input:not([type="radio"]):focus, select:focus {
       border-color: var(--azul-principal);
-      box-shadow: 0 0 5px rgba(0,123,255,0.3);
       outline: none;
-    }
-
-    input:focus::placeholder {
-      color: transparent;
-    }
-
-    .button {
-      background-color: var(--azul-principal);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      width: 100%;
-      margin-top: 20px;
-      font-weight: bold;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .button:hover {
-      transform: scale(1.03);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .button:active {
-      transform: scale(0.98);
-    }
-
-    .button.loading {
-      opacity: 0.7;
-      cursor: wait;
-    }
-
-    .info-message {
-      display: none;
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    .info-message.success {
-      background: #d4edda;
-      color: var(--sucesso);
-    }
-
-    .info-message.error {
-      background: #f8d7da;
-      color: var(--erro);
-    }
-
-    progress {
-      width: 100%;
-      height: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    progress::-webkit-progress-value {
-      background-color: var(--azul-principal);
+      box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.2);
     }
 
     input[readonly] {
       background-color: #e9ecef;
       cursor: not-allowed;
-      transition: background-color 0.3s ease;
     }
 
-    input[readonly]:hover {
-      background-color: #dee2e6;
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      margin-top: 10px;
     }
 
-    .copy-btn {
-      background: none;
-      border: none;
-      color: var(--azul-principal);
-      font-size: 0.9em;
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
       cursor: pointer;
-      margin-top: 3px;
-      text-decoration: underline;
+      color: var(--cinza-texto);
     }
 
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #121212;
-        color: #f1f1f1;
-      }
-      form {
-        background: #1e1e1e;
-      }
-      input, select {
-        background: #2b2b2b;
-        color: #fff;
-        border-color: #444;
-      }
-      .button {
-        background: var(--azul-escuro);
-      }
+    .button {
+      background-color: var(--azul-principal);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .button:hover { background-color: #003b91; transform: translateY(-2px); }
+    .button:active { transform: translateY(0); }
+    .button.loading { opacity: 0.6; cursor: wait; }
+
+    .error {
+      color: var(--erro);
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .info-message {
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .info-message.success { background-color: #d4edda; color: #155724; }
+    .info-message.error { background-color: #f8d7da; color: #721c24; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 576px) {
+      .container { padding: 20px; }
+      h2 { font-size: 20px; }
+      .subtitle { font-size: 13px; }
+      .button { font-size: 14px; padding: 12px; }
     }
   </style>
 </head>
+
 <body>
-  <h2>Solicitação de DERSO</h2>
+  <div class="progress-bar" id="progressBar"></div>
 
-  <form id="dersoForm">
-    <label for="nome">Nome: <span title="Digite ou selecione seu nome.">🛈</span></label>
-    <input list="nomes" id="nome" name="nome" placeholder="Digite ou selecione" required>
-    <datalist id="nomes">
-      <option value="Pedro">
-      <option value="Maria">
-      <option value="João">
-    </datalist>
+  <div class="container" id="formulario">
+    <h2>DERSO 1º BPM</h2>
+    <p class="subtitle" id="subtitle">Formulário de Solicitação de Folga</p>
 
-    <label for="matricula">Matrícula: <span title="Use apenas números; será completada automaticamente.">🛈</span></label>
-    <input type="text" id="matricula" name="matricula" maxlength="9" required>
-    <button type="button" id="copiar" class="copy-btn">Copiar matrícula</button>
-
-    <label for="data">Data da solicitação:</label>
-    <input type="date" id="data" name="data" required>
-
-    <fieldset class="form-group">
-      <legend>Folga <span class="required-star">*</span>:</legend>
-      <div class="radio-group">
-        <label><input type="radio" name="folga" value="Antes"> Antes</label>
-        <label><input type="radio" name="folga" value="Depois"> Depois</label>
+    <form id="dersoForm" style="display: none;">
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+        <datalist id="emailProviders"></datalist>
       </div>
-    </fieldset>
 
-    <button type="submit" class="button" id="submitBtn">Enviar Solicitação</button>
+      <div class="form-group">
+        <label for="matricula">Matrícula:</label>
+        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+        <div id="matriculaError" class="error" role="alert"></div>
+      </div>
 
-    <progress id="progressoEnvio" value="0" max="100"></progress>
+      <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" readonly required>
+      </div>
+
+      <fieldset>
+        <legend>Tipo de Folga:</legend>
+        <div class="radio-group">
+          <label><input type="radio" name="folga" value="24H">24H</label>
+          <label><input type="radio" name="folga" value="48H">48H</label>
+          <label><input type="radio" name="folga" value="72H">72H</label>
+          <label><input type="radio" name="folga" value="96H">96H</label>
+          <label><input type="radio" name="folga" value="FOLGA LE">FOLGA LE</label>
+          <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
+          <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
+          <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>
+        </div>
+        <div id="duplicateError" class="error" role="alert"></div>
+      </fieldset>
+
+      <div class="form-group">
+        <label for="data">Data:</label>
+        <input type="date" id="data" name="data" required>
+      </div>
+
+      <button type="submit" class="button">Enviar Solicitação</button>
+    </form>
+
     <div id="statusMessage" class="info-message" role="status" aria-live="polite"></div>
-  </form>
+  </div>
 
   <script>
-    const form = document.getElementById("dersoForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const progressoEnvio = document.getElementById("progressoEnvio");
-    const statusMessage = document.getElementById("statusMessage");
-    const copiarBtn = document.getElementById("copiar");
-    const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvXdbm_hZW8KUfg-1ifd754dkebUiOc9sf0xoQDF2NCswP9CaUG0vYjiF1wFxep20lUA/exec";
+    const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+    window.employeeList = {};
 
-    function showMessage(msg, type="success") {
-      statusMessage.textContent = msg;
-      statusMessage.className = `info-message ${type}`;
-      statusMessage.style.display = "block";
-      setTimeout(() => statusMessage.style.display = "none", 5000);
+    const progressBar = document.getElementById("progressBar");
+
+    function animateProgress(percent) {
+      progressBar.style.width = percent + "%";
+    }
+
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) return datalist.innerHTML = "";
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(p => p.startsWith(domainPart));
+      datalist.innerHTML = "";
+      filtered.forEach(p => {
+        const option = document.createElement("option");
+        option.value = value.slice(0, atIndex + 1) + p;
+        datalist.appendChild(option);
+      });
     }
 
     function standardizeMatricula(m) {
@@ -209,50 +281,123 @@
       return num.startsWith("1000") ? num : "1000" + num;
     }
 
-    copiarBtn.addEventListener("click", async () => {
-      const matricula = document.getElementById("matricula").value;
-      if (!matricula) return showMessage("Nada para copiar!", "error");
-      await navigator.clipboard.writeText(matricula);
-      showMessage("Matrícula copiada!", "success");
-    });
+    function loadEmployeeList() {
+      animateProgress(30);
+      fetch(SCRIPT_URL + "?action=lista")
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) throw new Error("Erro ao carregar lista");
+          window.employeeList = data;
+          animateProgress(60);
+        })
+        .catch(() => document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.");
+    }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      progressoEnvio.value = 0;
-      submitBtn.classList.add("loading");
+    function checkMatricula() {
+      const matriculaInput = document.getElementById("matricula");
+      const nomeInput = document.getElementById("nome");
+      const errorMsg = document.getElementById("matriculaError");
+      const standardized = standardizeMatricula(matriculaInput.value);
+      matriculaInput.value = standardized;
 
-      const dados = {
-        nome: document.getElementById("nome").value.trim(),
-        matricula: standardizeMatricula(document.getElementById("matricula").value),
-        data: document.getElementById("data").value,
-        folga: form.folga.value
-      };
-
-      progressoEnvio.value = 30;
-
-      try {
-        const response = await fetch("https://script.google.com/macros/s/YOUR_URL_HERE/exec", {
-          method: "POST",
-          body: JSON.stringify(dados),
-          headers: { "Content-Type": "application/json" }
-        });
-
-        progressoEnvio.value = 70;
-        const result = await response.json();
-
-        if (response.ok) {
-          progressoEnvio.value = 100;
-          beep.play();
-          showMessage("Solicitação enviada com sucesso!");
-          form.reset();
-        } else {
-          showMessage(result.error || "Erro ao enviar.", "error");
-        }
-      } catch {
-        showMessage("Erro de conexão.", "error");
-      } finally {
-        submitBtn.classList.remove("loading");
+      if (window.employeeList[standardized]) {
+        nomeInput.value = window.employeeList[standardized];
+        errorMsg.textContent = "";
+      } else {
+        nomeInput.value = "";
+        errorMsg.textContent = "Matrícula não encontrada.";
       }
+    }
+
+    function formatDateToBR(date) {
+      if (!date) return "";
+      const [y, m, d] = date.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function showMessage(msg, type = "success") {
+      const div = document.getElementById("statusMessage");
+      div.className = `info-message ${type}`;
+      div.textContent = msg;
+      div.style.display = "block";
+      setTimeout(() => div.style.display = "none", 5000);
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const formData = new FormData(form);
+      const date = document.getElementById("data").value;
+      formData.set("data", formatDateToBR(date));
+
+      const folgaValue = document.querySelector('input[name="folga"]:checked');
+      if (!folgaValue) {
+        document.getElementById("duplicateError").textContent = "Selecione uma opção de folga.";
+        return;
+      }
+      formData.set("folga", folgaValue.value);
+
+      const nomeInput = document.getElementById("nome");
+      if (!nomeInput.value.trim()) {
+        document.getElementById("matriculaError").textContent = "Matrícula inválida.";
+        nomeInput.focus();
+        return;
+      }
+
+      const submitBtn = document.querySelector(".button");
+      submitBtn.disabled = true;
+      submitBtn.classList.add("loading");
+      animateProgress(80);
+
+      fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(formData) })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            showMessage("✅ Solicitação enviada com sucesso!", "success");
+            form.reset();
+          } else {
+            showMessage("⚠️ " + (data.error || "Erro ao enviar solicitação."), "error");
+          }
+        })
+        .catch(() => showMessage("⚠️ Falha na conexão.", "error"))
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("loading");
+          animateProgress(100);
+          setTimeout(() => animateProgress(0), 1500);
+        });
+    }
+
+    function initializeForm() {
+      animateProgress(10);
+      fetch(SCRIPT_URL + '?action=datas')
+        .then(r => r.json())
+        .then(data => {
+          const form = document.getElementById("dersoForm");
+          const status = document.getElementById("statusMessage");
+          const agora = new Date();
+          const abertura = new Date(data.abertura);
+          const fechamento = new Date(data.fechamento);
+
+          if (agora < abertura || agora > fechamento) {
+            status.innerHTML = agora < abertura
+              ? `⏳ O período de solicitações abrirá em <b>${abertura.toLocaleString("pt-BR")}</b>.`
+              : `⛔ O período encerrou em <b>${fechamento.toLocaleString("pt-BR")}</b>.`;
+            status.style.display = "block";
+          } else {
+            form.style.display = "block";
+          }
+          animateProgress(40);
+        })
+        .catch(() => showMessage("Erro ao carregar as datas.", "error"));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadEmployeeList();
+      initializeForm();
+      document.getElementById("matricula").addEventListener("blur", checkMatricula);
+      document.getElementById("email").addEventListener("input", updateEmailDatalist);
+      document.getElementById("dersoForm").addEventListener("submit", submitForm);
     });
   </script>
 </body>
