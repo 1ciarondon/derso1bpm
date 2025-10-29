@@ -2,421 +2,165 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Solicitação de Folga - DERSO</title>
- <style>
-    /* Estilo para todo o corpo da página */
+
+  <style>
+    :root {
+      --azul-principal: #007bff;
+      --azul-escuro: #004d99;
+      --erro: #dc3545;
+      --sucesso: #28a745;
+      --cinza-claro: #f7f7f7;
+      --cinza-texto: #5a5a5a;
+    }
+
     body {
-        background-color: #ffffff; /* Fundo branco para um visual mais limpo e nítido */
-        font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
+      background-color: #ffffff;
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    /* Contêiner principal do formulário */
     .container {
-        width: 95%;
-        max-width: 500px;
-        background-color: #f7f7f7; /* Fundo do formulário cinza claro para destacá-lo do fundo branco da página */
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra mais destacada */
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
+      width: 95%;
+      max-width: 500px;
+      background-color: var(--cinza-claro);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Títulos e subtítulos */
     h2, .subtitle {
-        text-align: center;
-        margin-bottom: 5px;
-        line-height: 1.2;
+      text-align: center;
+      margin-bottom: 5px;
+      line-height: 1.2;
     }
 
     h2 {
-        color: #004d99; /* Azul escuro para o título, para um toque profissional */
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 5px;
+      color: var(--azul-escuro);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
     }
 
     .subtitle {
-        color: #5a5a5a;
-        font-size: 15px;
-        margin-bottom: 25px;
+      color: var(--cinza-texto);
+      font-size: 15px;
+      margin-bottom: 25px;
     }
 
-    /* Grupos de campos do formulário */
-    .form-group {
-        margin-bottom: 20px;
-        width: 100%;
+    .form-group, fieldset {
+      margin-bottom: 20px;
+      width: 100%;
+      border: none;
+      padding: 0;
     }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: #4a4a4a;
-        font-weight: 500;
-        font-size: 14px;
+    label, legend {
+      display: block;
+      margin-bottom: 8px;
+      color: #4a4a4a;
+      font-weight: 500;
+      font-size: 14px;
     }
 
-    /* Inputs e Selects */
     .form-group input:not([type="radio"]),
     .form-group select {
-        width: 100%;
-        padding: 12px 15px;
-        font-size: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-sizing: border-box;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .form-group input:not([type="radio"]):focus,
     .form-group select:focus {
-        border-color: #007bff;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+      border-color: var(--azul-principal);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
     }
-    
-    /* Estilo para o campo Nome (readonly) */
+
     input[readonly] {
-        background-color: #e9ecef;
-        cursor: not-allowed;
+      background-color: #e9ecef;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease;
     }
 
-    /* Estilo para a matrí­cula com placeholder */
+    input[readonly]:hover {
+      background-color: #dee2e6;
+    }
+
     input[id="matricula"]::placeholder {
-        color: #aaa;
+      color: #aaa;
     }
 
-    /* Estilo para os botões de rádio */
     .radio-group {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 10px;
     }
 
     .radio-group label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        user-select: none;
-        color: #5a5a5a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--cinza-texto);
     }
 
-    /* Estilo do botão de Enviar */
     .button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        padding: 14px 20px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
+      background-color: var(--azul-principal);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .button:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
+      background-color: #0056b3;
+      transform: translateY(-2px);
     }
 
     .button:active {
-        transform: translateY(0);
+      transform: translateY(0);
     }
 
-    /* Estilos para mensagens de erro e destaque */
+    .button.loading {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
     .error {
-        color: #dc3545;
-        margin-top: 5px;
-        font-size: 12px;
-        font-weight: 500;
+      color: var(--erro);
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .required-star {
-        color: #dc3545;
-        margin-left: 2px;
+      color: var(--erro);
+      margin-left: 2px;
     }
 
     .destaque-encerrou {
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    .destaque-iniciara {
-        color: #28a745;
-        font-weight: bold;
-    }
-
-    /* Ajustes para telas pequenas */
-    @media (max-width: 576px) {
-        .container {
-            padding: 20px;
-        }
-        h2 {
-            font-size: 20px;
-        }
-        .subtitle {
-            font-size: 13px;
-        }
-        .form-group input:not([type="radio"]),
-        .form-group select {
-            font-size: 14px;
-        }
-        .button {
-            font-size: 14px;
-            padding: 12px 15px;
-        }
-        .radio-group {
-            flex-direction: column;
-            gap: 10px;
-        }
-    }
-</style>
-</head>
-
-<body>
-  <div class="container" id="formulario">
-    <h2>DERSO 1º BPM</h2>
-    <p class="subtitle" id="subtitle">Formulário de DERSO - 1º BPM</p>
-    <form id="dersoForm" style="display: none;">
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
-        <datalist id="emailProviders"></datalist>
-      </div>
-
-      <div class="form-group">
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-        <div id="matriculaError" class="error"></div>
-      </div>
-
-      <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" readonly required>
-      </div>
-
-      <div class="form-group">
-        <label>Folga<span class="required-star">*</span>:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="folga" value="24H">24H</label>
-          <label><input type="radio" name="folga" value="48H">48H</label>
-          <label><input type="radio" name="folga" value="72H">72H</label>
-          <label><input type="radio" name="folga" value="96H">96H</label>
-          <label><input type="radio" name="folga" value="FOLGA LE">FOLGA LE</label>
-          <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
-          <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
-          <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>       
-        </div>
-        <div id="duplicateError" class="error"></div>
-      </div>
-
-      <div class="form-group">
-        <label for="data">Data:</label>
-        <input type="date" id="data" name="data" required>
-      </div>
-
-      <button type="submit" class="button">Enviar Solicitação</button>
-    </form>
-    <div id="statusMessage" class="info-message">
-    </div>
-  </div>
-
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvXdbm_hZW8KUfg-1ifd754dkebUiOc9sf0xoQDF2NCswP9CaUG0vYjiF1wFxep20lUA/exec";
-const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
-window.employeeList = {};
-
-function updateEmailDatalist() {
-    const emailInput = document.getElementById("email");
-    const datalist = document.getElementById("emailProviders");
-    const value = emailInput.value;
-    const atIndex = value.indexOf("@");
-    if (atIndex === -1) {
-        datalist.innerHTML = "";
-        return;
-    }
-    const domainPart = value.slice(atIndex + 1).toLowerCase();
-    const filtered = emailProviders.filter(provider => provider.startsWith(domainPart));
-    datalist.innerHTML = "";
-    filtered.forEach(provider => {
-        const option = document.createElement("option");
-        option.value = value.slice(0, atIndex + 1) + provider;
-        datalist.appendChild(option);
-    });
-}
-
-function standardizeMatricula(matricula) {
-    let num = matricula.replace(/\D/g, '');
-    return num.startsWith("1000") ? num : "1000" + num;
-}
-
-function loadEmployeeList() {
-    fetch(SCRIPT_URL + "?action=lista")
-        .then(response => {
-            if (!response.ok) throw new Error('Erro na rede ao buscar a lista de funcionários.');
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                console.error("Erro do script ao carregar lista:", data.error);
-                document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-                return;
-            }
-            window.employeeList = data;
-        })
-        .catch(error => {
-            console.error("Erro fatal ao carregar a lista:", error);
-            document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.";
-            window.employeeList = {};
-        });
-}
-
-function checkMatricula() {
-    const matriculaInput = document.getElementById("matricula");
-    const nomeInput = document.getElementById("nome");
-    const errorMsg = document.getElementById("matriculaError");
-    const standardized = standardizeMatricula(matriculaInput.value);
-    matriculaInput.value = standardized;
-
-    if (window.employeeList[standardized]) {
-        nomeInput.value = window.employeeList[standardized];
-        errorMsg.textContent = "";
-    } else {
-        nomeInput.value = "";
-        errorMsg.textContent = "Matrícula não encontrada!";
-    }
-}
-
-function setDateLimits() {
-    const dateInput = document.getElementById("data");
-    if (!dateInput) return;
-    const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-    dateInput.min = nextMonth.toISOString().split("T")[0];
-    dateInput.max = lastDay.toISOString().split("T")[0];
-}
-
-function formatDateToBR(dateString) {
-    if (!dateString) return "";
-    const [yyyy, mm, dd] = dateString.split("-");
-    return `${dd}/${mm}/${yyyy}`;
-}
-
-function submitForm(event) {
-    event.preventDefault();
-    const form = document.getElementById("dersoForm");
-    const formData = new FormData(form);
-    const dataValue = document.getElementById("data").value;
-    formData.set("data", formatDateToBR(dataValue));
-
-    const folgaValue = document.querySelector('input[name="folga"]:checked');
-    if (!folgaValue) {
-        document.getElementById("duplicateError").textContent = "Por favor, selecione uma opção de folga.";
-        return;
-    }
-    formData.set("folga", folgaValue.value);
-    document.getElementById("duplicateError").textContent = "";
-
-    const nomeInput = document.getElementById("nome");
-    if (nomeInput.value.trim() === "") {
-        document.getElementById("matriculaError").textContent = "Matrícula inválida. Por favor, corrija.";
-        document.getElementById("matricula").focus();
-        return;
-    }
-
-    const submitBtn = document.querySelector(".button");
-    submitBtn.disabled = true;
-
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        body: new URLSearchParams(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Solicitação enviada com sucesso!");
-            form.reset();
-            document.getElementById("email").focus();
-        } else {
-            document.getElementById("duplicateError").textContent = data.error;
-        }
-    })
-    .catch(error => {
-        console.error("Erro ao enviar:", error);
-        alert("Erro ao enviar solicitação! Verifique a console para detalhes.");
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-    });
-}
-
-function initializeForm() {
-    const formularioDiv = document.getElementById("formulario");
-    const statusMessageDiv = document.getElementById("statusMessage");
-    const formDiv = document.getElementById("dersoForm");
-
-    fetch(SCRIPT_URL + '?action=datas')
-        .then(response => {
-            if (!response.ok) throw new Error('Erro na rede ao buscar as datas.');
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                console.error("Erro do script ao carregar datas:", data.error);
-                statusMessageDiv.innerHTML = `<h3>Ocorreu um erro ao carregar as datas: ${data.error}. Verifique o log do Apps Script.</h3>`;
-                return;
-            }
-
-            const abertura = new Date(data.abertura);
-            const encerramento = new Date(data.fechamento);
-            const agora = new Date();
-
-            if (agora < abertura || agora > encerramento) {
-                const msg = agora < abertura ?
-                    `<h3>O período de solicitações será aberto em <span class="destaque-iniciara">${abertura.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>` :
-                    `<h3>O período de solicitações foi encerrado em <span class="destaque-encerrou">${encerramento.toLocaleString("pt-BR", { timeZone: "America/Porto_Velho" })}</span>.</h3>`;
-                statusMessageDiv.innerHTML = `<div class="info-message">${msg}</div>`;
-                formDiv.style.display = "none";
-            } else {
-                formDiv.style.display = "block";
-                statusMessageDiv.style.display = "none";
-            }
-        })
-        .catch(error => {
-            console.error('Erro fatal ao carregar as datas:', error);
-            statusMessageDiv.innerHTML = '<h3>Ocorreu um erro ao carregar as datas. Por favor, tente novamente mais tarde e verifique a console do navegador.</h3>';
-        });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadEmployeeList();
-    setDateLimits();
-    initializeForm();
-
-    const matriculaField = document.getElementById("matricula");
-    const emailField = document.getElementById("email");
-    const form = document.getElementById("dersoForm");
-
-    if (matriculaField) matriculaField.addEventListener("blur", checkMatricula);
-    if (emailField) emailField.addEventListener("input", updateEmailDatalist);
-    if (form) form.addEventListener("submit", submitForm);
-}); 
-</script>
-</body>
-</html>
