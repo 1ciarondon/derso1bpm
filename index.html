@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solicitação de Folga - DERSO</title>
+<title>Solicitação de Folga - DERSO 1º BPM</title>
 
 <style>
   :root {
@@ -84,16 +84,21 @@
 
   h2 {
     color: var(--azul-institucional);
-    font-size: 20px;
+    font-size: 22px;
     text-align: center;
-    margin-top: 0;
-    font-weight: 600;
+    margin: 0;
+    font-weight: 700;
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  p.subtitle {
+    text-align: center;
+    color: var(--texto);
+    margin-top: 5px;
+    font-size: 15px;
+  }
+
+  .form-group, fieldset {
+    margin-top: 15px;
   }
 
   label {
@@ -116,36 +121,53 @@
     box-shadow: 0 0 0 2px rgba(30,90,168,0.2);
   }
 
+  fieldset {
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  legend {
+    font-weight: 600;
+    color: var(--azul-institucional);
+  }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+  }
+
   button {
     background: var(--azul-institucional);
     color: white;
     font-weight: 600;
     cursor: pointer;
+    margin-top: 15px;
   }
 
   button:hover {
     background: var(--azul-secundario);
   }
 
-  .mensagem {
+  .error {
+    color: var(--erro);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .info-message {
     display: none;
     text-align: center;
-    font-weight: 500;
     padding: 10px;
     border-radius: 6px;
+    margin-top: 15px;
+    font-weight: 500;
   }
 
-  .sucesso {
-    display: block;
-    background: #d4edda;
-    color: var(--sucesso);
-  }
-
-  .erro {
-    display: block;
-    background: #f8d7da;
-    color: var(--erro);
-  }
+  .info-message.success { background: #d4edda; color: var(--sucesso); }
+  .info-message.error { background: #f8d7da; color: var(--erro); }
 
   footer {
     margin-top: auto;
@@ -156,7 +178,6 @@
     padding: 12px;
     font-size: 14px;
   }
-
 </style>
 </head>
 <body>
@@ -166,71 +187,191 @@
     <img src="https://rondonia.ro.gov.br/wp-content/uploads/2024/09/Brasao-PMRO-370x523.png" alt="Brasão PMRO">
     <img src="https://museu.pm.ro.gov.br/wp-content/uploads/2024/05/1-bpm-3.png" alt="Logo 1º BPM">
   </div>
-  <h1>Solicitação de Folga - DERSO</h1>
+  <h1>DERSO - 1º BPM</h1>
 </header>
 
-<div class="container">
-  <h2>Formulário de Solicitação</h2>
-  
-  <form id="formSolicitacao" onsubmit="enviarFormulario(event)">
-    <label for="nome">Nome completo:</label>
-    <input type="text" id="nome" name="nome" required>
+<div class="container" id="formulario">
+  <h2>DERSO 1º BPM</h2>
+  <p class="subtitle" id="subtitle">Formulário de Solicitação de Folga</p>
 
-    <label for="matricula">Matrícula:</label>
-    <input type="text" id="matricula" name="matricula" required>
+  <form id="dersoForm" style="display: none;">
+    <div class="form-group">
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+      <datalist id="emailProviders"></datalist>
+    </div>
 
-    <label for="data">Mês da solicitação:</label>
-    <input type="month" id="data" name="data" required>
+    <div class="form-group">
+      <label for="matricula">Matrícula:</label>
+      <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
+      <div id="matriculaError" class="error" role="alert"></div>
+    </div>
 
-    <label for="motivo">Motivo:</label>
-    <textarea id="motivo" name="motivo" rows="3" required></textarea>
+    <div class="form-group">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" readonly required>
+    </div>
 
-    <button type="submit">Enviar Solicitação</button>
+    <fieldset>
+      <legend>Tipo de Folga:</legend>
+      <div class="radio-group">
+        <label><input type="radio" name="folga" value="24H">24H</label>
+        <label><input type="radio" name="folga" value="48H">48H</label>
+        <label><input type="radio" name="folga" value="72H">72H</label>
+        <label><input type="radio" name="folga" value="96H">96H</label>
+        <label><input type="radio" name="folga" value="FOLGA LE">FOLGA LE</label>
+        <label><input type="radio" name="folga" value="1ª Folga">1ª FOLGA</label>
+        <label><input type="radio" name="folga" value="2ª Folga">2ª FOLGA</label>
+        <label><input type="radio" name="folga" value="Expediente">EXPEDIENTE</label>
+      </div>
+      <div id="duplicateError" class="error" role="alert"></div>
+    </fieldset>
+
+    <div class="form-group">
+      <label for="data">Data:</label>
+      <input type="date" id="data" name="data" required>
+    </div>
+
+    <button type="submit" class="button">Enviar Solicitação</button>
   </form>
 
-  <div id="mensagem" class="mensagem"></div>
+  <div id="statusMessage" class="info-message" role="status" aria-live="polite"></div>
 </div>
 
 <footer id="rodape"></footer>
 
 <script>
-  // Gera automaticamente o mês seguinte no campo de data
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvXdbm_hZW8KUfg-1ifd754dkebUiOc9sf0xoQDF2NCswP9CaUG0vYjiF1wFxep20lUA/exec";
+  const emailProviders = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "terra.com.br", "bol.com.br"];
+  window.employeeList = {};
+
+  // === DATA PRÓXIMO MÊS ===
   const dataInput = document.getElementById("data");
-  const agora = new Date();
-  let mes = agora.getMonth() + 2;
-  let ano = agora.getFullYear();
+  const hoje = new Date();
+  let mes = hoje.getMonth() + 2;
+  let ano = hoje.getFullYear();
+  if (mes > 12) { mes = 1; ano++; }
+  dataInput.value = `${ano}-${String(mes).padStart(2, "0")}-01`;
 
-  if (mes > 12) {
-    mes = 1;
-    ano++;
-  }
-
-  dataInput.value = `${ano}-${String(mes).padStart(2, '0')}`;
-
-  // Rodapé automático
+  // === RODAPÉ ===
   const rodape = document.getElementById("rodape");
-  const dataAtual = new Date();
-  const mesAtual = dataAtual.toLocaleString("pt-BR", { month: "long" });
-  const anoAtual = dataAtual.getFullYear();
+  const mesAtual = hoje.toLocaleString("pt-BR", { month: "long" });
+  const anoAtual = hoje.getFullYear();
   rodape.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto — ${mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1)} / ${anoAtual}`;
 
-  // Função de envio
-  function enviarFormulario(event) {
-    event.preventDefault();
-    const msg = document.getElementById("mensagem");
-
-    msg.textContent = "⏳ Enviando solicitação...";
-    msg.className = "mensagem";
-    msg.style.display = "block";
-
-    setTimeout(() => {
-      msg.textContent = "✅ Solicitação enviada com sucesso!";
-      msg.className = "mensagem sucesso";
-      document.getElementById("formSolicitacao").reset();
-      dataInput.value = `${ano}-${String(mes).padStart(2, '0')}`;
-    }, 1500);
+  // === RESTANTE DO SCRIPT ORIGINAL ===
+  function animateProgress(percent) { const p = document.getElementById("progressBar"); if (p) p.style.width = percent + "%"; }
+  function updateEmailDatalist() {
+    const emailInput = document.getElementById("email");
+    const datalist = document.getElementById("emailProviders");
+    const value = emailInput.value;
+    const atIndex = value.indexOf("@");
+    if (atIndex === -1) return datalist.innerHTML = "";
+    const domainPart = value.slice(atIndex + 1).toLowerCase();
+    const filtered = emailProviders.filter(p => p.startsWith(domainPart));
+    datalist.innerHTML = "";
+    filtered.forEach(p => {
+      const option = document.createElement("option");
+      option.value = value.slice(0, atIndex + 1) + p;
+      datalist.appendChild(option);
+    });
   }
-</script>
 
+  function standardizeMatricula(m) {
+    let num = m.replace(/[^\d]/g, '').slice(0, 9);
+    return num.startsWith("1000") ? num : "1000" + num;
+  }
+
+  function loadEmployeeList() {
+    fetch(SCRIPT_URL + "?action=lista")
+      .then(r => r.json())
+      .then(data => { if (!data.error) window.employeeList = data; })
+      .catch(() => document.getElementById("matriculaError").textContent = "Erro ao carregar lista de funcionários.");
+  }
+
+  function checkMatricula() {
+    const mInput = document.getElementById("matricula");
+    const nInput = document.getElementById("nome");
+    const err = document.getElementById("matriculaError");
+    const standardized = standardizeMatricula(mInput.value);
+    mInput.value = standardized;
+    if (window.employeeList[standardized]) {
+      nInput.value = window.employeeList[standardized];
+      err.textContent = "";
+    } else {
+      nInput.value = "";
+      err.textContent = "Matrícula não encontrada.";
+    }
+  }
+
+  function formatDateToBR(date) {
+    if (!date) return "";
+    const [y, m, d] = date.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function showMessage(msg, type = "success") {
+    const div = document.getElementById("statusMessage");
+    div.className = `info-message ${type}`;
+    div.textContent = msg;
+    div.style.display = "block";
+    setTimeout(() => div.style.display = "none", 5000);
+  }
+
+  function submitForm(event) {
+    event.preventDefault();
+    const form = document.getElementById("dersoForm");
+    const formData = new FormData(form);
+    const date = document.getElementById("data").value;
+    formData.set("data", formatDateToBR(date));
+    const folgaValue = document.querySelector('input[name="folga"]:checked');
+    if (!folgaValue) return document.getElementById("duplicateError").textContent = "Selecione uma opção de folga.";
+    formData.set("folga", folgaValue.value);
+    const nomeInput = document.getElementById("nome");
+    if (!nomeInput.value.trim()) return document.getElementById("matriculaError").textContent = "Matrícula inválida.";
+    const btn = document.querySelector(".button");
+    btn.disabled = true;
+    fetch(SCRIPT_URL, { method: "POST", body: new URLSearchParams(formData) })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          showMessage("✅ Solicitação enviada com sucesso!", "success");
+          form.reset();
+          dataInput.value = `${ano}-${String(mes).padStart(2, "0")}-01`;
+        } else showMessage("⚠️ " + (data.error || "Erro ao enviar solicitação."), "error");
+      })
+      .catch(() => showMessage("⚠️ Falha na conexão.", "error"))
+      .finally(() => btn.disabled = false);
+  }
+
+  function initializeForm() {
+    fetch(SCRIPT_URL + '?action=datas')
+      .then(r => r.json())
+      .then(data => {
+        const form = document.getElementById("dersoForm");
+        const status = document.getElementById("statusMessage");
+        const agora = new Date();
+        const abertura = new Date(data.abertura);
+        const fechamento = new Date(data.fechamento);
+        if (agora < abertura || agora > fechamento) {
+          status.innerHTML = agora < abertura
+            ? `⏳ O período abrirá em <b>${abertura.toLocaleString("pt-BR")}</b>.`
+            : `⛔ O período encerrou em <b>${fechamento.toLocaleString("pt-BR")}</b>.`;
+          status.style.display = "block";
+        } else {
+          form.style.display = "block";
+        }
+      })
+      .catch(() => showMessage("Erro ao carregar as datas.", "error"));
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadEmployeeList();
+    initializeForm();
+    document.getElementById("matricula").addEventListener("blur", checkMatricula);
+    document.getElementById("email").addEventListener("input", updateEmailDatalist);
+    document.getElementById("dersoForm").addEventListener("submit", submitForm);
+  });
+</script>
 </body>
 </html>
