@@ -230,27 +230,31 @@
       margin-left: 2px;
     }
 
-    .info-message {
+   /* NOVO BLOCO NO SEU CSS: */
+.info-message {
       text-align: center;
       padding: 10px;
       border-radius: 8px;
       font-size: 14px;
+      
+      /* Oculta por padrão */
       display: none;
-      /* Sugestão de Design 3: Transições de Estado */
-      opacity: 0; 
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0; 
+      transition: opacity 0.3s ease;
     }
-    
-    .info-message.show {
-        opacity: 1;
-    }
+    
+    .info-message.show {
+        opacity: 1;
+    }
 
     .info-message.success {
+      /* Mantém cores específicas */
       background-color: #d4edda;
       color: #155724;
     }
 
     .info-message.error {
+      /* Mantém cores específicas */
       background-color: #f8d7da;
       color: #721c24;
     }
