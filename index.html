@@ -330,22 +330,14 @@
       else { n.value=""; e.textContent="Matrícula não encontrada!"; }
     }
 
-   function setDateLimits() {
-      const dateInput = document.getElementById("data");
-      // Define o ano e o mês fixos: Janeiro (mês 0) de 2026
-      const fixedYear = 2026;
-      const fixedMonth = 0; // Janeiro é o mês 0 em JavaScript (0-11)
-
-      // Primeiro dia de Janeiro de 2026
-      let firstDay = new Date(fixedYear, fixedMonth, 1);
-      // Último dia de Janeiro de 2026 (dia 0 do mês seguinte, que é Fevereiro)
-      let lastDay = new Date(fixedYear, fixedMonth + 1, 0);
-
-      // Define o limite mínimo para o primeiro dia do mês fixo (01/01/2026)
-      dateInput.min = firstDay.toISOString().split("T")[0];
-      // Define o limite máximo para o último dia do mês fixo (31/01/2026)
-      dateInput.max = lastDay.toISOString().split("T")[0];
-    }
+    function setDateLimits() {
+      const dateInput = document.getElementById("data");
+      const today = new Date();
+      let nextMonth = new Date(today.getFullYear(), today.getMonth()+1,1);
+      let lastDay = new Date(today.getFullYear(), today.getMonth()+2,0);
+      dateInput.min = nextMonth.toISOString().split("T")[0];
+      dateInput.max = lastDay.toISOString().split("T")[0];
+    }
 
     function formatDateBR(d) {
       if(!d) return "";
@@ -420,3 +412,4 @@
   </script>
 </body>
 </html>
+
