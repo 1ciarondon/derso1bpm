@@ -515,64 +515,91 @@ async function submitForm(e){
       }
     }
 
-  // Função para mostrar mensagens temporárias (sucesso/erro do submit)
-function showMessage(msg, type = "success") {
-  const div = document.getElementById("statusMessage");
-  div.className = "info-message " + type;
-  div.innerHTML = msg; // Usamos innerHTML para suportar negrito/emojis
-  div.style.display = "block";
-  // A mensagem TEMPORÁRIA é oculta após 5 segundos
-  setTimeout(() => { div.style.display = "none"; }, 5000); 
+ // Adicione a função para ocultar a mensagem com transição
+function hideMessage(div) {
+    div.classList.remove("show");
+    // Espera a transição (0.3s) e então oculta totalmente
+    setTimeout(() => { div.style.display = "none"; }, 300);
 }
 
-// NOVO: Função para mostrar a mensagem de PRAZO (deve ser persistente)
+// Função para mostrar mensagens temporárias (sucesso/erro do submit)
+function showMessage(msg, type = "success") {
+    const div = document.getElementById("statusMessage");
+    // Limpa a classe persistente anterior, se houver
+    div.className = "info-message " + type; 
+    div.innerHTML = msg; 
+    div.style.display = "block"; // Exibe o container
+
+    // Força o repaint antes de adicionar a classe 'show' para iniciar a transição CSS
+    void div.offsetWidth; 
+    div.classList.add("show"); // Inicia a transição de opacidade
+
+    // A mensagem TEMPORÁRIA é oculta após 5 segundos
+    setTimeout(() => { hideMessage(div); }, 5000); 
+}
+
+// Função para mostrar a mensagem de PRAZO (deve ser persistente)
 function showPersistentMessage(msg, type = "success") {
-  const div = document.getElementById("statusMessage");
-  div.className = "info-message " + type;
-  div.innerHTML = msg;
-  div.style.display = "block";
-  // A mensagem PERSISTENTE não é oculta.
-}  
+    const div = document.getElementById("statusMessage");
+    div.className = "info-message " + type;
+    div.innerHTML = msg; 
+    div.style.display = "block";
+    void div.offsetWidth; 
+    div.classList.add("show"); // Mostra com transição
+}
     
  function initializeForm(){
-  loadEmployeeList();
-  setDateLimits();
-  const formDiv = document.getElementById("dersoForm");
-  const footer = document.getElementById("footerText"); // Removi statusMessage daqui, pois showPersistentMessage já a referencia
+    loadEmployeeList();
+    setDateLimits();
+    const formDiv = document.getElementById("dersoForm");
+    const footer = document.getElementById("footerText");
 
-  fetch(SCRIPT_URL+"?action=datas")
-  .then(r=>r.json())
-  .then(data=>{
-    const agora = new Date();
-    const abertura = new Date(data.abertura);
-    const fechamento = new Date(data.fechamento);
+    // ESCONDE O FORMULÁRIO ENQUANTO VERIFICA O PRAZO
+    formDiv.style.display = "none"; 
 
-    if(agora < abertura || agora > fechamento){
-      // Período Fechado
-      const msg = agora < abertura
-          ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
-          : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
-      
-      // *** MUDANÇA: Usando a função persistente ***
-      showPersistentMessage(msg, "error");
-      formDiv.style.display = "none"; // Garante que o formulário não aparece
-    } else {
-      // Período Aberto: Calculando e mostrando o tempo restante
-      formDiv.style.display = "block";
-      
-      const diffTime = fechamento.getTime() - agora.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento do formulário em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
+    fetch(SCRIPT_URL+"?action=datas")
+    .then(r=>r.json())
+    .then(data=>{
+        // Se houver erro nas datas, exibe erro persistente e para
+        if(data.error) {
+             showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
+             return;
+        }
+        
+        const agora = new Date();
+        const abertura = new Date(data.abertura);
+        const fechamento = new Date(data.fechamento);
 
-      // *** MUDANÇA: Usando a função persistente ***
-      showPersistentMessage(msg, "success");
-    }
-  });
+        if(agora < abertura || agora > fechamento){
+            // Período Fechado
+            const msg = agora < abertura
+                ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
+                : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
+            
+            showPersistentMessage(msg, "error");
+            formDiv.style.display = "none";
+        } else {
+            // Período Aberto: Mostra o formulário e o tempo restante
+            formDiv.style.display = "block";
+            
+            const diffTime = fechamento.getTime() - agora.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento do formulário em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
 
-  const now = new Date();
-  const mes = now.getMonth()+1; const ano = now.getFullYear();
-  footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
+            showPersistentMessage(msg, "success");
+        }
+    })
+    .catch(error => {
+        // Se a chamada de fetch falhar
+        showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
+    });
+
+    // Texto do Rodapé
+    const now = new Date();
+    const mes = now.getMonth()+1; 
+    const ano = now.getFullYear();
+    footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
 }
     
     document.addEventListener("DOMContentLoaded",()=>{
