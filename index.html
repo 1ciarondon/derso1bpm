@@ -443,27 +443,67 @@
             });
         }
 
-        function checkMatricula() {
-            const m = document.getElementById("matricula");
-            const n = document.getElementById("nome");
-            const e = document.getElementById("matriculaError");
-            const standardized = standardizeMatricula(m.value);
+       function checkMatricula() {
+    const m = document.getElementById("matricula");
+    const n = document.getElementById("nome");
+    const e = document.getElementById("matriculaError");
+    
+    // --- 🎯 CORREÇÃO 1: Trata campo vazio primeiro ---
+    // Se o campo estiver vazio, limpa tudo e não exibe erro.
+    if (!m.value.trim()) {
+        n.value = "";
+        e.textContent = ""; 
+        m.classList.remove("is-valid", "is-invalid");
+        return; // Sai da função
+    }
+    // ------------------------------------------------
 
-            m.classList.remove("is-valid", "is-invalid");
+    const standardized = standardizeMatricula(m.value);
+    
+    // --- 🎯 CORREÇÃO 2: Padroniza APENAS se houver valor ---
+    m.value = standardized;
+    // ------------------------------------------------
 
-            m.value = standardized;
-            if(window.employeeList[standardized]) { 
-                n.value = window.employeeList[standardized]; 
-                e.textContent = ""; 
-                m.classList.add("is-valid"); 
-            }
-            else { 
-                n.value = ""; 
-                e.textContent = "Matrícula não encontrada!"; 
-                m.classList.add("is-invalid"); 
-            }
-        }
+    m.classList.remove("is-valid", "is-invalid");
 
+    if(window.employeeList[standardized]) { 
+        n.value = window.employeeList[standardized]; 
+        e.textContent = ""; 
+        m.classList.add("is-valid"); 
+    }
+    else { 
+        n.value = ""; 
+        // --- A mensagem de erro agora só aparece se houver valor (corrigido no if inicial)
+        e.textContent = "Matrícula não encontrada!"; 
+        m.classList.add("is-invalid"); 
+    }
+}
+
+// --- 🎯 CORREÇÃO 3: Remover chamada imediata do loadEmployeeList ---
+// No loadEmployeeList, vamos remover a chamada final para checkMatricula()
+
+function loadEmployeeList() {
+    setProgress(20);
+    const matriculaInput = document.getElementById("matricula");
+    matriculaInput.disabled = true; 
+    matriculaInput.placeholder = "Carregando lista de funcionários...";
+
+    fetch(SCRIPT_URL+"?action=lista")
+    .then(r => r.json())
+    .then(data => {
+        if(data.error) throw new Error(data.error);
+        window.employeeList = data;
+        setProgress(40);
+        matriculaInput.disabled = false; 
+        matriculaInput.placeholder = "Ex: 12345 ou 100012345";
+        // REMOVER: checkMatricula(); 
+    }).catch(()=>{
+        document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
+        showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
+        initialLoadingDiv.style.display = "none";
+        formDiv.style.display = "none";
+    });
+}
         function setDateLimits() {
             const dateInput = document.getElementById("data");
             const messageDiv = document.getElementById("dateLimitMessage"); 
