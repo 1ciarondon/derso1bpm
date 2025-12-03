@@ -1,401 +1,378 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solicitação de Folga - DERSO</title>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitação de Folga - DERSO</title>
 
-  <style>
-    :root {
-      --azul-principal: #007bff;
-      --azul-escuro: #004d99;
-      --erro: #dc3545;
-      --sucesso: #28a745;
-      --cinza-claro: #f7f7f7;
-      --cinza-texto: #5a5a5a;
-    }
+  <style>
+   :root {
+    --azul-principal: #0056b3; /* Cor principal um pouco mais profunda */
+    --azul-escuro: #004d99;
+      --erro: #dc3545;
+      --sucesso: #28a745;
+      --cinza-claro: #f7f7f7;
+      --cinza-texto: #5a5a5a;
+    }
 
-    body {
-      background-color: #ffffff;
-      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+    body {
+    background-color: #fcfcfc; /* Fundo levemente fora do branco puro */
+    font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* Aplica a nova fonte */
+    color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-    .container {
-      width: 95%;
-      max-width: 500px;
-      background-color: var(--cinza-claro);
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+    .container {
+      width: 95%;
+      max-width: 500px;
+      background-color: var(--cinza-claro);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-    /* Barra de progresso */
-    #progressBarContainer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background-color: #e0e0e0;
-     border-radius: 8px 8px 0 0;
-      overflow: hidden;
-    }
+    /* Barra de progresso */
+    #progressBarContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: #e0e0e0;
+     border-radius: 8px 8px 0 0;
+      overflow: hidden;
+    }
 
-    #progressBar {
-     width: 0%;
-      height: 100%;
-      background-color: var(--azul-principal);
-      transition: width 0.4s ease;
-    }
+    #progressBar {
+     width: 0%;
+      height: 100%;
+      background-color: var(--azul-principal);
+      transition: width 0.4s ease;
+    }
 
+    /* Logos */
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
 
+    .logos img {
+      height: 70px;
+      object-fit: contain;
+    }
 
-    /* Logos */
-    .logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
+    h2, .subtitle {
+      text-align: center;
+      margin-bottom: 5px;
+      line-height: 1.2;
+    }
 
+    h2 {
+      color: var(--azul-escuro);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
 
-    .logos img {
-      height: 70px;
-      object-fit: contain;
-    }
+    .subtitle {
+      color: var(--cinza-texto);
+      font-size: 15px;
+      margin-bottom: 25px;
+    }
 
+    .form-group, fieldset {
+      margin-bottom: 20px;
+      width: 100%;
+      border: none;
+      padding: 0;
+    }
 
+    label, legend {
+      display: block;
+      margin-bottom: 8px;
+      color: #4a4a4a;
+      font-weight: 500;
+      font-size: 14px;
+    }
 
-    h2, .subtitle {
-      text-align: center;
-      margin-bottom: 5px;
-      line-height: 1.2;
-    }
+    .form-group input:not([type="radio"]),
+    .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
+    .form-group input:not([type="radio"]):focus,
+    .form-group select:focus {
+      border-color: var(--azul-principal);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    }
 
+    input[readonly] {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
 
-    h2 {
-      color: var(--azul-escuro);
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
+    input[id="matricula"]::placeholder {
+      color: #aaa;
+    }
 
-
-
-    .subtitle {
-      color: var(--cinza-texto);
-      font-size: 15px;
-      margin-bottom: 25px;
-    }
-
-
-
-    .form-group, fieldset {
-      margin-bottom: 20px;
-      width: 100%;
-      border: none;
-      padding: 0;
-    }
-
-
-
-    label, legend {
-      display: block;
-      margin-bottom: 8px;
-      color: #4a4a4a;
-      font-weight: 500;
-      font-size: 14px;
-    }
-
-
-
-    .form-group input:not([type="radio"]),
-    .form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-
-
-    .form-group input:not([type="radio"]):focus,
-    .form-group select:focus {
-      border-color: var(--azul-principal);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-    }
-
-
-
-    input[readonly] {
-      background-color: #e9ecef;
-      cursor: not-allowed;
-    }
-
-
-
-    input[id="matricula"]::placeholder {
-      color: #aaa;
-    }
-
-
-
-  /* Novo CSS para os botões de alternância (Toggle Buttons) */
+  /* Novo CSS para os botões de alternância (Toggle Buttons) */
 .radio-group-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
-
-
 
 .radio-group-buttons input[type="radio"] {
-  /* Esconde o radio button nativo */
-  display: none;
+  /* Esconde o radio button nativo */
+  display: none;
 }
-
-
 
 .radio-group-buttons label {
-
-  /* Estiliza o label como um botão */
-  display: inline-block;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-  user-select: none;
-  text-transform: uppercase; /* Para manter o estilo original das opções */
+  /* Estiliza o label como um botão */
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  user-select: none;
+  /* text-transform: uppercase; <--- REMOVIDO/COMENTADO */
 }
-
-
 
 .radio-group-buttons input[type="radio"]:checked + label {
-  /* Estilo quando o botão está selecionado */
-  background-color: var(--azul-principal);
-  color: #fff;
-  border-color: var(--azul-principal);
-  font-weight: 600;
-  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+  /* Estilo quando o botão está selecionado */
+  background-color: var(--azul-principal);
+  color: #fff;
+  border-color: var(--azul-principal);
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
 }
-
-
 
 .radio-group-buttons label:hover {
-  /* Estilo ao passar o mouse */
-  background-color: var(--cinza-claro);
-  border-color: var(--azul-principal);
+  /* Estilo ao passar o mouse */
+  background-color: var(--cinza-claro);
+  border-color: var(--azul-principal);
 }
-
-
 
 /* Garante que em telas pequenas as opções continuem organizadas */
 @media (max-width: 576px) {
-  /* Ajuste para que as opções continuem em linha, se houver espaço, ou quebrem */
-  .radio-group-buttons {
-    justify-content: center; /* Centraliza no móvel */
-  }
+  /* Ajuste para que as opções continuem em linha, se houver espaço, ou quebrem */
+  .radio-group-buttons {
+    justify-content: center; /* Centraliza no móvel */
+  }
 
 }
 
-
-
-    /* Feedback visual para campos */
+    /* Feedback visual para campos */
 .form-group input.is-valid {
-  border-color: var(--sucesso) !important;
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2) !important; /* Cor de sucesso */
+  border-color: var(--sucesso) !important;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2) !important; /* Cor de sucesso */
 }
-
-
 
 .form-group input.is-invalid {
-  border-color: var(--erro) !important;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2) !important; /* Cor de erro */
+  border-color: var(--erro) !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2) !important; /* Cor de erro */
 }
 
+    .button {
+      background-color: var(--azul-principal);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
+    .button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
 
-    .button {
-      background-color: var(--azul-principal);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 8px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .button:active {
+      transform: translateY(0);
+    }
 
+    .error {
+      color: var(--erro);
+     margin-top: 5px;
+      font-size: 12px;
+      font-weight: 500;
+    }
 
+    .required-star {
+      color: var(--erro);
+      margin-left: 2px;
+    }
 
-    .button:hover {
-      background-color: #0056b3;
-      transform: translateY(-2px);
-    }
+    .info-message {
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
 
+    .info-message.success {
+     background-color: #d4edda;
+      color: #155724;
+    }
 
+    .info-message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
 
-    .button:active {
-      transform: translateY(0);
-    }
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 12px;
+      color: #5a5a5a;
+    }
 
+    @media (max-width: 576px) {
+      .container { padding: 20px; }
+      h2 { font-size: 20px; }
+      .subtitle { font-size: 13px; }
+      .form-group input:not([type="radio"]), .form-group select { font-size: 14px; }
+      .button { font-size: 14px; padding: 12px 15px; }
+      .radio-group { flex-direction: column; gap: 10px; }
+      .logos img { height: 50px; }
+    }
 
+/* 🚨 Correções de Sintaxe (Removidas do HTML, Adicionadas aqui) */
+.hidden {
+    display: none !important;
+}
 
-    .error {
-      color: var(--erro);
-     margin-top: 5px;
-      font-size: 12px;
-      font-weight: 500;
-    }
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--azul-principal);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-
-    .required-star {
-      color: var(--erro);
-      margin-left: 2px;
-    }
-
-
-
-    .info-message {
-      text-align: center;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      display: none;
-    }
-
-
-
-    .info-message.success {
-     background-color: #d4edda;
-      color: #155724;
-    }
-
-
-
-    .info-message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-
-
-
-    .footer {
-      text-align: center;
-      margin-top: 25px;
-      font-size: 12px;
-      color: #5a5a5a;
-    }
-
-
-
-    @media (max-width: 576px) {
-      .container { padding: 20px; }
-      h2 { font-size: 20px; }
-      .subtitle { font-size: 13px; }
-      .form-group input:not([type="radio"]), .form-group select { font-size: 14px; }
-      .button { font-size: 14px; padding: 12px 15px; }
-      .radio-group { flex-direction: column; gap: 10px; }
-      .logos img { height: 50px; }
-    }
-
-  </style>
+  </style>
 </head>
 <body>
-  <div class="container" id="formulario">
-    <div id="progressBarContainer"><div id="progressBar"></div></div>
-    <div class="logos">
-      <img src="https://rondonia.ro.gov.br/wp-content/uploads/2024/09/Brasao-PMRO-370x523.png" alt="PMRO">
-      <img src="https://museu.pm.ro.gov.br/wp-content/uploads/2024/05/1-bpm-3.png" alt="1º BPM">
-    </div>
+ <div class="container" id="formulario">
+    <div id="progressBarContainer"><div id="progressBar"></div></div>
+    
+    <div id="loadingState" style="text-align: center; padding: 40px 0;">
+      <div class="spinner"></div>
+      <p class="subtitle" id="loadingMessage">Carregando dados de funcionários e verificando prazo...</p>
+    </div>
+    <div class="logos">
+      <img src="https://rondonia.ro.gov.br/wp-content/uploads/2024/09/Brasao-PMRO-370x523.png" alt="PMRO">
+      <img src="https://museu.pm.ro.gov.br/wp-content/uploads/2024/05/1-bpm-3.png" alt="1º BPM">
+    </div>
 
-    <h2>DERSO 1º BPM</h2>
-    <p class="subtitle">Formulário de Solicitação de Folga</p>
+    <h2>DERSO 1º BPM</h2>
+    <p class="subtitle">Formulário de Solicitação de Folga</p>
 
-    <form id="dersoForm" style="display: none;">
-      <div class="form-group">
-       <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
-        <datalist id="emailProviders"></datalist>
-      </div>
+   <form id="dersoForm" class="hidden">
+      <div class="form-group">
+       <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+        <datalist id="emailProviders"></datalist>
+      </div>
 
-     <div class="form-group">
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-        <div id="matriculaError" class="error"></div>
-      </div>
-
-
-     <div class="form-group">
-  <label for="nome">Nome:</label>
-  <input type="text" id="nome" name="nome" readonly required>
+    <div class="form-group">
+    <label for="matricula">Matrícula:</label>
+    <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345" autocomplete="off">
+    <div id="matriculaError" class="error"></div>
 </div>
 
-
+     <div class="form-group">
+  <label for="nome">Nome:</label>
+  <input type="text" id="nome" name="nome" readonly required>
+</div>
 
 <fieldset>
+  <legend>Tipo de Folga<span class="required-star">*</span>:</legend>
+  <div class="radio-group-buttons">
+    <input type="radio" id="folga24H" name="folga" value="24H" required><label for="folga24H">24h</label>
+    <input type="radio" id="folga48H" name="folga" value="48H"><label for="folga48H">48h</label>
+    <input type="radio" id="folga72H" name="folga" value="72H"><label for="folga72H">72h</label>
+    <input type="radio" id="folga96H" name="folga" value="96H"><label for="folga96H">96h</label>
+    <input type="radio" id="folgaLE" name="folga" value="FOLGA LE"><label for="folgaLE">LE</label>
+    <input type="radio" id="folga1" name="folga" value="1ª Folga"><label for="folga1">1ª</label>
+    <input type="radio" id="folga2" name="folga" value="2ª Folga"><label for="folga2">2ª</label>
+    <input type="radio" id="folgaExp" name="folga" value="Expediente"><label for="folgaExp">EXP</label>
+  </div>
 
-  <legend>Tipo de Folga<span class="required-star">*</span>:</legend>
-  <div class="radio-group-buttons">
-    <input type="radio" id="folga24H" name="folga" value="24H" required><label for="folga24H">24H</label>
-    <input type="radio" id="folga48H" name="folga" value="48H"><label for="folga48H">48H</label>
-    <input type="radio" id="folga72H" name="folga" value="72H"><label for="folga72H">72H</label>
-    <input type="radio" id="folga96H" name="folga" value="96H"><label for="folga96H">96H</label>
-    <input type="radio" id="folgaLE" name="folga" value="FOLGA LE"><label for="folgaLE">FOLGA LE</label>
-    <input type="radio" id="folga1" name="folga" value="1ª Folga"><label for="folga1">1ª FOLGA</label>
-    <input type="radio" id="folga2" name="folga" value="2ª Folga"><label for="folga2">2ª FOLGA</label>
-    <input type="radio" id="folgaExp" name="folga" value="Expediente"><label for="folgaExp">EXPEDIENTE</label>
-  </div>
-
-  <div id="duplicateError" class="error"></div>
+  <div id="duplicateError" class="error"></div>
 
 </fieldset>
 
 
-    <div class="form-group">
-  <label for="data">Data:</label>
-  <input type="date" id="data" name="data" required>
-  <div id="dateLimitMessage" class="subtitle" style="margin-top: 5px; margin-bottom: 0; font-size: 12px; text-align: left;"></div>
+    <div class="form-group">
+  <label for="data">Data:</label>
+  <input type="date" id="data" name="data" required>
+  <div id="dateLimitMessage" class="subtitle" style="margin-top: 5px; margin-bottom: 0; font-size: 12px; text-align: left;"></div>
 </div>
 
-      <button type="submit" class="button">Enviar Solicitação</button>
-    </form>
-    <div id="statusMessage" class="info-message"></div>
-    <div class="footer" id="footerText"></div>
-  </div>
+     <button type="submit" class="button">
+    <span aria-hidden="true">➡️</span> Enviar Solicitação
+</button>
+      
+    </form>
+    <div id="statusMessage" class="info-message"></div>
+    <div class="footer" id="footerText"></div>
+  </div>
 
- <script>
+ <script>
+    // 🚀 NOVO: Função utilitária para "atrasar" a execução (debounce)
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe2vseE23YEgIwPxOHiXlv3COUfJYVRsMSTYov0v78zSgDZtOeTCYx1J8GOzlzKhwDFg/exec";
     const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br"];
     window.employeeList = {};
 
     const progressBar = document.getElementById("progressBar");
-    const formDiv = document.getElementById("dersoForm");
+    const formDiv = document.getElementById("dersoForm");
+    const loadingStateDiv = document.getElementById("loadingState");
 
     function setProgress(percent) {
       progressBar.style.width = percent + "%";
@@ -418,7 +395,7 @@
       return num.startsWith("1000") ? num : "1000"+num;
     }
 
-    // Função de Checagem de Duplicidade (Async)
+    // Função de Checagem de Duplicidade (Async)
     async function checkDuplicity(matricula, data, folga) {
         // O SCRIPT_URL precisa estar configurado para aceitar a ação 'check_duplicidade'
         const url = `${SCRIPT_URL}?action=check_duplicidade&matricula=${matricula}&data=${data}&folga=${folga}`;
@@ -436,65 +413,66 @@
     }
 
     function loadEmployeeList() {
-        setProgress(20);
-        const matriculaInput = document.getElementById("matricula");
-        matriculaInput.disabled = true; 
-        matriculaInput.placeholder = "Carregando lista de funcionários...";
+        setProgress(20);
+        const matriculaInput = document.getElementById("matricula");
+        matriculaInput.disabled = true; 
+        matriculaInput.placeholder = "Carregando lista de funcionários...";
 
-        fetch(SCRIPT_URL+"?action=lista")
-        .then(r => r.json())
-        .then(data => {
-            if(data.error) throw new Error(data.error);
-            window.employeeList = data;
-            setProgress(40);
-            matriculaInput.disabled = false; 
-            matriculaInput.placeholder = "Ex: 12345 ou 100012345";
-        }).catch(()=>{
-            document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
-            showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
-            formDiv.style.display = "none";
-        });
-    }
+        fetch(SCRIPT_URL+"?action=lista")
+        .then(r => r.json())
+        .then(data => {
+            if(data.error) throw new Error(data.error);
+            window.employeeList = data;
+            setProgress(40);
+            matriculaInput.disabled = false; 
+            matriculaInput.placeholder = "Ex: 12345 ou 100012345";
+        }).catch(()=>{
+            document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
+            showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
+            formDiv.classList.add("hidden");
+            loadingStateDiv.classList.add("hidden"); // Oculta o loading em caso de falha
+        });
+    }
 
    function checkMatricula() {
-        const m = document.getElementById("matricula");
-        const n = document.getElementById("nome");
-        const e = document.getElementById("matriculaError");
-        const standardized = standardizeMatricula(m.value);
+        const m = document.getElementById("matricula");
+        const n = document.getElementById("nome");
+        const e = document.getElementById("matriculaError");
+        const standardized = standardizeMatricula(m.value);
   
-        m.classList.remove("is-valid", "is-invalid");
+        m.classList.remove("is-valid", "is-invalid");
 
-        m.value = standardized;
-        if(window.employeeList[standardized]) { 
-            n.value = window.employeeList[standardized]; 
-            e.textContent = ""; 
-            m.classList.add("is-valid"); 
-        }
-        else { 
-            n.value = ""; 
-            e.textContent = "Matrícula não encontrada!"; 
-            m.classList.add("is-invalid"); 
-        }
-    }
+        m.value = standardized;
+        if(window.employeeList[standardized]) { 
+            n.value = window.employeeList[standardized]; 
+            e.textContent = ""; 
+            m.classList.add("is-valid"); 
+        }
+        else { 
+            n.value = ""; 
+            e.textContent = "Matrícula não encontrada!"; 
+            m.classList.add("is-invalid"); 
+        }
+    }
 
     function setDateLimits() {
-        const dateInput = document.getElementById("data");
-        const messageDiv = document.getElementById("dateLimitMessage"); 
+        const dateInput = document.getElementById("data");
+        const messageDiv = document.getElementById("dateLimitMessage"); 
 
-        const today = new Date();
-        let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-        let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        const today = new Date();
+        let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
 
-        dateInput.min = nextMonthStart.toISOString().split("T")[0];
-        dateInput.max = nextMonthEnd.toISOString().split("T")[0];
+        dateInput.min = nextMonthStart.toISOString().split("T")[0];
+        dateInput.max = nextMonthEnd.toISOString().split("T")[0];
 
-        const startDay = nextMonthStart.getDate().toString().padStart(2, '0');
-        const startMonth = (nextMonthStart.getMonth() + 1).toString().padStart(2, '0');
-        const endDay = nextMonthEnd.getDate().toString().padStart(2, '0');
-        const endMonth = (nextMonthEnd.getMonth() + 1).toString().padStart(2, '0');
+        const startDay = nextMonthStart.getDate().toString().padStart(2, '0');
+        const startMonth = (nextMonthStart.getMonth() + 1).toString().padStart(2, '0');
+        const endDay = nextMonthEnd.getDate().toString().padStart(2, '0');
+        const endMonth = (nextMonthEnd.getMonth() + 1).toString().padStart(2, '0');
 
-        messageDiv.textContent = `Período de folga permitido: ${startDay}/${startMonth} a ${endDay}/${endMonth}.`;
-    }
+        messageDiv.textContent = `Período de folga permitido: ${startDay}/${startMonth} a ${endDay}/${endMonth}.`;
+    }
 
     function formatDateBR(d) {
       if(!d) return "";
@@ -502,7 +480,7 @@
       return `${day}/${m}/${y}`;
     }
 
-    // Função de Submissão Atualizada com Checagem de Duplicidade (Async)
+    // Função de Submissão Atualizada com Checagem de Duplicidade (Async)
     async function submitForm(e){
       e.preventDefault();
       const form = document.getElementById("dersoForm");
@@ -563,7 +541,7 @@
       } finally {
         btn.disabled = false;
         setProgress(100);
-        setTimeout(()=>setProgress(0), 1500);
+        setTimeout(()=>setProgress(0), 500);
       }
     }
 
@@ -589,14 +567,14 @@ function showPersistentMessage(msg, type = "success") {
  function initializeForm(){
   loadEmployeeList();
   setDateLimits();
-  const footer = document.getElementById("footerText"); 
+  const footer = document.getElementById("footerText"); 
 
   fetch(SCRIPT_URL+"?action=datas")
   .then(r=>r.json())
   .then(data=>{
       if(data.error) {
           showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
-          formDiv.style.display = "none"; 
+          formDiv.style.display = "none"; 
           return;
       }
       
@@ -611,10 +589,10 @@ function showPersistentMessage(msg, type = "success") {
             : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
         
         showPersistentMessage(msg, "error");
-        formDiv.style.display = "none"; 
+        formDiv.style.display = "none"; 
       } else {
         // Período Aberto: Mostra o formulário e o tempo restante
-        formDiv.style.display = "block";
+       formDiv.classList.remove("hidden");
         
         const diffTime = fechamento.getTime() - agora.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -623,12 +601,16 @@ function showPersistentMessage(msg, type = "success") {
 
         showPersistentMessage(msg, "success");
       }
+      // Oculta o loading após o carregamento e verificação do prazo
+      loadingStateDiv.classList.add("hidden"); 
   })
-  .catch(error => {
-    // Falha geral na comunicação com o script de datas
-    showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
-    formDiv.style.display = "none";
-  });
+  .catch(error => {
+    // Falha geral na comunicação com o script de datas
+    showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
+    formDiv.style.display = "none";
+    // Oculta o loading em caso de falha de prazo/conexão
+    loadingStateDiv.classList.add("hidden");
+  });
 
 
   const now = new Date();
@@ -638,6 +620,8 @@ function showPersistentMessage(msg, type = "success") {
     
     document.addEventListener("DOMContentLoaded",()=>{
       initializeForm();
+      // Aplica o debounce para a validação enquanto digita
+      document.getElementById("matricula").addEventListener("input", debounce(checkMatricula, 300));
       document.getElementById("matricula").addEventListener("blur",checkMatricula);
       document.getElementById("email").addEventListener("input",updateEmailDatalist);
       document.getElementById("dersoForm").addEventListener("submit",submitForm);
