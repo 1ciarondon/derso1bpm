@@ -389,223 +389,259 @@
     <div class="footer" id="footerText"></div>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvXdbm_hZW8KUfg-1ifd754dkebUiOc9sf0xoQDF2NCswP9CaUG0vYjiF1wFxep20lUA/exec";
-    const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br"];
-    window.employeeList = {};
+ <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvXdbm_hZW8KUfg-1ifd754dkebUiOc9sf0xoQDF2NCswP9CaUG0vYjiF1wFxep20lUA/exec";
+    const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br"];
+    window.employeeList = {};
 
-    const progressBar = document.getElementById("progressBar");
+    const progressBar = document.getElementById("progressBar");
+    const formDiv = document.getElementById("dersoForm");
 
-    function setProgress(percent) {
-      progressBar.style.width = percent + "%";
+    function setProgress(percent) {
+      progressBar.style.width = percent + "%";
+    }
+
+    function updateEmailDatalist() {
+      const emailInput = document.getElementById("email");
+      const datalist = document.getElementById("emailProviders");
+      const value = emailInput.value;
+      const atIndex = value.indexOf("@");
+      if (atIndex === -1) { datalist.innerHTML = ""; return; }
+      const domainPart = value.slice(atIndex + 1).toLowerCase();
+      const filtered = emailProviders.filter(p => p.startsWith(domainPart));
+      datalist.innerHTML = "";
+      filtered.forEach(p => { const option = document.createElement("option"); option.value = value.slice(0, atIndex+1)+p; datalist.appendChild(option); });
+    }
+
+    function standardizeMatricula(m) {
+      let num = m.replace(/\D/g,'').slice(0,9);
+      return num.startsWith("1000") ? num : "1000"+num;
+    }
+
+    // Função de Checagem de Duplicidade (Async)
+    async function checkDuplicity(matricula, data, folga) {
+        // O SCRIPT_URL precisa estar configurado para aceitar a ação 'check_duplicidade'
+        const url = `${SCRIPT_URL}?action=check_duplicidade&matricula=${matricula}&data=${data}&folga=${folga}`;
+        try {
+          const response = await fetch(url);
+          const dataJson = await response.json();
+          // Verifica se a resposta contém a flag de duplicidade
+          return dataJson.duplicado === true; 
+        } catch (e) {
+          // Em caso de falha na checagem, assume que NÃO É duplicado, mas avisa
+          console.error("Falha ao verificar duplicidade:", e);
+          showMessage("⚠️ Erro ao verificar duplicidade. Tentando enviar...", "error");
+          return false; // Permite o envio para evitar bloqueio indevido
+        }
+    }
+
+    function loadEmployeeList() {
+        setProgress(20);
+        const matriculaInput = document.getElementById("matricula");
+        matriculaInput.disabled = true; 
+        matriculaInput.placeholder = "Carregando lista de funcionários...";
+
+        fetch(SCRIPT_URL+"?action=lista")
+        .then(r => r.json())
+        .then(data => {
+            if(data.error) throw new Error(data.error);
+            window.employeeList = data;
+            setProgress(40);
+            matriculaInput.disabled = false; 
+            matriculaInput.placeholder = "Ex: 12345 ou 100012345";
+        }).catch(()=>{
+            document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
+            showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
+            formDiv.style.display = "none";
+        });
     }
 
+   function checkMatricula() {
+        const m = document.getElementById("matricula");
+        const n = document.getElementById("nome");
+        const e = document.getElementById("matriculaError");
+        const standardized = standardizeMatricula(m.value);
+  
+        m.classList.remove("is-valid", "is-invalid");
 
-
-    function updateEmailDatalist() {
-      const emailInput = document.getElementById("email");
-      const datalist = document.getElementById("emailProviders");
-      const value = emailInput.value;
-      const atIndex = value.indexOf("@");
-      if (atIndex === -1) { datalist.innerHTML = ""; return; }
-      const domainPart = value.slice(atIndex + 1).toLowerCase();
-      const filtered = emailProviders.filter(p => p.startsWith(domainPart));
-      datalist.innerHTML = "";
-      filtered.forEach(p => { const option = document.createElement("option"); option.value = value.slice(0, atIndex+1)+p; datalist.appendChild(option); });
+        m.value = standardized;
+        if(window.employeeList[standardized]) { 
+            n.value = window.employeeList[standardized]; 
+            e.textContent = ""; 
+            m.classList.add("is-valid"); 
+        }
+        else { 
+            n.value = ""; 
+            e.textContent = "Matrícula não encontrada!"; 
+            m.classList.add("is-invalid"); 
+        }
     }
 
+    function setDateLimits() {
+        const dateInput = document.getElementById("data");
+        const messageDiv = document.getElementById("dateLimitMessage"); 
 
+        const today = new Date();
+        let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
 
-    function standardizeMatricula(m) {
-      let num = m.replace(/\D/g,'').slice(0,9);
-      return num.startsWith("1000") ? num : "1000"+num;
-    }
-    function loadEmployeeList() {
-  setProgress(20);
-  const matriculaInput = document.getElementById("matricula");
-  matriculaInput.disabled = true; // Desabilita enquanto carrega
-  matriculaInput.placeholder = "Carregando lista de funcionários...";
+        dateInput.min = nextMonthStart.toISOString().split("T")[0];
+        dateInput.max = nextMonthEnd.toISOString().split("T")[0];
 
+        const startDay = nextMonthStart.getDate().toString().padStart(2, '0');
+        const startMonth = (nextMonthStart.getMonth() + 1).toString().padStart(2, '0');
+        const endDay = nextMonthEnd.getDate().toString().padStart(2, '0');
+        const endMonth = (nextMonthEnd.getMonth() + 1).toString().padStart(2, '0');
 
-  fetch(SCRIPT_URL+"?action=lista")
-  .then(r => r.json())
-  .then(data => {
-    if(data.error) throw new Error(data.error);
-    window.employeeList = data;
-    setProgress(40);
-    // Habilita e restaura o placeholder ao terminar
-    matriculaInput.disabled = false; 
-    matriculaInput.placeholder = "Ex: 12345 ou 100012345";
-  }).catch(()=>{
-    document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários. Tente novamente.";
-  });
-
-}
-
-
-
-   function checkMatricula() {
-  const m = document.getElementById("matricula");
-  const n = document.getElementById("nome");
-  const e = document.getElementById("matriculaError");
-  const standardized = standardizeMatricula(m.value);
- 
-
-  // Limpa classes anteriores
-  m.classList.remove("is-valid", "is-invalid");
-  m.value = standardized;
-  if(window.employeeList[standardized]) { 
-    n.value = window.employeeList[standardized]; 
-    e.textContent = ""; 
-    m.classList.add("is-valid"); // Adiciona sucesso
-  }
-
-  else { 
-    n.value = ""; 
-    e.textContent = "Matrícula não encontrada!"; 
-    m.classList.add("is-invalid"); // Adiciona erro
-  }
-
-}
-
-    function setDateLimits() {
-  const dateInput = document.getElementById("data");
-  const messageDiv = document.getElementById("dateLimitMessage"); // Novo elemento
-
-  const today = new Date();
- let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-
-  dateInput.min = nextMonthStart.toISOString().split("T")[0];
-  dateInput.max = nextMonthEnd.toISOString().split("T")[0];
-
-
-  // Formata as datas para exibição na mensagem
-  const startDay = nextMonthStart.getDate().toString().padStart(2, '0');
-  const startMonth = (nextMonthStart.getMonth() + 1).toString().padStart(2, '0');
-  const endDay = nextMonthEnd.getDate().toString().padStart(2, '0');
-  const endMonth = (nextMonthEnd.getMonth() + 1).toString().padStart(2, '0');
-
-  messageDiv.textContent = `Período de folga permitido: ${startDay}/${startMonth} a ${endDay}/${endMonth}.`;
-}
-
-
-    function formatDateBR(d) {
-     if(!d) return "";
-     const [y,m,day] = d.split("-");
-      return `${day}/${m}/${y}`;
+        messageDiv.textContent = `Período de folga permitido: ${startDay}/${startMonth} a ${endDay}/${endMonth}.`;
     }
 
+    function formatDateBR(d) {
+      if(!d) return "";
+      const [y,m,day] = d.split("-");
+      return `${day}/${m}/${y}`;
+    }
 
-    function submitForm(e){
-      e.preventDefault();
-      const form = document.getElementById("dersoForm");
-      const fd = new FormData(form);
-      const dataValue = document.getElementById("data").value;
-      fd.set("data",formatDateBR(dataValue));
-      const folga = document.querySelector('input[name="folga"]:checked');
-      if(!folga){document.getElementById("duplicateError").textContent="Selecione uma folga."; return;}
-      fd.set("folga",folga.value);
-      document.getElementById("duplicateError").textContent="";
-      if(document.getElementById("nome").value.trim()===""){document.getElementById("matriculaError").textContent="Matrícula inválida."; return;}
-      const btn = document.querySelector(".button");
-      btn.disabled=true;
-      setProgress(60);
+    // Função de Submissão Atualizada com Checagem de Duplicidade (Async)
+    async function submitForm(e){
+      e.preventDefault();
+      const form = document.getElementById("dersoForm");
+      const btn = document.querySelector(".button");
+      const matriculaInput = document.getElementById("matricula");
+      const dataValue = document.getElementById("data").value;
+      const folgaRadio = document.querySelector('input[name="folga"]:checked');
+      const duplicateError = document.getElementById("duplicateError");
+      const nomeValue = document.getElementById("nome").value.trim();
+      const dataBR = formatDateBR(dataValue);
 
+      duplicateError.textContent = "";
+      
+      // Validações básicas
+      if(!folgaRadio){
+        duplicateError.textContent = "Selecione um Tipo de Folga."; 
+        return;
+      }
+      if(nomeValue === "" || matriculaInput.classList.contains("is-invalid")){
+        document.getElementById("matriculaError").textContent = nomeValue === "" ? "Matrícula inválida. Verifique o número." : "Matrícula inválida."; 
+        return;
+      }
 
-      fetch(SCRIPT_URL,{method:"POST",body:new URLSearchParams(fd)})
-      .then(r=>r.json())
-      .then(data=>{
-        if(data.success){showMessage("✅ Solicitação enviada com sucesso!","success"); form.reset(); }
-        else showMessage("⚠️ "+(data.error||"Erro ao enviar."),"error");
-      }).catch(()=>showMessage("⚠️ Falha na conexão.","error"))
-      .finally(()=>{
-        btn.disabled=false;
-        setProgress(100);
-        setTimeout(()=>setProgress(0),1500);
-      });
+      btn.disabled = true;
+      setProgress(60);
 
-    }
+      try {
+          // 1. VERIFICAÇÃO DE DUPLICIDADE
+          const isDuplicate = await checkDuplicity(
+            matriculaInput.value, 
+            dataBR, 
+            folgaRadio.value
+          );
 
-  // Função para mostrar mensagens temporárias (sucesso/erro do submit)
+          if (isDuplicate) {
+            showMessage(`⚠️ Solicitação DUPLICADA. Você já solicitou **${folgaRadio.value}** para ${dataBR}.`, "error");
+            return; // Para a submissão
+          }
+          
+          // 2. ENVIO FINAL
+          const fd = new FormData(form);
+          fd.set("data", dataBR);
+          fd.set("folga", folgaRadio.value); // Garante que a folga checada é a que é enviada
+
+          const response = await fetch(SCRIPT_URL, {method: "POST", body: new URLSearchParams(fd)});
+          const data = await response.json();
+
+          if(data.success){
+            showMessage("✅ Solicitação enviada com sucesso! Um resumo foi enviado para o seu e-mail.","success"); 
+            form.reset(); 
+          } else {
+            showMessage("⚠️ "+(data.error||"Erro ao enviar. Tente novamente."),"error");
+          }
+
+      } catch(error) {
+        console.error("Erro na duplicidade ou envio:", error);
+        showMessage("⚠️ Falha na conexão ou processamento. Tente novamente.", "error");
+      } finally {
+        btn.disabled = false;
+        setProgress(100);
+        setTimeout(()=>setProgress(0), 1500);
+      }
+    }
+
+  // Função para mostrar mensagens temporárias (sucesso/erro do submit)
 function showMessage(msg, type = "success") {
-  const div = document.getElementById("statusMessage");
-  div.className = "info-message " + type;
-  div.innerHTML = msg; // Usamos innerHTML para suportar negrito/emojis
-  div.style.display = "block";
-  // A mensagem TEMPORÁRIA é oculta após 5 segundos
-  setTimeout(() => { div.style.display = "none"; }, 5000); 
-
+  const div = document.getElementById("statusMessage");
+  div.className = "info-message " + type;
+  div.innerHTML = msg; // Usamos innerHTML para suportar negrito/emojis
+  div.style.display = "block";
+  // A mensagem TEMPORÁRIA é oculta após 5 segundos
+  setTimeout(() => { div.style.display = "none"; }, 5000); 
 }
 
-
-// NOVO: Função para mostrar a mensagem de PRAZO (deve ser persistente)
+// Função para mostrar a mensagem de PRAZO (deve ser persistente)
 function showPersistentMessage(msg, type = "success") {
-  const div = document.getElementById("statusMessage");
-  div.className = "info-message " + type;
-  div.innerHTML = msg;
-  div.style.display = "block";
-  // A mensagem PERSISTENTE não é oculta.
+  const div = document.getElementById("statusMessage");
+  div.className = "info-message " + type;
+  div.innerHTML = msg;
+  div.style.display = "block";
+  // A mensagem PERSISTENTE não é oculta.
+}  
+    
+ function initializeForm(){
+  loadEmployeeList();
+  setDateLimits();
+  const footer = document.getElementById("footerText"); 
 
-}  
+  fetch(SCRIPT_URL+"?action=datas")
+  .then(r=>r.json())
+  .then(data=>{
+      if(data.error) {
+          showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
+          formDiv.style.display = "none"; 
+          return;
+      }
+      
+      const agora = new Date();
+      const abertura = new Date(data.abertura);
+      const fechamento = new Date(data.fechamento);
 
- function initializeForm(){
-  loadEmployeeList();
-  setDateLimits();
-  const formDiv = document.getElementById("dersoForm");
-  const footer = document.getElementById("footerText"); // Removi statusMessage daqui, pois showPersistentMessage já a referencia
+      if(agora < abertura || agora > fechamento){
+        // Período Fechado
+        const msg = agora < abertura
+            ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
+            : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
+        
+        showPersistentMessage(msg, "error");
+        formDiv.style.display = "none"; 
+      } else {
+        // Período Aberto: Mostra o formulário e o tempo restante
+        formDiv.style.display = "block";
+        
+        const diffTime = fechamento.getTime() - agora.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento do formulário em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
 
-
-  fetch(SCRIPT_URL+"?action=datas")
-  .then(r=>r.json())
-  .then(data=>{
-    const agora = new Date();
-    const abertura = new Date(data.abertura);
-    const fechamento = new Date(data.fechamento);
-
-
-    if(agora < abertura || agora > fechamento){
-
-      // Período Fechado
-      const msg = agora < abertura
-          ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
-          : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
-
-      
-      // *** MUDANÇA: Usando a função persistente ***
-      showPersistentMessage(msg, "error");
-      formDiv.style.display = "none"; // Garante que o formulário não aparece
-    } else {
-
-      // Período Aberto: Calculando e mostrando o tempo restante
-      formDiv.style.display = "block";
-
-      
-
-      const diffTime = fechamento.getTime() - agora.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-         const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento do formulário em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
-
-      // *** MUDANÇA: Usando a função persistente ***
-      showPersistentMessage(msg, "success");
-    }
+        showPersistentMessage(msg, "success");
+      }
+  })
+  .catch(error => {
+    // Falha geral na comunicação com o script de datas
+    showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
+    formDiv.style.display = "none";
   });
 
 
-  const now = new Date();
-  const mes = now.getMonth()+1; const ano = now.getFullYear();
-  footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
-
+  const now = new Date();
+  const mes = now.getMonth()+1; const ano = now.getFullYear();
+  footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
 }
-    
-    document.addEventListener("DOMContentLoaded",()=>{
-      initializeForm();
-      document.getElementById("matricula").addEventListener("blur",checkMatricula);
-      document.getElementById("email").addEventListener("input",updateEmailDatalist);
-      document.getElementById("dersoForm").addEventListener("submit",submitForm);
-    });
-
-  </script>
+    
+    document.addEventListener("DOMContentLoaded",()=>{
+      initializeForm();
+      document.getElementById("matricula").addEventListener("blur",checkMatricula);
+      document.getElementById("email").addEventListener("input",updateEmailDatalist);
+      document.getElementById("dersoForm").addEventListener("submit",submitForm);
+    });
+  </script>
 </body>
 </html>
