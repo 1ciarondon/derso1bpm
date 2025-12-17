@@ -544,27 +544,60 @@
             prazoMessageDiv.innerHTML = msg; prazoMessageDiv.style.display = "block";
         } 
 
-      function initializeForm(){
-    loadEmployeeList();
-    setDateLimits();
-    fetch(SCRIPT_URL+"?action=datas")
-    .then(r=>r.json())
-    .then(data=>{
-        initialLoadingDiv.style.display = "none";
-        formDiv.style.display = "block";
-        const fechamento = new Date(data.fechamento);
-        showPersistentMessage(`🚨 Prazo final: ${fechamento.toLocaleString("pt-BR")}`, "success");
-    }).catch(() => { initialLoadingDiv.style.display = "none"; formDiv.style.display = "block"; });
-    
-    // AJUSTE DO RODAPÉ CONFORME SOLICITADO
-    const agora = new Date();
-    const mes = agora.getMonth() + 1;
-    const ano = agora.getFullYear();
-    const footer = document.getElementById("footerText");
-    footer.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
-}
+     function initializeForm(){
+            loadEmployeeList();
+            setDateLimits();
+            const footer = document.getElementById("footerText"); 
 
-        document.addEventListener("DOMContentLoaded",()=>{
+            fetch(SCRIPT_URL+"?action=datas")
+            .then(r=>r.json())
+            .then(data=>{
+                if(data.error) {
+                    showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
+                    initialLoadingDiv.style.display = "none";
+                    formDiv.style.display = "none"; 
+                    return;
+                }
+
+                const agora = new Date();
+                const abertura = new Date(data.abertura);
+                const fechamento = new Date(data.fechamento);
+
+                initialLoadingDiv.style.display = "none"; // 🎯 Oculta o spinner inicial
+
+                if(agora < abertura || agora > fechamento){
+                    // Período Fechado
+                    const msg = agora < abertura
+                        ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
+                        : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
+
+                    showPersistentMessage(msg, "error");
+                    formDiv.style.display = "none"; 
+                } else {
+                    // Período Aberto: Mostra o formulário e o tempo restante
+                    formDiv.style.display = "block";
+
+                    const diffTime = fechamento.getTime() - agora.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
+
+                    showPersistentMessage(msg, "success");
+                }
+            })
+            .catch(error => {
+                showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
+                initialLoadingDiv.style.display = "none";
+                formDiv.style.display = "none";
+            });
+
+
+            const now = new Date();
+            const mes = now.getMonth()+1; const ano = now.getFullYear();
+            footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
+        }
+
+            document.addEventListener("DOMContentLoaded",()=>{
             initializeForm();
             document.getElementById("matricula").addEventListener("blur",checkMatricula);
             document.getElementById("email").addEventListener("input",updateEmailDatalist);
@@ -572,6 +605,7 @@
             document.getElementById("btnHistory").onclick = fetchHistory;
             document.getElementById("closeHistory").onclick = () => { document.getElementById("historyModal").style.display = "none"; };
         });
+
     </script>
 </body>
 </html>
