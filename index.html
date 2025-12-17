@@ -10,13 +10,13 @@
     <style>
         /* 1. PALETA DE CORES INSTITUCIONAL */
         :root {
-            --azul-marinho: #0C3667; /* Azul Escuro / Azul Noturno (Forte) */
-            --dourado-amarelo: #FFD700; /* Amarelo Forte para destaque/progresso */
-            --azul-claro-hover: #1a5ca7; /* Para hover/botões */
-            --erro: #b00020; /* Vermelho mais profundo para alertas */
-            --sucesso: #388e3c; /* Verde mais escuro */
-            --cinza-fundo: #f4f7f9; /* Fundo mais suave */
-            --cinza-texto: #333333; /* Texto escuro com alto contraste */
+            --azul-marinho: #0C3667; 
+            --dourado-amarelo: #FFD700; 
+            --azul-claro-hover: #1a5ca7; 
+            --erro: #b00020; 
+            --sucesso: #388e3c; 
+            --cinza-fundo: #f4f7f9; 
+            --cinza-texto: #333333; 
             --borda-campo: #aaa;
         }
 
@@ -36,10 +36,9 @@
         .container {
             width: 95%;
             max-width: 500px;
-            background-color: #ffffff; /* Fundo branco puro para efeito "papel" */
+            background-color: #ffffff; 
             border-radius: 8px;
             padding: 30px;
-            /* Sombra mais forte e borda sutil */
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             border: 1px solid #ccc;
             box-sizing: border-box;
@@ -48,7 +47,6 @@
             position: relative;
         }
 
-        /* Barra de progresso (Agora DOURADA e sutil) */
         #progressBarContainer {
             position: absolute;
             top: 0;
@@ -63,11 +61,10 @@
         #progressBar {
             width: 0%;
             height: 100%;
-            background-color: var(--dourado-amarelo); /* Dourado para destaque */
+            background-color: var(--dourado-amarelo); 
             transition: width 0.4s ease;
         }
 
-        /* Logos */
         .logos {
             display: flex;
             justify-content: center;
@@ -81,7 +78,6 @@
             object-fit: contain;
         }
 
-        /* 3. ESTILO DO TÍTULO COM AUTORIDADE */
         h2 {
             font-family: 'Merriweather', serif;
             text-align: center;
@@ -91,7 +87,6 @@
             margin-bottom: 10px;
             line-height: 1.2;
             letter-spacing: -0.5px;
-            /* Linha divisória de destaque DOURADA */
             border-bottom: 2px solid var(--dourado-amarelo);
             padding-bottom: 5px;
         }
@@ -118,14 +113,13 @@
             font-size: 15px;
         }
 
-        /* 4. ESTILO DOS CAMPOS (Mais formais) */
         .form-group input:not([type="radio"]),
         .form-group select {
             width: 100%;
             padding: 12px 15px;
             font-size: 15px;
             border: 1px solid var(--borda-campo);
-            border-radius: 4px; /* Menos arredondado */
+            border-radius: 4px; 
             box-sizing: border-box;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -134,7 +128,6 @@
         .form-group select:focus {
             border-color: var(--azul-claro-hover);
             outline: none;
-            /* Foco mais discreto */
             box-shadow: 0 0 0 2px rgba(12, 54, 103, 0.2);
         }
 
@@ -143,11 +136,10 @@
             cursor: not-allowed;
         }
 
-        /* Estilo para os botões de alternância (Toggle Buttons) */
         .radio-group-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px; /* Menor gap */
+            gap: 8px; 
             margin-top: 10px;
         }
 
@@ -156,11 +148,11 @@
         }
 
         .radio-group-buttons label {
-            padding: 8px 10px; /* Padding menor */
+            padding: 8px 10px; 
             border: 1px solid #ccc;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px; /* Fonte menor */
+            font-size: 13px; 
             transition: background-color 0.2s, border-color 0.2s, color 0.2s;
             user-select: none;
             text-transform: uppercase;
@@ -168,7 +160,6 @@
         }
 
         .radio-group-buttons input[type="radio"]:checked + label {
-            /* Cor de Seleção: Azul Marinho com texto DOURADO */
             background-color: var(--azul-marinho);
             color: var(--dourado-amarelo);
             border-color: var(--azul-marinho);
@@ -181,18 +172,6 @@
             border-color: var(--azul-claro-hover);
         }
 
-        /* Feedback visual para campos */
-        .form-group input.is-valid {
-            border-color: var(--sucesso) !important;
-            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.2) !important;
-        }
-
-        .form-group input.is-invalid {
-            border-color: var(--erro) !important;
-            box-shadow: 0 0 0 3px rgba(176, 0, 32, 0.2) !important;
-        }
-
-        /* 5. ESTILO DO BOTÃO DE AÇÃO */
         .button {
             background-color: var(--azul-claro-hover);
             color: #fff;
@@ -209,21 +188,28 @@
             text-transform: uppercase;
         }
 
+        .button.secondary {
+            background-color: #fff;
+            color: var(--azul-marinho);
+            border: 1px solid var(--azul-marinho);
+            margin-bottom: 10px;
+        }
+
         .button:hover {
-            background-color: var(--azul-marinho); /* Azul Marinho no hover */
+            background-color: var(--azul-marinho); 
             transform: translateY(-1px);
         }
-
-        .button:active {
-            transform: translateY(0);
+        
+        .button.secondary:hover {
+            background-color: #f0f0f0;
+            color: var(--azul-marinho);
         }
 
-        /* 6. ESTILO DAS MENSAGENS DE ERRO/STATUS (Mais proeminentes) */
         .error {
             color: var(--erro);
             margin-top: 5px;
             font-size: 13px;
-            font-weight: 600; /* Mais negrito */
+            font-weight: 600; 
             padding-left: 5px;
         }
 
@@ -236,17 +222,17 @@
             display: none;
             margin-bottom: 25px;
             padding: 12px 15px;
-            border-left: 5px solid; /* Adiciona barra lateral de destaque */
+            border-left: 5px solid; 
         }
 
         .info-message.success {
-            background-color: #e8f5e9; /* Fundo verde claro */
+            background-color: #e8f5e9; 
             color: var(--sucesso);
             border-left-color: var(--sucesso);
         }
 
         .info-message.error {
-            background-color: #fce4ec; /* Fundo vermelho claro */
+            background-color: #fce4ec; 
             color: var(--erro);
             border-left-color: var(--erro);
         }
@@ -258,14 +244,44 @@
             color: #777;
         }
 
-        /* 7. LOADING OVERLAY (para submissão) */
+        /* ESTILOS DO MODAL DE HISTÓRICO */
+        .modal-base {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
         #loadingOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.9); /* Quase opaco */
+            background-color: rgba(255, 255, 255, 0.9); 
             display: none;
             justify-content: center;
             align-items: center;
@@ -278,7 +294,7 @@
 
         .spinner {
             border: 4px solid rgba(12, 54, 103, 0.2);
-            border-top: 4px solid var(--azul-claro-hover); /* Cor de destaque no spinner */
+            border-top: 4px solid var(--azul-claro-hover); 
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -290,22 +306,11 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Media Queries */
-        @media (max-width: 576px) {
-            .container { padding: 20px; }
-            h2 { font-size: 24px; }
-            .subtitle { font-size: 14px; }
-            .form-group input:not([type="radio"]), .form-group select { font-size: 14px; }
-            .button { font-size: 15px; padding: 12px 15px; }
-            .radio-group-buttons { justify-content: flex-start; } /* Deixa as opções à esquerda no móvel */
-            .logos img { height: 50px; }
-        }
-
     </style>
 </head>
 <body>
     <div id="loadingOverlay">
-        <p>Enviando solicitação. Aguarde...</p>
+        <p>Aguarde...</p>
         <div class="spinner"></div>
     </div>
 
@@ -330,7 +335,7 @@
         <form id="dersoForm" style="display: none;">
             <div class="form-group">
                 <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" list="emailProviders" required autofocus>
+                <input type="email" id="email" name="email" list="emailProviders" required>
                 <datalist id="emailProviders"></datalist>
             </div>
 
@@ -346,7 +351,7 @@
             </div>
 
             <fieldset>
-                <legend>Tipo de Folga<span class="required-star">*</span>:</legend>
+                <legend>Tipo de Folga:</legend>
                 <div class="radio-group-buttons">
                     <input type="radio" id="folga24H" name="folga" value="24H" required><label for="folga24H">24H</label>
                     <input type="radio" id="folga48H" name="folga" value="48H"><label for="folga48H">48H</label>
@@ -366,18 +371,61 @@
                 <div id="dateLimitMessage" class="subtitle" style="margin-top: 5px; margin-bottom: 0; font-size: 13px; text-align: left;"></div>
             </div>
 
+            <button type="button" class="button secondary" id="btnHistory">SOLICITAÇÕES FEITAS</button>
             <button type="submit" class="button">Enviar Solicitação</button>
         </form>
         
         <div id="statusMessage" class="info-message"></div>
-
         <div class="footer" id="footerText"></div>
     </div>
 
+    <div id="historyModal" class="modal-base">
+        <div class="modal-content">
+            <h3 style="color:var(--azul-marinho);margin-top:0">Meu Histórico</h3>
+            <div id="historyBox" class="history-list">Carregando...</div>
+            <button type="button" class="button" id="closeHistory">Fechar</button>
+        </div>
+    </div>
+
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe2vseE23YEgIwPxOHiXlv3COUfJYVRsMSTYov0v78zSgDZtOeTCYx1J8GOzlzKhwDFg/exec";
-        const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br"];
+    // ***********************************************
+    // AQUI ESTÁ A NOVA URL ATUALIZADA:
+    // ***********************************************
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7-pdQ3f8UMXZylF-4M4Qai6UWGsXPdqfYhoyuPuEVBL_nbBrCn2DfyfpHVmgAFEhh/exec"; 
+    const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br","pm.ro.gov.br"];
+
         window.employeeList = {};
+
+        async function fetchHistory() {
+    const mat = document.getElementById("matricula").value.trim();
+    if(!mat) { alert("Digite sua matrícula primeiro."); return; }
+    
+    const modal = document.getElementById("historyModal");
+    const box = document.getElementById("historyBox");
+    modal.style.display = "flex";
+    box.innerHTML = "Buscando solicitações...";
+
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=historico&matricula=${mat}`);
+        const data = await response.json();
+        
+        if(data.error) { box.innerHTML = `<p style="color:red">${data.error}</p>`; return; }
+        
+        let html = `<p><strong>${data.nome}</strong></p><ul style="padding:0">`;
+        data.historico.forEach(h => {
+            const statusCor = h.Status === 'APROVADA' ? 'var(--sucesso)' : (h.Status === 'RECUSADA' ? 'var(--erro)' : '#666');
+            
+            // LÓGICA ALTERADA: Se o status for 'PENDENTE', a variável fica vazia.
+            const statusTexto = (h.Status && h.Status.toUpperCase() !== 'PENDENTE') ? h.Status : '';
+            
+            html += `<li style="border-bottom:1px solid #eee;padding:8px 0">
+                ${h.Data} - ${h.Folga} <br>
+                <span style="color:${statusCor};font-weight:bold;font-size:12px">${statusTexto}</span>
+            </li>`;
+        });
+        box.innerHTML = html + "</ul>";
+    } catch(e) { box.innerHTML = "Erro ao conectar com o servidor."; }
+}
 
         const progressBar = document.getElementById("progressBar");
         const formDiv = document.getElementById("dersoForm");
@@ -412,115 +460,43 @@
                 const response = await fetch(url);
                 const dataJson = await response.json();
                 return dataJson.duplicado === true; 
-            } catch (e) {
-                console.error("Falha ao verificar duplicidade:", e);
-                // Usa a função de mensagem temporária para o erro
-                showMessage("⚠️ Erro ao verificar duplicidade. Tentando enviar...", "error", true); 
-                return false; 
-            }
+            } catch (e) { return false; }
         }
 
         function loadEmployeeList() {
             setProgress(20);
-            const matriculaInput = document.getElementById("matricula");
-            matriculaInput.disabled = true; 
-            matriculaInput.placeholder = "Carregando lista de funcionários...";
-
             fetch(SCRIPT_URL+"?action=lista")
             .then(r => r.json())
             .then(data => {
-                if(data.error) throw new Error(data.error);
                 window.employeeList = data;
                 setProgress(40);
-                matriculaInput.disabled = false; 
-                matriculaInput.placeholder = "Ex: 12345 ou 100012345";
-                checkMatricula(); // Para atualizar o estado inicial do campo
+                document.getElementById("matricula").disabled = false;
             }).catch(()=>{
-                document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
-                showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
-                initialLoadingDiv.style.display = "none";
-                formDiv.style.display = "none";
+                document.getElementById("matriculaError").textContent="Erro ao carregar lista.";
             });
         }
 
-       function checkMatricula() {
-    const m = document.getElementById("matricula");
-    const n = document.getElementById("nome");
-    const e = document.getElementById("matriculaError");
-    
-    // --- 🎯 CORREÇÃO 1: Trata campo vazio primeiro ---
-    // Se o campo estiver vazio, limpa tudo e não exibe erro.
-    if (!m.value.trim()) {
-        n.value = "";
-        e.textContent = ""; 
-        m.classList.remove("is-valid", "is-invalid");
-        return; // Sai da função
-    }
-    // ------------------------------------------------
+        function checkMatricula() {
+            const m = document.getElementById("matricula");
+            const n = document.getElementById("nome");
+            const e = document.getElementById("matriculaError");
+            if (!m.value.trim()) { n.value = ""; e.textContent = ""; m.classList.remove("is-valid", "is-invalid"); return; }
+            const standardized = standardizeMatricula(m.value);
+            m.value = standardized;
+            m.classList.remove("is-valid", "is-invalid");
+            if(window.employeeList[standardized]) { n.value = window.employeeList[standardized]; e.textContent = ""; m.classList.add("is-valid"); }
+            else { n.value = ""; e.textContent = "Matrícula não encontrada!"; m.classList.add("is-invalid"); }
+        }
 
-    const standardized = standardizeMatricula(m.value);
-    
-    // --- 🎯 CORREÇÃO 2: Padroniza APENAS se houver valor ---
-    m.value = standardized;
-    // ------------------------------------------------
-
-    m.classList.remove("is-valid", "is-invalid");
-
-    if(window.employeeList[standardized]) { 
-        n.value = window.employeeList[standardized]; 
-        e.textContent = ""; 
-        m.classList.add("is-valid"); 
-    }
-    else { 
-        n.value = ""; 
-        // --- A mensagem de erro agora só aparece se houver valor (corrigido no if inicial)
-        e.textContent = "Matrícula não encontrada!"; 
-        m.classList.add("is-invalid"); 
-    }
-}
-
-// --- 🎯 CORREÇÃO 3: Remover chamada imediata do loadEmployeeList ---
-// No loadEmployeeList, vamos remover a chamada final para checkMatricula()
-
-function loadEmployeeList() {
-    setProgress(20);
-    const matriculaInput = document.getElementById("matricula");
-    matriculaInput.disabled = true; 
-    matriculaInput.placeholder = "Carregando lista de funcionários...";
-
-    fetch(SCRIPT_URL+"?action=lista")
-    .then(r => r.json())
-    .then(data => {
-        if(data.error) throw new Error(data.error);
-        window.employeeList = data;
-        setProgress(40);
-        matriculaInput.disabled = false; 
-        matriculaInput.placeholder = "Ex: 12345 ou 100012345";
-        // REMOVER: checkMatricula(); 
-    }).catch(()=>{
-        document.getElementById("matriculaError").textContent="Erro ao carregar lista de funcionários.";
-        showPersistentMessage("⚠️ Erro grave ao carregar dados de funcionários. Tente recarregar a página.", "error");
-        initialLoadingDiv.style.display = "none";
-        formDiv.style.display = "none";
-    });
-}
         function setDateLimits() {
             const dateInput = document.getElementById("data");
             const messageDiv = document.getElementById("dateLimitMessage"); 
-
             const today = new Date();
             let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
             let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-
             dateInput.min = nextMonthStart.toISOString().split("T")[0];
             dateInput.max = nextMonthEnd.toISOString().split("T")[0];
-
-            const startDay = nextMonthStart.getDate().toString().padStart(2, '0');
-            const startMonth = (nextMonthStart.getMonth() + 1).toString().padStart(2, '0');
-            const endDay = nextMonthEnd.getDate().toString().padStart(2, '0');
-            const endMonth = (nextMonthEnd.getMonth() + 1).toString().padStart(2, '0');
-
-            messageDiv.textContent = `Período de folga permitido: ${startDay}/${startMonth} a ${endDay}/${endMonth}.`;
+            messageDiv.textContent = `Período permitido: ${nextMonthStart.toLocaleDateString("pt-BR")} a ${nextMonthEnd.toLocaleDateString("pt-BR")}.`;
         }
 
         function formatDateBR(d) {
@@ -529,150 +505,72 @@ function loadEmployeeList() {
             return `${day}/${m}/${y}`;
         }
 
-        // Função de Submissão Atualizada com Checagem de Duplicidade (Async)
         async function submitForm(e){
             e.preventDefault();
-            const form = document.getElementById("dersoForm");
-            const btn = document.querySelector(".button");
-            const matriculaInput = document.getElementById("matricula");
-            const dataValue = document.getElementById("data").value;
+            const btn = document.querySelector('button[type="submit"]');
+            const matInput = document.getElementById("matricula");
             const folgaRadio = document.querySelector('input[name="folga"]:checked');
-            const duplicateError = document.getElementById("duplicateError");
-            const nomeValue = document.getElementById("nome").value.trim();
+            const dataValue = document.getElementById("data").value;
             const dataBR = formatDateBR(dataValue);
 
-            duplicateError.textContent = "";
-            
-            // Validações básicas
-            if(!folgaRadio){
-                duplicateError.textContent = "Selecione um Tipo de Folga."; 
-                return;
-            }
-            if(nomeValue === "" || matriculaInput.classList.contains("is-invalid")){
-                document.getElementById("matriculaError").textContent = nomeValue === "" ? "Matrícula inválida. Verifique o número." : "Matrícula inválida."; 
-                return;
-            }
+            if(matInput.classList.contains("is-invalid") || !folgaRadio) return;
 
             btn.disabled = true;
-            loadingOverlay.style.display = "flex"; // 🎯 Exibe o overlay de carregamento
-            setProgress(60);
-
+            loadingOverlay.style.display = "flex";
+            
             try {
-                // 1. VERIFICAÇÃO DE DUPLICIDADE
-                const isDuplicate = await checkDuplicity(
-                    matriculaInput.value, 
-                    dataBR, 
-                    folgaRadio.value
-                );
-
-                if (isDuplicate) {
-                    showMessage(`⚠️ Solicitação DUPLICADA. Você já solicitou **${folgaRadio.value}** para ${dataBR}.`, "error");
-                    return; // Para a submissão
-                }
+                const isDuplicate = await checkDuplicity(matInput.value, dataBR, folgaRadio.value);
+                if (isDuplicate) { showMessage(`⚠️ Já existe solicitação para esta data/folga.`, "error"); return; }
                 
-                // 2. ENVIO FINAL
-                const fd = new FormData(form);
+                const fd = new FormData(document.getElementById("dersoForm"));
                 fd.set("data", dataBR);
-                fd.set("folga", folgaRadio.value); 
-
-                const response = await fetch(SCRIPT_URL, {method: "POST", body: new URLSearchParams(fd)});
-                const data = await response.json();
-
-                if(data.success){
-                    showMessage("✅ Solicitação enviada com sucesso! Um resumo foi enviado para o seu e-mail.","success"); 
-                    form.reset(); 
-                    document.getElementById("nome").value = ""; // Limpa campo readonly
-                    document.getElementById("matricula").classList.remove("is-valid"); // Remove o estado de validação
-                } else {
-                    showMessage("⚠️ "+(data.error||"Erro ao enviar. Tente novamente."),"error");
-                }
-
-            } catch(error) {
-                console.error("Erro na duplicidade ou envio:", error);
-                showMessage("⚠️ Falha na conexão ou processamento. Tente novamente.", "error");
-            } finally {
-                btn.disabled = false;
-                loadingOverlay.style.display = "none"; // 🎯 Oculta o overlay de carregamento
-                setProgress(100);
-                setTimeout(()=>setProgress(0), 1500);
-            }
+                const resp = await fetch(SCRIPT_URL, {method: "POST", body: new URLSearchParams(fd)});
+                const result = await resp.json();
+                if(result.success){ showMessage("✅ Enviado com sucesso!","success"); document.getElementById("dersoForm").reset(); checkMatricula(); }
+                else { showMessage("⚠️ Erro ao enviar.", "error"); }
+            } catch(error) { showMessage("⚠️ Erro de conexão.", "error"); }
+            finally { btn.disabled = false; loadingOverlay.style.display = "none"; }
         }
 
-        // Função para mostrar mensagens TEMPORÁRIAS (sucesso/erro do submit)
         function showMessage(msg, type = "success") {
             const div = document.getElementById("statusMessage");
             div.className = "info-message " + type;
-            div.innerHTML = msg; 
-            div.style.display = "block";
-            // A mensagem TEMPORÁRIA é oculta após 5 segundos
-            setTimeout(() => { div.style.display = "none"; }, 5000); 
+            div.innerHTML = msg; div.style.display = "block";
+            setTimeout(() => { div.style.display = "none"; }, 5000);
         }
 
-        // Função para mostrar a mensagem de PRAZO/STATUS (PERSISTENTE)
         function showPersistentMessage(msg, type = "success") {
             prazoMessageDiv.className = "info-message " + type;
-            prazoMessageDiv.innerHTML = msg;
-            prazoMessageDiv.style.display = "block";
+            prazoMessageDiv.innerHTML = msg; prazoMessageDiv.style.display = "block";
         } 
-            
-        function initializeForm(){
-            loadEmployeeList();
-            setDateLimits();
-            const footer = document.getElementById("footerText"); 
 
-            fetch(SCRIPT_URL+"?action=datas")
-            .then(r=>r.json())
-            .then(data=>{
-                if(data.error) {
-                    showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
-                    initialLoadingDiv.style.display = "none";
-                    formDiv.style.display = "none"; 
-                    return;
-                }
-                
-                const agora = new Date();
-                const abertura = new Date(data.abertura);
-                const fechamento = new Date(data.fechamento);
+      function initializeForm(){
+    loadEmployeeList();
+    setDateLimits();
+    fetch(SCRIPT_URL+"?action=datas")
+    .then(r=>r.json())
+    .then(data=>{
+        initialLoadingDiv.style.display = "none";
+        formDiv.style.display = "block";
+        const fechamento = new Date(data.fechamento);
+        showPersistentMessage(`🚨 Prazo final: ${fechamento.toLocaleString("pt-BR")}`, "success");
+    }).catch(() => { initialLoadingDiv.style.display = "none"; formDiv.style.display = "block"; });
+    
+    // AJUSTE DO RODAPÉ CONFORME SOLICITADO
+    const agora = new Date();
+    const mes = agora.getMonth() + 1;
+    const ano = agora.getFullYear();
+    const footer = document.getElementById("footerText");
+    footer.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
+}
 
-                initialLoadingDiv.style.display = "none"; // 🎯 Oculta o spinner inicial
-
-                if(agora < abertura || agora > fechamento){
-                    // Período Fechado
-                    const msg = agora < abertura
-                        ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
-                        : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
-                    
-                    showPersistentMessage(msg, "error");
-                    formDiv.style.display = "none"; 
-                } else {
-                    // Período Aberto: Mostra o formulário e o tempo restante
-                    formDiv.style.display = "block";
-                    
-                    const diffTime = fechamento.getTime() - agora.getTime();
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    
-                    const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
-
-                    showPersistentMessage(msg, "success");
-                }
-            })
-            .catch(error => {
-                showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
-                initialLoadingDiv.style.display = "none";
-                formDiv.style.display = "none";
-            });
-
-
-            const now = new Date();
-            const mes = now.getMonth()+1; const ano = now.getFullYear();
-            footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
-        }
-            
         document.addEventListener("DOMContentLoaded",()=>{
             initializeForm();
             document.getElementById("matricula").addEventListener("blur",checkMatricula);
             document.getElementById("email").addEventListener("input",updateEmailDatalist);
             document.getElementById("dersoForm").addEventListener("submit",submitForm);
+            document.getElementById("btnHistory").onclick = fetchHistory;
+            document.getElementById("closeHistory").onclick = () => { document.getElementById("historyModal").style.display = "none"; };
         });
     </script>
 </body>
