@@ -543,58 +543,80 @@
             prazoMessageDiv.className = "info-message " + type;
             prazoMessageDiv.innerHTML = msg; prazoMessageDiv.style.display = "block";
         } 
-
-     function initializeForm(){
+        
+function initializeForm() {
             loadEmployeeList();
             setDateLimits();
-            const footer = document.getElementById("footerText"); 
+            const footer = document.getElementById("footerText");
 
-            fetch(SCRIPT_URL+"?action=datas")
-            .then(r=>r.json())
-            .then(data=>{
-                if(data.error) {
-                    showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
+            // Busca os dados da planilha com "cache busting"
+            fetch(`${SCRIPT_URL}?action=datas&t=${new Date().getTime()}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
+                        initialLoadingDiv.style.display = "none";
+                        return;
+                    }
+
                     initialLoadingDiv.style.display = "none";
-                    formDiv.style.display = "none"; 
-                    return;
-                }
 
-                const agora = new Date();
-                const abertura = new Date(data.abertura);
-                const fechamento = new Date(data.fechamento);
+                    const atualizarCronometro = () => {
+                        const agora = new Date();
+                        // Forçando fuso horário de Rondônia
+                        const abertura = new Date(data.abertura + "-04:00");
+                        const fechamento = new Date(data.fechamento + "-04:00");
 
-                initialLoadingDiv.style.display = "none"; // 🎯 Oculta o spinner inicial
+                        if (agora < abertura) {
+                            // CASO 1: AINDA NÃO ABRIU
+                            const diff = abertura - agora;
+                            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-                if(agora < abertura || agora > fechamento){
-                    // Período Fechado
-                    const msg = agora < abertura
-                        ? `⏳ **Abertura:** ${abertura.toLocaleString("pt-BR")}`
-                        : `⛔ **Encerrado:** ${fechamento.toLocaleString("pt-BR")}`;
+                            showPersistentMessage(`⏳ **FORMULÁRIO FECHADO**<br>Abre em: ${d}d ${h}h ${m}m ${s}s`, "error");
+                            formDiv.style.display = "none";
+                        } 
+                        else if (agora > fechamento) {
+                            // CASO 2: PRAZO ENCERRADO
+                            showPersistentMessage(`⛔ **FORMULÁRIO ENCERRADO**<br>O prazo terminou em ${fechamento.toLocaleString("pt-BR")}`, "error");
+                            formDiv.style.display = "none";
+                            clearInterval(intervalo);
+                        } 
+                        else {
+                            // CASO 3: SISTEMA ABERTO
+                            formDiv.style.display = "block";
+                            const diff = fechamento - agora;
+                            
+                            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-                    showPersistentMessage(msg, "error");
-                    formDiv.style.display = "none"; 
-                } else {
-                    // Período Aberto: Mostra o formulário e o tempo restante
-                    formDiv.style.display = "block";
+                            let tempoTexto = `${d}d ${h}h ${m}m ${s}s`;
+                            
+                            // Lógica de alerta crítico (menos de 2 horas)
+                            if (diff < (2 * 60 * 60 * 1000)) {
+                                showPersistentMessage(`⚠️ **URGENTE! ENCERRAMENTO EM:**<br><span style="color: #ff0000; font-size: 1.2em; animation: blinker 1s linear infinite;">${tempoTexto}</span>`, "error");
+                            } else {
+                                showPersistentMessage(`🚨 **FORMULÁRIO ABERTO!**<br>Encerra em: **${tempoTexto}**`, "success");
+                            }
+                        }
+                    };
 
-                    const diffTime = fechamento.getTime() - agora.getTime();
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    // Inicia e define a atualização a cada 1 segundo
+                    atualizarCronometro();
+                    const intervalo = setInterval(atualizarCronometro, 1000);
+                })
+                .catch(error => {
+                    showPersistentMessage(`⚠️ Falha ao conectar com o servidor.`, "error");
+                    initialLoadingDiv.style.display = "none";
+                });
 
-                    const msg = `🚨 **Atenção!** Restam **${diffDays} dia(s)** para o fechamento em ${fechamento.toLocaleDateString("pt-BR")} às ${fechamento.toLocaleTimeString("pt-BR")}.`;
-
-                    showPersistentMessage(msg, "success");
-                }
-            })
-            .catch(error => {
-                showPersistentMessage(`⚠️ Falha ao conectar com o servidor. Verifique o link do script.`, "error");
-                initialLoadingDiv.style.display = "none";
-                formDiv.style.display = "none";
-            });
-
-
+            // Atualiza o rodapé com mês/ano atual
             const now = new Date();
-            const mes = now.getMonth()+1; const ano = now.getFullYear();
-            footer.textContent=`Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${mes.toString().padStart(2,'0')}/${ano}`;
+            footer.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
         }
 
             document.addEventListener("DOMContentLoaded",()=>{
