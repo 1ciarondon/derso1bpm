@@ -396,42 +396,69 @@
 
         window.employeeList = {};
 
-       async function fetchHistory() {
+      async function fetchHistory() {
     let mat = document.getElementById("matricula").value.trim();
-    if (!mat) { 
-        alert("Digite sua matrícula primeiro."); 
-        return; 
+    if (!mat) {
+        alert("Digite sua matrícula primeiro.");
+        return;
     }
 
     mat = standardizeMatricula(mat);
     document.getElementById("matricula").value = mat;
-    
+
     const modal = document.getElementById("historyModal");
     const box = document.getElementById("historyBox");
+
     modal.style.display = "flex";
     box.innerHTML = "Buscando solicitações...";
 
     try {
-        const response = await fetch(`${SCRIPT_URL}?action=historico&matricula=${mat}`);
+        const response = await fetch(
+            `${SCRIPT_URL}?action=historico&matricula=${encodeURIComponent(mat)}`
+        );
+
+        console.log("Status HTTP:", response.status);
+
         const data = await response.json();
-        
-        if(data.error) { box.innerHTML = `<p style="color:red">${data.error}</p>`; return; }
-        
+        console.log("Resposta bruta do backend:", data);
+
+        if (!Array.isArray(data.historico) || data.historico.length === 0) {
+            box.innerHTML = `
+                <p><strong>${data.nome || "Usuário"}</strong></p>
+                <p>Nenhuma solicitação encontrada.</p>
+            `;
+            return;
+        }
+
         let html = `<p><strong>${data.nome}</strong></p><ul style="padding:0">`;
+
         data.historico.forEach(h => {
-            const statusCor = h.Status === 'APROVADA' ? 'var(--sucesso)' : (h.Status === 'RECUSADA' ? 'var(--erro)' : '#666');
-            
-            // LÓGICA ALTERADA: Se o status for 'PENDENTE', a variável fica vazia.
-            const statusTexto = (h.Status && h.Status.toUpperCase() !== 'PENDENTE') ? h.Status : '';
-            
-            html += `<li style="border-bottom:1px solid #eee;padding:8px 0">
-                ${h.Data} - ${h.Folga} <br>
-                <span style="color:${statusCor};font-weight:bold;font-size:12px">${statusTexto}</span>
-            </li>`;
+            const statusCor =
+                h.Status === 'APROVADA' ? 'var(--sucesso)' :
+                h.Status === 'RECUSADA' ? 'var(--erro)' : '#666';
+
+            const statusTexto =
+                (h.Status && h.Status.toUpperCase() !== 'PENDENTE') ? h.Status : '';
+
+            html += `
+                <li style="border-bottom:1px solid #eee;padding:8px 0">
+                    ${h.Data} - ${h.Folga}<br>
+                    <span style="color:${statusCor};font-weight:bold;font-size:12px">
+                        ${statusTexto}
+                    </span>
+                </li>
+            `;
         });
-        box.innerHTML = html + "</ul>";
-    } catch(e) { box.innerHTML = "Erro ao conectar com o servidor."; }
+
+        html += "</ul>";
+        box.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        box.innerHTML = "<p>Erro ao conectar com o servidor.</p>";
+    }
 }
+
 
         const progressBar = document.getElementById("progressBar");
         const formDiv = document.getElementById("dersoForm");
