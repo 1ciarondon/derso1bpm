@@ -396,9 +396,15 @@
 
         window.employeeList = {};
 
-        async function fetchHistory() {
-    const mat = document.getElementById("matricula").value.trim();
-    if(!mat) { alert("Digite sua matrícula primeiro."); return; }
+       async function fetchHistory() {
+    let mat = document.getElementById("matricula").value.trim();
+    if (!mat) { 
+        alert("Digite sua matrícula primeiro."); 
+        return; 
+    }
+
+    mat = standardizeMatricula(mat);
+    document.getElementById("matricula").value = mat;
     
     const modal = document.getElementById("historyModal");
     const box = document.getElementById("historyBox");
