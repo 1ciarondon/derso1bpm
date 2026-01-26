@@ -3,664 +3,755 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitação de Folga - DERSO</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Solicitação de Folga - DERSO 1º BPM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 1. PALETA DE CORES INSTITUCIONAL */
         :root {
-            --azul-marinho: #0C3667; 
-            --dourado-amarelo: #FFD700; 
-            --azul-claro-hover: #1a5ca7; 
-            --erro: #b00020; 
-            --sucesso: #388e3c; 
-            --cinza-fundo: #f4f7f9; 
-            --cinza-texto: #333333; 
-            --borda-campo: #aaa;
+            --azul-marinho: #1A3C6E;
+            --ouro-brilhante: #FFD700;
+            --sucesso-verde: #2E7D32;
+            --alerta-laranja: #ef6c00;
+            --critico-vermelho: #D32F2F;
+            --cinza-fundo: #F0F2F5;
+            --raio-padrao: 8px;
         }
 
-        /* 2. TIPOGRAFIA E FUNDO */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: var(--cinza-fundo);
-            font-family: 'Roboto', Arial, sans-serif;
-            color: var(--cinza-texto);
+            font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px 10px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
 
         .container {
-            width: 95%;
-            max-width: 500px;
-            background-color: #ffffff; 
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        #progressBarContainer {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 4px;
-            background-color: #e0e0e0;
-            border-radius: 8px 8px 0 0;
+            max-width: 500px;
+            background: #fff;
+            border-radius: var(--raio-padrao);
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
             overflow: hidden;
         }
 
-        #progressBar {
+        #barraProgresso {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 0%;
-            height: 100%;
-            background-color: var(--dourado-amarelo); 
+            height: 6px;
+            background: var(--ouro-brilhante);
             transition: width 0.4s ease;
+            z-index: 3;
+        }
+
+        .barra-completa {
+            background-color: var(--sucesso-verde) !important;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .logos {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 15px;
             margin-bottom: 15px;
         }
 
         .logos img {
-            height: 70px;
-            object-fit: contain;
+            height: 75px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         h2 {
-            font-family: 'Merriweather', serif;
-            text-align: center;
             color: var(--azul-marinho);
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-            border-bottom: 2px solid var(--dourado-amarelo);
-            padding-bottom: 5px;
+            font-size: 24px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .divisor {
+            width: 100%;
+            height: 2px;
+            background: var(--ouro-brilhante);
+            margin: 15px 0;
         }
 
         .subtitle {
-            text-align: center;
-            color: var(--cinza-texto);
-            font-size: 16px;
-            margin-bottom: 25px;
-        }
-
-        .form-group, fieldset {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
             margin-bottom: 20px;
-            width: 100%;
-            border: none;
-            padding: 0;
-        }
-
-        label, legend {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--cinza-texto);
             font-weight: 500;
-            font-size: 15px;
         }
 
-        .form-group input:not([type="radio"]),
-        .form-group select {
+       /* --- 1. ADAPTAÇÃO PARA MODO NOTURNO (Automático) --- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --cinza-fundo: #121212;
+    }
+    body { background-color: var(--cinza-fundo); color: #e0e0e0; }
+    .container { background: #1e1e1e; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+    input:not([type="radio"]) { background: #2d2d2d; border-color: #404040; color: #fff; }
+    label { color: #ccc; }
+    .radio-group label { background: #2d2d2d; border-color: #404040; color: #fff; }
+    .subtitle { color: #999; }
+    #instMessage { background: rgba(255, 215, 0, 0.05); }
+}
+
+/* --- 2. AJUSTES NO PRAZOBOX E NOVOS ESTADOS --- */
+#prazoBox {
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px; /* Ficou um pouco mais arredondado para ser "bonito" */
+    margin-bottom: 15px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid transparent; /* Borda completa para a "caixa bonita" */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.estado-verde { 
+    background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; 
+}
+
+/* Estado intermediário de urgência (Laranja) */
+.estado-urgente { 
+    background: #FFF3E0; border-color: #EF6C00; color: #E65100;
+    transform: scale(1.01);
+}
+
+/* Mantendo seus estados originais */
+.estado-sucesso { background: #E8F5E9 !important; border: 2px solid #2E7D32 !important; color: #2E7D32 !important; }
+.estado-inspecao { background: #f8f9fa !important; border: 2px dashed #1A3C6E !important; color: #1A3C6E !important; }
+.estado-alerta { background: #fff3e0; border-color: var(--alerta-laranja); color: #e65100; }
+.estado-critico { 
+    background: #ffebee; border-color: var(--critico-vermelho); color: var(--critico-vermelho);
+    animation: pulse-glow 1.2s infinite; transform: scale(1.04);
+    font-weight: bold;
+}
+
+        #instMessage {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: var(--azul-marinho);
+            background: rgba(255, 215, 0, 0.1);
+            padding: 12px;
+            border-radius: var(--raio-padrao);
+            border-left: 4px solid var(--ouro-brilhante);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--critico-vermelho);
+        }
+
+        input:not([type="radio"]) {
             width: 100%;
-            padding: 12px 15px;
-            font-size: 15px;
-            border: 1px solid var(--borda-campo);
-            border-radius: 4px; 
-            box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: var(--raio-padrao);
+            font-size: 16px;
+            transition: border 0.3s;
         }
 
-        .form-group input:not([type="radio"]):focus,
-        .form-group select:focus {
-            border-color: var(--azul-claro-hover);
+        input:focus {
+            border-color: var(--azul-marinho);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(12, 54, 103, 0.2);
         }
 
-        input[readonly] {
-            background-color: #e9ecef;
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .radio-group input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-group label {
+            flex: 1 1 calc(30% - 8px);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #eee;
+            cursor: pointer;
+            border-radius: var(--raio-padrao);
+            font-size: 12px;
+            font-weight: bold;
+            background: #fafafa;
+            transition: 0.2s;
+        }
+
+        .radio-group input:checked + label {
+            background: var(--azul-marinho);
+            color: var(--ouro-brilhante);
+            border-color: var(--azul-marinho);
+        }
+
+        .btn {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            border-radius: var(--raio-padrao);
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: #777;
+            border: 1.5px solid #ccc;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: var(--azul-marinho);
+            color: #fff;
+        }
+
+        .btn:disabled {
+            background: #ccc !important;
             cursor: not-allowed;
         }
 
-        .radio-group-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px; 
-            margin-top: 10px;
-        }
-
-        .radio-group-buttons input[type="radio"] {
+        .modal {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(4px);
         }
 
-        .radio-group-buttons label {
-            padding: 8px 10px; 
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px; 
-            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-            user-select: none;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .radio-group-buttons input[type="radio"]:checked + label {
-            background-color: var(--azul-marinho);
-            color: var(--dourado-amarelo);
-            border-color: var(--azul-marinho);
-            font-weight: 700;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .radio-group-buttons label:hover {
-            background-color: #e0e0e0;
-            border-color: var(--azul-claro-hover);
-        }
-
-        .button {
-            background-color: var(--azul-claro-hover);
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 4px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            text-transform: uppercase;
-        }
-
-        .button.secondary {
-            background-color: #fff;
-            color: var(--azul-marinho);
-            border: 1px solid var(--azul-marinho);
-            margin-bottom: 10px;
-        }
-
-        .button:hover {
-            background-color: var(--azul-marinho); 
-            transform: translateY(-1px);
-        }
-        
-        .button.secondary:hover {
-            background-color: #f0f0f0;
-            color: var(--azul-marinho);
-        }
-
-        .error {
-            color: var(--erro);
-            margin-top: 5px;
-            font-size: 13px;
-            font-weight: 600; 
-            padding-left: 5px;
-        }
-
-        .info-message {
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 400px;
             text-align: center;
-            border-radius: 4px;
-            font-size: 15px;
-            font-weight: 600;
-            line-height: 1.4;
+        }
+
+        #historyContent {
+            margin: 15px 0;
+            max-height: 250px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .historico-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        .msg-erro {
+            color: var(--critico-vermelho);
+            font-size: 11px;
             display: none;
-            margin-bottom: 25px;
-            padding: 12px 15px;
-            border-left: 5px solid; 
-        }
-
-        .info-message.success {
-            background-color: #e8f5e9; 
-            color: var(--sucesso);
-            border-left-color: var(--sucesso);
-        }
-
-        .info-message.error {
-            background-color: #fce4ec; 
-            color: var(--erro);
-            border-left-color: var(--erro);
+            margin-top: 5px;
+            font-weight: bold;
         }
 
         .footer {
             text-align: center;
             margin-top: 25px;
-            font-size: 12px;
-            color: #777;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.5;
         }
-
-        /* ESTILOS DO MODAL DE HISTÓRICO */
-        .modal-base {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .history-list {
-            list-style: none;
-            padding: 0;
-            margin: 15px 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .history-list li {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9); 
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            font-size: 18px;
-            color: var(--azul-marinho);
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .spinner {
-            border: 4px solid rgba(12, 54, 103, 0.2);
-            border-top: 4px solid var(--azul-claro-hover); 
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin-top: 15px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
     </style>
 </head>
 <body>
-    <div id="loadingOverlay">
-        <p>Aguarde...</p>
-        <div class="spinner"></div>
-    </div>
 
-    <div class="container" id="formulario">
-        <div id="progressBarContainer"><div id="progressBar"></div></div>
-        
-        <div class="logos">
-            <img src="https://rondonia.ro.gov.br/wp-content/uploads/2024/09/Brasao-PMRO-370x523.png" alt="PMRO">
-            <img src="https://museu.pm.ro.gov.br/wp-content/uploads/2024/05/1-bpm-3.png" alt="1º BPM">
+    <div class="container">
+        <div id="barraProgresso"></div>
+        <header class="header">
+            <div class="logos">
+                <img src="https://rondonia.ro.gov.br/wp-content/uploads/2024/09/Brasao-PMRO-370x523.png" alt="Brasão PMRO">
+                <img src="https://museu.pm.ro.gov.br/wp-content/uploads/2024/05/1-bpm-3.png" alt="Logotipo 1º BPM">
+            </div>
+            <h2>DERSO 1º BPM</h2>
+            <div class="divisor"></div>
+            <p class="subtitle">Formulário de Solicitação de Diária Especial de Reforço do Serviço Operacional</p>
+        </header>
+
+        <div id="loadingScreen" style="text-align: center; padding: 50px 0;">
+            <p>Sincronizando dados com o sistema...</p>
         </div>
 
-        <h2>DERSO 1º BPM</h2>
-        <p class="subtitle">Formulário de Solicitação de Diária Especial de Reforço do Serviço Operacional - DERSO </p>
-
-        <div id="prazoMessage" class="info-message success" style="margin-bottom: 25px;"></div>
-
-        <div id="initialLoading" style="text-align: center; padding: 50px; color: var(--azul-marinho);">
-            <p>Carregando dados do sistema...</p>
-            <div class="spinner"></div>
-        </div>
-
-        <form id="dersoForm" style="display: none;">
-            <div class="form-group">
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" list="emailProviders" required>
-                <datalist id="emailProviders"></datalist>
-            </div>
-
-            <div class="form-group">
-                <label for="matricula">Matrícula:</label>
-                <input type="text" id="matricula" name="matricula" required placeholder="Ex: 12345 ou 100012345">
-                <div id="matriculaError" class="error"></div>
-            </div>
-
-            <div class="form-group">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" readonly required>
-            </div>
-
-            <fieldset>
-                <legend>Tipo de Folga:</legend>
-                <div class="radio-group-buttons">
-                    <input type="radio" id="folga24H" name="folga" value="24H" required><label for="folga24H">24H</label>
-                    <input type="radio" id="folga48H" name="folga" value="48H"><label for="folga48H">48H</label>
-                    <input type="radio" id="folga72H" name="folga" value="72H"><label for="folga72H">72H</label>
-                    <input type="radio" id="folga96H" name="folga" value="96H"><label for="folga96H">96H</label>
-                    <input type="radio" id="folgaLE" name="folga" value="FOLGA LE"><label for="folgaLE">FOLGA LE</label>
-                    <input type="radio" id="folga1" name="folga" value="1ª Folga"><label for="folga1">1ª FOLGA</label>
-                    <input type="radio" id="folga2" name="folga" value="2ª Folga"><label for="folga2">2ª FOLGA</label>
-                    <input type="radio" id="folgaExp" name="folga" value="Expediente"><label for="folgaExp">EXPEDIENTE</label>
+        <div id="formContent" class="is-hidden">
+            <section id="prazoBox">
+                <div id="timerDisplay">⌛ CALCULANDO PRAZO...</div>
+                
+                <div id="consultaFechada" style="display:none; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px;">
+                    <input type="text" id="matriculaConsulta" placeholder="Matrícula p/ consulta" inputmode="numeric" style="margin-bottom:10px; text-align:center;">
+                    <button type="button" class="btn btn-outline" id="btnHistoryFechado">📂 VER MINHAS SOLICITAÇÕES</button>
                 </div>
-                <div id="duplicateError" class="error"></div>
-            </fieldset>
+            </section>
 
-            <div class="form-group">
-                <label for="data">Data:</label>
-                <input type="date" id="data" name="data" required>
-                <div id="dateLimitMessage" class="subtitle" style="margin-top: 5px; margin-bottom: 0; font-size: 13px; text-align: left;"></div>
-            </div>
+            <div id="instMessage"></div>
 
-            <button type="button" class="button secondary" id="btnHistory">SOLICITAÇÕES FEITAS</button>
-            <button type="submit" class="button">Enviar Solicitação</button>
-        </form>
-        
-        <div id="statusMessage" class="info-message"></div>
-        <div class="footer" id="footerText"></div>
+            <form id="dersoForm">
+                <div class="form-group">
+                    <label for="email" class="required">E-mail Institucional ou Pessoal:</label>
+                    <input type="email" id="email" name="email" list="emailProviders" placeholder="exemplo@pm.ro.gov.br" required>
+                    <datalist id="emailProviders"></datalist>
+                    <span id="erroEmail" class="msg-erro">E-mail inválido</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="matricula" class="required">Matrícula (apenas números):</label>
+                    <input type="text" id="matricula" name="matricula" inputmode="numeric" placeholder="Ex: 100012345" required>
+                    <span id="erroMatricula" class="msg-erro">⚠️ MATRÍCULA NÃO LOCALIZADA</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" name="nome" readonly placeholder="Identificação automática">
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Tipo de Folga:</label>
+                    <div class="radio-group" id="radioFolga">
+                        <input type="radio" id="f24" name="folga" value="24H" required><label for="f24">24H</label>
+                        <input type="radio" id="f48" name="folga" value="48H"><label for="f48">48H</label>
+                        <input type="radio" id="f72" name="folga" value="72H"><label for="f72">72H</label>
+                        <input type="radio" id="f96" name="folga" value="96H"><label for="f96">96H</label>
+                        <input type="radio" id="fLE" name="folga" value="FOLGA LE"><label for="fLE">FOLGA LE</label>
+                        <input type="radio" id="f1" name="folga" value="1ª Folga"><label for="f1">1ª FOLGA</label>
+                        <input type="radio" id="f1" name="folga" value="2ª Folga"><label for="f2">2ª FOLGA</label>
+                        <input type="radio" id="fExp" name="folga" value="Expediente"><label for="fExp">EXPEDIENTE</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="data" class="required">Data da Folga:</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+
+                <button type="button" class="btn btn-outline" id="btnHistory" style="margin-bottom:10px;">📂 VER MINHAS SOLICITAÇÕES</button>
+                <button type="submit" class="btn btn-primary" id="btnEnviar">ENVIAR SOLICITAÇÃO</button>
+            </form>
+        </div>
+
+        <footer class="footer" id="footerText"></footer>
     </div>
 
-    <div id="historyModal" class="modal-base">
+    <div id="modalMsg" class="modal">
         <div class="modal-content">
-            <h3 style="color:var(--azul-marinho);margin-top:0">Meu Histórico</h3>
-            <div id="historyBox" class="history-list">Carregando...</div>
-            <button type="button" class="button" id="closeHistory">Fechar</button>
+            <div id="modalIcon" style="font-size: 50px;"></div>
+            <h3 id="modalTitle"></h3>
+            <p id="modalText"></p>
+            <div id="historyContent"></div> 
+            <button class="btn btn-primary" id="btnCloseModal">FECHAR</button>
         </div>
     </div>
 
-    <script>
-    // ***********************************************
-    // AQUI ESTÁ A NOVA URL ATUALIZADA:
-    // ***********************************************
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3FuQoK3JEZJl6zF2H1dTXNI4xAHgTKBk1g5oFhsR0LedGoVJP6xeipdJN2A9TJiv7wA/exec"; 
-    const emailProviders = ["gmail.com","hotmail.com","outlook.com","yahoo.com","terra.com.br","bol.com.br","pm.ro.gov.br"];
+<script>
+    const CONFIG = {
+        API_URL: "https://script.google.com/macros/s/AKfycbz-11arycDKX6Vwo26KmTeIqfjMMuIiPUpf5SjKd3PyIVqqttbRWTmNoMP8Y4iAXweUMQ/exec",
+        VERSAO: "4.5.2",
+        EMAIL_LIST: ["gmail.com","hotmail.com","outlook.com","yahoo.com","pm.ro.gov.br"],
+        ADMIN_EMAIL: "1cia.rondon@gmail.com"
+    };
 
-        window.employeeList = {};
-
-      async function fetchHistory() {
-    let mat = document.getElementById("matricula").value.trim();
-    if (!mat) {
-        alert("Digite sua matrícula primeiro.");
-        return;
+    const STATE = { employeeList: {}, isClosed: false, sessionLogs: [] };
+    
+    // --- FUNÇÃO DE LOGS ---
+    function registrarLog(acao, detalhes, tipo = "INFO") {
+        const agora = new Date().toLocaleString("pt-BR");
+        const logEntry = { data: agora, acao, detalhes, tipo };
+        STATE.sessionLogs.push(logEntry);
+        
+        const cores = { INFO: "🔵", SUCESSO: "🟢", AVISO: "🟡", ERRO: "🔴" };
+        console.log(`${cores[tipo] || "⚪"} [${agora}] ${acao}:`, detalhes);
     }
 
-    mat = standardizeMatricula(mat);
-    document.getElementById("matricula").value = mat;
+    const DOM = {
+        form: document.getElementById('dersoForm'),
+        email: document.getElementById('email'),
+        matricula: document.getElementById('matricula'),
+        matriculaConsulta: document.getElementById('matriculaConsulta'),
+        nome: document.getElementById('nome'),
+        data: document.getElementById('data'),
+        btnEnviar: document.getElementById('btnEnviar'),
+        btnHistory: document.getElementById('btnHistory'),
+        btnHistoryFechado: document.getElementById('btnHistoryFechado'),
+        consultaFechada: document.getElementById('consultaFechada'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        prazoBox: document.getElementById('prazoBox'),
+        modal: document.getElementById('modalMsg'),
+        historyContent: document.getElementById('historyContent'),
+        loading: document.getElementById('loadingScreen'),
+        formContent: document.getElementById('formContent'),
+        barra: document.getElementById('barraProgresso'),
+        footer: document.getElementById('footerText')
+    };
 
-    const modal = document.getElementById("historyModal");
-    const box = document.getElementById("historyBox");
+    window.onload = async () => {
+        registrarLog("SISTEMA", "Iniciando carregamento DERSO...");
+        try {
+            const [dResp, lResp] = await Promise.all([
+                fetch(`${CONFIG.API_URL}?action=datas`).then(r => r.json()),
+                fetch(`${CONFIG.API_URL}?action=lista`).then(r => r.json())
+            ]);
+            
+            STATE.employeeList = lResp;
+            DOM.loading.classList.add('is-hidden');
+            DOM.formContent.classList.remove('is-hidden');
+            
+            registrarLog("SISTEMA", "Dados sincronizados com sucesso", "SUCESSO");
+            
+            applyInstitutionalTheme();
+            monitorarPrazos(dResp.abertura, dResp.fechamento);
+            setupEvents();
+            updateFooter();
+            applyDarkModeStyles(); // Aplica adaptações de Modo Noturno
+        } catch (e) {
+            registrarLog("FALHA_CRITICA", e.message, "ERRO");
+            console.error("❌ Erro de Conexão Inicial:", e);
+            DOM.loading.innerHTML = "Falha crítica de comunicação com o servidor.";
+        }
+    };
 
-    modal.style.display = "flex";
-    box.innerHTML = "Buscando solicitações...";
+    // --- ADAPTAÇÃO DINÂMICA MODO NOTURNO ---
+    function applyDarkModeStyles() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            registrarLog("INTERFACE", "Modo Noturno detectado e aplicado");
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @media (prefers-color-scheme: dark) {
+                    body { background-color: #121212; color: #e0e0e0; }
+                    .container { background: #1e1e1e; border: 1px solid #333; }
+                    input:not([type="radio"]), select, textarea { 
+                        background: #2d2d2d !important; color: #fff !important; border-color: #444 !important; 
+                    }
+                    .radio-group label { background: #2d2d2d; border-color: #444; color: #eee; }
+                    .subtitle { color: #bbb; }
+                    #prazoBox { box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
+    function updateFooter() {
+        const now = new Date();
+        DOM.footer.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - versão ${CONFIG.VERSAO} - em ${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+    }
+
+    function monitorarPrazos(dataAbertura, dataFechamento) {
+    const abertura = new Date(dataAbertura).getTime();
+    const fechamento = new Date(dataFechamento).getTime();
+    const hoje = new Date();
+    
+    // --- LÓGICA DO MÊS SEGUINTE ---
+    const mesSeguinte = hoje.getMonth() + 1;
+    const ano = hoje.getFullYear();
+    const dataMinima = new Date(ano, mesSeguinte, 1);
+    const dataMaxima = new Date(ano, mesSeguinte + 1, 0); // Último dia do mês seguinte
+    
+    // Formatação para o atributo 'min' e 'max' (YYYY-MM-DD)
+    const minStr = dataMinima.toISOString().split('T')[0];
+    const maxStr = dataMaxima.toISOString().split('T')[0];
+    
+    DOM.data.min = minStr;
+    DOM.data.max = maxStr;
+    
+    // ALTERAÇÃO PARA CELERIDADE: O campo inicia vazio para exibir dd/mm/aaaa
+    DOM.data.value = ""; 
+
+    // Adiciona o texto informativo abaixo da data
+    let infoData = document.getElementById('infoPeriodo');
+    if (!infoData) {
+        infoData = document.createElement('small');
+        infoData.id = 'infoPeriodo';
+        infoData.style.display = 'block';
+        infoData.style.marginTop = '5px';
+        infoData.style.color = '#666';
+        DOM.data.parentNode.appendChild(infoData);
+    }
+    infoData.innerHTML = `📅 Período permitido: <b>${dataMinima.toLocaleDateString('pt-BR')}</b> a <b>${dataMaxima.toLocaleDateString('pt-BR')}</b>`;
+
+    const nomeMesRef = dataMinima.toLocaleString('pt-BR', { month: 'long' }).toUpperCase();
+    const ultimoDiaMes = dataMaxima.getTime();
+
+    setInterval(() => {
+        const agora = new Date().getTime();
+        const instDiv = document.getElementById("instMessage");
+        
+        DOM.prazoBox.classList.remove('estado-verde', 'estado-alerta', 'estado-urgente', 'estado-critico', 'estado-sucesso', 'estado-inspecao');
+
+        if (agora < abertura) {
+            STATE.isClosed = true;
+            DOM.form.style.display = "none";
+            instDiv.style.display = "none";
+            DOM.prazoBox.classList.add('estado-inspecao');
+            
+            const diff = abertura - agora;
+            const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000),
+                  m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+            
+            DOM.timerDisplay.innerHTML = `
+                <b style="color:#1A3C6E">ESTAMOS PASSANDO EM INSPEÇÃO AO CÓDIGO.</b><br>
+                <p style="margin: 10px 0;">Voltamos em: <br>
+                <span style="font-size:1.1rem; font-weight:bold;">${d}d ${h}h ${m}m ${s}s</span></p>
+                <span style="font-size:24px;">🫡👮‍♂️</span>`;
+        } 
+        else if (agora > fechamento) {
+            STATE.isClosed = true;
+            DOM.form.style.display = "none";
+            instDiv.style.display = "none";
+            
+            if (agora <= ultimoDiaMes) {
+                DOM.consultaFechada.style.display = "block";
+                DOM.btnHistoryFechado.style.display = "block";
+                DOM.prazoBox.classList.add('estado-sucesso');
+                DOM.timerDisplay.innerHTML = `
+                    <div style="padding:10px;">
+                        <b style="color:#2E7D32">MISSÃO CUMPRIDA!</b><br>
+                        <p style="font-size:14px; margin: 10px 0; line-height:1.4;">
+                            AS SOLICITAÇÕES DE DERSO PARA O MÊS DE <b>${nomeMesRef}</b> <br>
+                            FORAM ENCERRADAS EM <b>${new Date(fechamento).toLocaleString("pt-BR")}</b>.
+                        </p>
+                        <p style="font-size:13px; color:#555;">Você ainda pode consultar suas solicitações abaixo: 👮‍♂️</p>
+                    </div>`;
+            } else {
+                DOM.consultaFechada.style.display = "none";
+                DOM.timerDisplay.innerHTML = "⌛ Aguardando novo cronograma de escalas...";
+            }
+        } 
+        else {
+            STATE.isClosed = false;
+            DOM.form.style.display = "block";
+            instDiv.style.display = "block";
+            
+            const diff = fechamento - agora;
+            const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000),
+                  m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+
+            // --- LÓGICA DE URGÊNCIA ATUALIZADA ---
+            if (diff < 7200000) { // Menos de 2 horas (CRÍTICO)
+                DOM.prazoBox.classList.add('estado-critico');
+                DOM.timerDisplay.innerHTML = `🔥 <b>EMERGÊNCIA: TEMPO ACABANDO!</b><br>Fecha em: <b>${h}h ${m}m ${s}s</b>`;
+            } else if (diff < 21600000) { // Menos de 6 horas (URGENTE)
+                DOM.prazoBox.classList.add('estado-urgente');
+                DOM.timerDisplay.innerHTML = `⚠️ <b>RÁPIDO! O TEMPO ESTÁ ACABANDO</b><br>Resta apenas: <b>${h}h ${m}m ${s}s</b>`;
+            } else if (diff < 86400000) { // Menos de 24 horas (ALERTA)
+                DOM.prazoBox.classList.add('estado-alerta');
+                DOM.timerDisplay.innerHTML = `⏳ <b>SISTEMA FECHA EM BREVE</b><br>Tempo restante: ${h}h ${m}m ${s}s`;
+            } else { // VERDE
+                DOM.prazoBox.classList.add('estado-verde');
+                DOM.timerDisplay.innerHTML = `⚡ <b>OPERACIONAL ATIVO</b><br><small>Encerra em: ${d}d ${h}h ${m}m ${s}s</small>`;
+            }
+        }
+    }, 1000);
+}
+
+    function applyInstitutionalTheme() {
+        const hoje = new Date(), mes = hoje.getMonth(), dia = hoje.getDate();
+        const instDiv = document.getElementById("instMessage");
+        const aplicar = (msg) => instDiv.innerHTML = msg;
+
+        const temas = {
+            "1-4": () => aplicar(`🌳 Rondônia: ${hoje.getFullYear() - 1982} anos de história, bravura e compromisso.`),
+            "5-1": () => aplicar("🛠️ Dia do Trabalhador: O serviço público é a engrenagem que move a cidadania."),
+            "9-7": () => aplicar("🇧🇷 7 de Setembro: A independência se constrói com ordem, progresso e segurança."),
+            "11-15": () => aplicar(`📜 15 de Novembro: A República se fortalece com instituições sólidas. ${hoje.getFullYear() - 1889} anos de Proclamação.`),
+            "11-20": () => aplicar("✊ Consciência Negra: A união e o respeito às raízes constroem uma sociedade justa. ⚖️"),
+            "12-7": () => aplicar(`🛡️ 1º BPM: O Sentinela da Capital. ${hoje.getFullYear() - 1983} anos de tradição e compromisso.`)
+        };
+
+        const chave = `${mes+1}-${dia}`;
+        if (temas[chave]) {
+            temas[chave]();
+        } else {
+            const mensais = {
+                0: "🎭 Janeiro: Planejamento estratégico para garantir a segurança em grandes eventos.",
+                1: "🎊 Fevereiro: Foco e prevenção. Nossa missão é garantir a tranquilidade de todos.",
+                2: "🌷 Março: Homenagem às mulheres da Corporação que honram a farda.",
+                3: "🕊️ Abril: Tempo de renovação, reflexão e fortalecimento da união familiar.",
+                4: "🤱 Maio: Mães, a base de tudo. Reconhecemos sua dupla missão.",
+                5: "🔥 Junho: Valorizando a cultura e as tradições que formam nossa identidade.",
+                6: "👮 Julho: Disciplina e prontidão no policiamento ostensivo.",
+                7: "👔 Agosto: A presença familiar é o alicerce para o equilíbrio do profissional.",
+                8: "🇧🇷 Setembro: Renovando nosso juramento de servir e proteger o Brasil.",
+                9: "🎗️ Outubro: Prevenção é o melhor caminho para a saúde.",
+                10: `📜 Novembro: Compromisso republicano e respeito à diversidade. ${hoje.getFullYear() - 1889}º ano da República.`,
+                11: "🎄 Dezembro: Planejamento e compromisso garantem um final de ano seguro. ✨"
+            };
+            aplicar(mensais[mes] || "DERSO 1º BPM");
+        }
+    }
+
+    function setupEvents() {
+        DOM.email.oninput = (e) => {
+            const val = e.target.value;
+            const datalist = document.getElementById('emailProviders');
+            datalist.innerHTML = "";
+            if (val.includes("@")) {
+                const prefix = val.split("@")[0];
+                CONFIG.EMAIL_LIST.forEach(p => datalist.innerHTML += `<option value="${prefix}@${p}">`);
+            }
+            updateProgress();
+        };
+
+        DOM.matricula.onblur = () => {
+            let val = DOM.matricula.value.trim();
+            if (!val) return;
+            if (val.length <= 6 && !val.startsWith("1000")) val = "1000" + val;
+            DOM.matricula.value = val;
+            
+            if (STATE.employeeList[val]) {
+                DOM.nome.value = STATE.employeeList[val];
+                document.getElementById('erroMatricula').style.display = "none";
+                registrarLog("VALIDACAO", `Matrícula ${val} identificada como: ${STATE.employeeList[val]}`, "SUCESSO");
+            } else {
+                DOM.nome.value = "";
+                document.getElementById('erroMatricula').style.display = "block";
+                registrarLog("VALIDACAO", `Matrícula ${val} não encontrada`, "AVISO");
+            }
+            updateProgress();
+        };
+
+        DOM.form.oninput = updateProgress;
+        DOM.btnHistory.onclick = () => fetchHistory(DOM.matricula.value);
+        DOM.btnHistoryFechado.onclick = () => fetchHistory(DOM.matriculaConsulta.value);
+        document.getElementById('btnCloseModal').onclick = () => DOM.modal.style.display = 'none';
+        DOM.form.onsubmit = handleSubmit;
+    }
+
+    function updateProgress() {
+        const fields = [
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(DOM.email.value),
+            DOM.nome.value.length > 3,
+            !!document.querySelector('input[name="folga"]:checked'),
+            DOM.data.value !== ""
+        ];
+        const perc = (fields.filter(Boolean).length / 4) * 100;
+        DOM.barra.style.width = perc + "%";
+        DOM.barra.classList.toggle('barra-completa', perc === 100);
+    }
+
+    async function fetchHistory(mat) {
+        if (!mat) {
+            registrarLog("PESQUISA", "Tentativa de consulta sem matrícula", "AVISO");
+            return showModal("AVISO", "Insira a matrícula para consultar.", "📂", "#FFD700");
+        }
+        registrarLog("PESQUISA", `Buscando histórico para: ${mat}`);
+        showModal("CONSULTANDO", "Buscando seus registros...", "⏳", "#1A3C6E");
+        try {
+            const r = await fetch(`${CONFIG.API_URL}?action=historico&matricula=${mat}`).then(res => res.json());
+            if (r.dados && r.dados.length > 0) {
+                registrarLog("PESQUISA", `${r.dados.length} registros encontrados para ${mat}`, "SUCESSO");
+                const html = r.dados.map(i => `<div class="historico-item"><span>📅 ${i.data}</span><b>${i.folga}</b></div>`).join('');
+                DOM.historyContent.innerHTML = html;
+                showModal(r.nome || "REGISTROS", "Solicitações encontradas:", "📋", "#1A3C6E", true);
+            } else {
+                registrarLog("PESQUISA", `Nenhum registro encontrado para ${mat}`, "INFO");
+                showModal("NADA ENCONTRADO", "Não há registros para esta matrícula.", "🔎", "#777");
+            }
+        } catch (e) {
+            registrarLog("PESQUISA_FALHA", e.message, "ERRO");
+            showModal("ERRO", "Falha na comunicação com o banco de dados.", "❌", "red");
+        }
+    }
+
+    async function handleSubmit(e) {
+    e.preventDefault();
+    DOM.btnEnviar.disabled = true;
+    DOM.btnEnviar.textContent = "ENVIANDO...";
+    
+    const mLog = DOM.matricula.value;
+    registrarLog("ENVIO", `Iniciando tentativa de envio para matrícula: ${mLog}`);
 
     try {
-        const response = await fetch(
-            `${SCRIPT_URL}?action=historico&matricula=${encodeURIComponent(mat)}`
-        );
+        const formData = new URLSearchParams(new FormData(DOM.form));
+        const response = await fetch(CONFIG.API_URL, { method: 'POST', body: formData }).then(r => r.json());
 
-        console.log("Status HTTP:", response.status);
-
-        const data = await response.json();
-        console.log("Resposta bruta do backend:", data);
-
-        if (!Array.isArray(data.historico) || data.historico.length === 0) {
-            box.innerHTML = `
-                <p><strong>${data.nome || "Usuário"}</strong></p>
-                <p>Nenhuma solicitação encontrada.</p>
-            `;
-            return;
+        if (response.success) {
+            registrarLog("ENVIO", `Solicitação de ${mLog} gravada com sucesso`, "SUCESSO");
+            showModal("SUCESSO!", "Sua solicitação foi registrada no banco de dados.", "✔", "#2E7D32");
+            
+            // --- ALTERAÇÃO PARA CELERIDADE: RESET SELETIVO ---
+            DOM.data.value = ""; // Limpa a data
+            document.querySelectorAll('input[name="folga"]').forEach(radio => radio.checked = false); // Desmarca a folga
+            
+            updateProgress();
+        } else {
+            registrarLog("ENVIO_NEGADO", `Servidor recusou: ${response.message}`, "AVISO");
+            if (response.message.includes("duplicada")) {
+                showModal("SOLICITAÇÃO DUPLICADA", "Você já solicitou folga para esta data.", "🚫", "orange");
+                
+                // Limpa apenas a data e folga também em caso de duplicidade para ele tentar outra
+                DOM.data.value = "";
+                document.querySelectorAll('input[name="folga"]').forEach(radio => radio.checked = false);
+                updateProgress();
+            } else {
+                showModal("AVISO", response.message, "⚠️", "orange");
+            }
         }
-
-        let html = `<p><strong>${data.nome}</strong></p><ul style="padding:0">`;
-
-        data.historico.forEach(h => {
-            const statusCor =
-                h.Status === 'APROVADA' ? 'var(--sucesso)' :
-                h.Status === 'RECUSADA' ? 'var(--erro)' : '#666';
-
-            const statusTexto =
-                (h.Status && h.Status.toUpperCase() !== 'PENDENTE') ? h.Status : '';
-
-            html += `
-                <li style="border-bottom:1px solid #eee;padding:8px 0">
-                    ${h.Data} - ${h.Folga}<br>
-                    <span style="color:${statusCor};font-weight:bold;font-size:12px">
-                        ${statusTexto}
-                    </span>
-                </li>
-            `;
-        });
-
-        html += "</ul>";
-        box.innerHTML = html;
-
-    } catch (e) {
-        console.error(e);
-        box.innerHTML = "<p>Erro ao conectar com o servidor.</p>";
+    } catch (err) {
+        registrarLog("ENVIO_CRITICO", err.message, "ERRO");
+        showModal("ERRO DE CONEXÃO", "Não foi possível enviar sua solicitação. Verifique sua internet.", "📡", "red");
+    } finally {
+        DOM.btnEnviar.disabled = false;
+        DOM.btnEnviar.textContent = "ENVIAR SOLICITAÇÃO";
     }
 }
 
-
-        const progressBar = document.getElementById("progressBar");
-        const formDiv = document.getElementById("dersoForm");
-        const initialLoadingDiv = document.getElementById("initialLoading");
-        const loadingOverlay = document.getElementById("loadingOverlay");
-        const prazoMessageDiv = document.getElementById("prazoMessage");
-
-        function setProgress(percent) {
-            progressBar.style.width = percent + "%";
-        }
-
-        function updateEmailDatalist() {
-            const emailInput = document.getElementById("email");
-            const datalist = document.getElementById("emailProviders");
-            const value = emailInput.value;
-            const atIndex = value.indexOf("@");
-            if (atIndex === -1) { datalist.innerHTML = ""; return; }
-            const domainPart = value.slice(atIndex + 1).toLowerCase();
-            const filtered = emailProviders.filter(p => p.startsWith(domainPart));
-            datalist.innerHTML = "";
-            filtered.forEach(p => { const option = document.createElement("option"); option.value = value.slice(0, atIndex+1)+p; datalist.appendChild(option); });
-        }
-
-        function standardizeMatricula(m) {
-            let num = m.replace(/\D/g,'').slice(0,9);
-            return num.startsWith("1000") ? num : "1000"+num;
-        }
-
-        async function checkDuplicity(matricula, data, folga) {
-            const url = `${SCRIPT_URL}?action=check_duplicidade&matricula=${matricula}&data=${data}&folga=${folga}`;
-            try {
-                const response = await fetch(url);
-                const dataJson = await response.json();
-                return dataJson.duplicado === true; 
-            } catch (e) { return false; }
-        }
-
-        function loadEmployeeList() {
-            setProgress(20);
-            fetch(SCRIPT_URL+"?action=lista")
-            .then(r => r.json())
-            .then(data => {
-                window.employeeList = data;
-                setProgress(40);
-                document.getElementById("matricula").disabled = false;
-            }).catch(()=>{
-                document.getElementById("matriculaError").textContent="Erro ao carregar lista.";
-            });
-        }
-
-        function checkMatricula() {
-            const m = document.getElementById("matricula");
-            const n = document.getElementById("nome");
-            const e = document.getElementById("matriculaError");
-            if (!m.value.trim()) { n.value = ""; e.textContent = ""; m.classList.remove("is-valid", "is-invalid"); return; }
-            const standardized = standardizeMatricula(m.value);
-            m.value = standardized;
-            m.classList.remove("is-valid", "is-invalid");
-            if(window.employeeList[standardized]) { n.value = window.employeeList[standardized]; e.textContent = ""; m.classList.add("is-valid"); }
-            else { n.value = ""; e.textContent = "Matrícula não encontrada!"; m.classList.add("is-invalid"); }
-        }
-
-        function setDateLimits() {
-            const dateInput = document.getElementById("data");
-            const messageDiv = document.getElementById("dateLimitMessage"); 
-            const today = new Date();
-            let nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-            let nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
-            dateInput.min = nextMonthStart.toISOString().split("T")[0];
-            dateInput.max = nextMonthEnd.toISOString().split("T")[0];
-            messageDiv.textContent = `Período permitido: ${nextMonthStart.toLocaleDateString("pt-BR")} a ${nextMonthEnd.toLocaleDateString("pt-BR")}.`;
-        }
-
-        function formatDateBR(d) {
-            if(!d) return "";
-            const [y,m,day] = d.split("-");
-            return `${day}/${m}/${y}`;
-        }
-
-        async function submitForm(e){
-            e.preventDefault();
-            const btn = document.querySelector('button[type="submit"]');
-            const matInput = document.getElementById("matricula");
-            const folgaRadio = document.querySelector('input[name="folga"]:checked');
-            const dataValue = document.getElementById("data").value;
-            const dataBR = formatDateBR(dataValue);
-
-            if(matInput.classList.contains("is-invalid") || !folgaRadio) return;
-
-            btn.disabled = true;
-            loadingOverlay.style.display = "flex";
-            
-            try {
-                const isDuplicate = await checkDuplicity(matInput.value, dataBR, folgaRadio.value);
-                if (isDuplicate) { showMessage(`⚠️ Já existe solicitação para esta data/folga.`, "error"); return; }
-                
-                const fd = new FormData(document.getElementById("dersoForm"));
-                fd.set("data", dataBR);
-                const resp = await fetch(SCRIPT_URL, {method: "POST", body: new URLSearchParams(fd)});
-                const result = await resp.json();
-                if(result.success){ showMessage("✅ Enviado com sucesso!","success"); document.getElementById("dersoForm").reset(); checkMatricula(); }
-                else { showMessage("⚠️ Erro ao enviar.", "error"); }
-            } catch(error) { showMessage("⚠️ Erro de conexão.", "error"); }
-            finally { btn.disabled = false; loadingOverlay.style.display = "none"; }
-        }
-
-        function showMessage(msg, type = "success") {
-            const div = document.getElementById("statusMessage");
-            div.className = "info-message " + type;
-            div.innerHTML = msg; div.style.display = "block";
-            setTimeout(() => { div.style.display = "none"; }, 5000);
-        }
-
-        function showPersistentMessage(msg, type = "success") {
-            prazoMessageDiv.className = "info-message " + type;
-            prazoMessageDiv.innerHTML = msg; prazoMessageDiv.style.display = "block";
-        } 
-        
-function initializeForm() {
-            loadEmployeeList();
-            setDateLimits();
-            const footer = document.getElementById("footerText");
-
-            // Busca os dados da planilha com "cache busting"
-            fetch(`${SCRIPT_URL}?action=datas&t=${new Date().getTime()}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.error) {
-                        showPersistentMessage(`⚠️ Erro ao verificar o prazo: ${data.error}`, "error");
-                        initialLoadingDiv.style.display = "none";
-                        return;
-                    }
-
-                    initialLoadingDiv.style.display = "none";
-
-                    const atualizarCronometro = () => {
-                        const agora = new Date();
-                        // Forçando fuso horário de Rondônia
-                        const abertura = new Date(data.abertura + "-04:00");
-                        const fechamento = new Date(data.fechamento + "-04:00");
-
-                        if (agora < abertura) {
-                            // CASO 1: AINDA NÃO ABRIU
-                            const diff = abertura - agora;
-                            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                            const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-                            showPersistentMessage(`⏳ **FORMULÁRIO FECHADO**<br>Abre em: ${d}d ${h}h ${m}m ${s}s`, "error");
-                            formDiv.style.display = "none";
-                        } 
-                        else if (agora > fechamento) {
-                            // CASO 2: PRAZO ENCERRADO
-                            showPersistentMessage(`⛔ **FORMULÁRIO ENCERRADO**<br>O prazo terminou em ${fechamento.toLocaleString("pt-BR")}`, "error");
-                            formDiv.style.display = "none";
-                            clearInterval(intervalo);
-                        } 
-                        else {
-                            // CASO 3: SISTEMA ABERTO
-                            formDiv.style.display = "block";
-                            const diff = fechamento - agora;
-                            
-                            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                            const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-                            let tempoTexto = `${d}d ${h}h ${m}m ${s}s`;
-                            
-                            // Lógica de alerta crítico (menos de 2 horas)
-                            if (diff < (2 * 60 * 60 * 1000)) {
-                                showPersistentMessage(`⚠️ **URGENTE! ENCERRAMENTO EM:**<br><span style="color: #ff0000; font-size: 1.2em; animation: blinker 1s linear infinite;">${tempoTexto}</span>`, "error");
-                            } else {
-                                showPersistentMessage(`🚨 **FORMULÁRIO ABERTO!**<br>Encerra em: **${tempoTexto}**`, "success");
-                            }
-                        }
-                    };
-
-                    // Inicia e define a atualização a cada 1 segundo
-                    atualizarCronometro();
-                    const intervalo = setInterval(atualizarCronometro, 1000);
-                })
-                .catch(error => {
-                    showPersistentMessage(`⚠️ Falha ao conectar com o servidor.`, "error");
-                    initialLoadingDiv.style.display = "none";
-                });
-
-            // Atualiza o rodapé com mês/ano atual
-            const now = new Date();
-            footer.textContent = `Desenvolvido na 1ª Cia do 1º BPM pelo PVSA Pedro Porto - ${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
-        }
-
-            document.addEventListener("DOMContentLoaded",()=>{
-            initializeForm();
-            document.getElementById("matricula").addEventListener("blur",checkMatricula);
-            document.getElementById("email").addEventListener("input",updateEmailDatalist);
-            document.getElementById("dersoForm").addEventListener("submit",submitForm);
-            document.getElementById("btnHistory").onclick = fetchHistory;
-            document.getElementById("closeHistory").onclick = () => { document.getElementById("historyModal").style.display = "none"; };
-        });
-
-    </script>
+    function showModal(title, text, icon, color, showHistory = false) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalText').textContent = text;
+        const iconDiv = document.getElementById('modalIcon');
+        iconDiv.textContent = icon;
+        iconDiv.style.color = color;
+        DOM.historyContent.classList.toggle('is-hidden', !showHistory);
+        DOM.modal.style.display = 'flex';
+    }
+</script>
 </body>
 </html>
