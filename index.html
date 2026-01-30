@@ -362,7 +362,7 @@
                         <input type="radio" id="f96" name="folga" value="96H"><label for="f96">96H</label>
                         <input type="radio" id="fLE" name="folga" value="FOLGA LE"><label for="fLE">FOLGA LE</label>
                         <input type="radio" id="f1" name="folga" value="1ª Folga"><label for="f1">1ª FOLGA</label>
-                        <input type="radio" id="f1" name="folga" value="2ª Folga"><label for="f2">2ª FOLGA</label>
+                        <input type="radio" id="f2" name="folga" value="2ª Folga"><label for="f2">2ª FOLGA</label>
                         <input type="radio" id="fExp" name="folga" value="Expediente"><label for="fExp">EXPEDIENTE</label>
                     </div>
                 </div>
@@ -392,8 +392,8 @@
 
 <script>
     const CONFIG = {
-        API_URL: "https://script.google.com/macros/s/AKfycbz-11arycDKX6Vwo26KmTeIqfjMMuIiPUpf5SjKd3PyIVqqttbRWTmNoMP8Y4iAXweUMQ/exec",
-        VERSAO: "4.5.2",
+        API_URL: "https://script.google.com/macros/s/AKfycbydNKKdRg-4TipeHqTYXNbJYTGiVZ899pGWzBQy4-AwnNV3PmmYOgZt8UW2BhmF6UVvyg/exec",
+        VERSAO: "4.5.3",
         EMAIL_LIST: ["gmail.com","hotmail.com","outlook.com","yahoo.com","pm.ro.gov.br"],
         ADMIN_EMAIL: "1cia.rondon@gmail.com"
     };
@@ -591,41 +591,58 @@
     }, 1000);
 }
 
-    function applyInstitutionalTheme() {
-        const hoje = new Date(), mes = hoje.getMonth(), dia = hoje.getDate();
-        const instDiv = document.getElementById("instMessage");
-        const aplicar = (msg) => instDiv.innerHTML = msg;
+function applyInstitutionalTheme(matriculaLogada = null) {
+    const hoje = new Date();
+    const diaAtual = hoje.getDate();
+    const mesAtual = hoje.getMonth();
+    const chaveHoje = `${diaAtual}-${mesAtual + 1}`;
+    
+    // Mês de referência (Mês seguinte para a escala)
+    const dataRef = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
+    const mesReferencia = dataRef.getMonth(); 
 
-        const temas = {
-            "1-4": () => aplicar(`🌳 Rondônia: ${hoje.getFullYear() - 1982} anos de história, bravura e compromisso.`),
-            "5-1": () => aplicar("🛠️ Dia do Trabalhador: O serviço público é a engrenagem que move a cidadania."),
-            "9-7": () => aplicar("🇧🇷 7 de Setembro: A independência se constrói com ordem, progresso e segurança."),
-            "11-15": () => aplicar(`📜 15 de Novembro: A República se fortalece com instituições sólidas. ${hoje.getFullYear() - 1889} anos de Proclamação.`),
-            "11-20": () => aplicar("✊ Consciência Negra: A união e o respeito às raízes constroem uma sociedade justa. ⚖️"),
-            "12-7": () => aplicar(`🛡️ 1º BPM: O Sentinela da Capital. ${hoje.getFullYear() - 1983} anos de tradição e compromisso.`)
-        };
+    const instDiv = document.getElementById("instMessage");
+    const aplicar = (msg) => instDiv.innerHTML = msg;
 
-        const chave = `${mes+1}-${dia}`;
-        if (temas[chave]) {
-            temas[chave]();
-        } else {
-            const mensais = {
-                0: "🎭 Janeiro: Planejamento estratégico para garantir a segurança em grandes eventos.",
-                1: "🎊 Fevereiro: Foco e prevenção. Nossa missão é garantir a tranquilidade de todos.",
-                2: "🌷 Março: Homenagem às mulheres da Corporação que honram a farda.",
-                3: "🕊️ Abril: Tempo de renovação, reflexão e fortalecimento da união familiar.",
-                4: "🤱 Maio: Mães, a base de tudo. Reconhecemos sua dupla missão.",
-                5: "🔥 Junho: Valorizando a cultura e as tradições que formam nossa identidade.",
-                6: "👮 Julho: Disciplina e prontidão no policiamento ostensivo.",
-                7: "👔 Agosto: A presença familiar é o alicerce para o equilíbrio do profissional.",
-                8: "🇧🇷 Setembro: Renovando nosso juramento de servir e proteger o Brasil.",
-                9: "🎗️ Outubro: Prevenção é o melhor caminho para a saúde.",
-                10: `📜 Novembro: Compromisso republicano e respeito à diversidade. ${hoje.getFullYear() - 1889}º ano da República.`,
-                11: "🎄 Dezembro: Planejamento e compromisso garantem um final de ano seguro. ✨"
-            };
-            aplicar(mensais[mes] || "DERSO 1º BPM");
+    // 1. PRIORIDADE MÁXIMA: Aniversário do Combatente Logado
+    if (matriculaLogada && STATE.employeeList[matriculaLogada]) {
+        const militar = STATE.employeeList[matriculaLogada];
+        if (militar.niver === chaveHoje) {
+            const primeiroNome = (militar.nome || "").split(' ')[0];
+            return aplicar(`🎂 <b>Parabéns, ${primeiroNome}!</b> O 1º BPM celebra seu dia. Saúde e vida longa, combatente! 🫡`);
         }
     }
+
+    // 2. PRIORIDADE MÉDIA: Datas Comemorativas (Hoje)
+    const temasPontuais = {
+        "4-1": `🌳 Rondônia: ${hoje.getFullYear() - 1982} anos de história e bravura.`,
+        "1-5": "🛠️ Dia do Trabalhador: O serviço público move a cidadania.",
+        "7-9": "🇧🇷 7 de Setembro: Independência se constrói com Ordem e Progresso.",
+        "7-12": `🛡️ 1º BPM: O Sentinela da Capital. ${hoje.getFullYear() - 1983} anos de compromisso.`
+    };
+
+    if (temasPontuais[chaveHoje]) {
+        return aplicar(temasPontuais[chaveHoje]);
+    }
+
+    // 3. PADRÃO: Mensagem Mensal (Baseada no Mês da Escala - Mês Seguinte)
+    const mensais = {
+        0: "🎭 Janeiro: Planejamento estratégico para o novo ano.",
+        1: "🎊 Fevereiro: Foco e prevenção na segurança dos eventos.",
+        2: "🌷 Março: Homenagem às mulheres que honram a farda.",
+        3: "🕊️ Abril: Tempo de renovação e fortalecimento da união.",
+        4: "🤱 Maio: Mães, a base de tudo. Reconhecemos sua missão.",
+        5: "🔥 Junho: Valorizando a cultura e as tradições locais.",
+        6: "👮 Julho: Disciplina e prontidão no policiamento ostensivo.",
+        7: "👔 Agosto: A presença familiar é o alicerce do profissional.",
+        8: "🇧🇷 Setembro: Renovando nosso juramento de servir e proteger.",
+        9: "🎗️ Outubro: Prevenção é o melhor caminho para a saúde.",
+        10: "📜 Novembro: Compromisso com os ideais da República.",
+        11: "🎄 Dezembro: Planejamento garante um final de ano seguro. ✨"
+    };
+
+    aplicar(mensais[mesReferencia] || "DERSO 1º BPM");
+}
 
     function setupEvents() {
         DOM.email.oninput = (e) => {
@@ -646,13 +663,18 @@
             DOM.matricula.value = val;
             
             if (STATE.employeeList[val]) {
-                DOM.nome.value = STATE.employeeList[val];
+                const militar = STATE.employeeList[val];
+                DOM.nome.value = typeof militar === 'object' ? militar.nome : militar;
                 document.getElementById('erroMatricula').style.display = "none";
-                registrarLog("VALIDACAO", `Matrícula ${val} identificada como: ${STATE.employeeList[val]}`, "SUCESSO");
+                registrarLog("VALIDACAO", `Matrícula ${val} identificada`, "SUCESSO");
+                
+                // Dispara o tema institucional com a matrícula logada
+                applyInstitutionalTheme(val);
             } else {
                 DOM.nome.value = "";
                 document.getElementById('erroMatricula').style.display = "block";
                 registrarLog("VALIDACAO", `Matrícula ${val} não encontrada`, "AVISO");
+                applyInstitutionalTheme(); // Volta ao tema padrão
             }
             updateProgress();
         };
