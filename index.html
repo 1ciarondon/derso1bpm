@@ -55,22 +55,44 @@
         z-index: 3;
     }
 
-    .barra-completa {
-        background-color: var(--sucesso-verde) !important;
-        box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
-    }
+   .barra-completa {
+    animation: brilho 1s ease-in-out;
+}
 
-    .header { text-align: center; margin-bottom: 25px; }
+@keyframes brilho {
+    0% { box-shadow: 0 0 0 rgba(46,125,50,0); }
+    50% { box-shadow: 0 0 12px rgba(46,125,50,0.6); }
+    100% { box-shadow: 0 0 0 rgba(46,125,50,0); }
+}
 
-    .logos {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 15px;
-    }
+
+   .header {
+    padding-bottom: 20px;
+   text-align: center;
+    background: linear-gradient(
+        180deg,
+        rgba(26, 60, 110, 0.05),
+        transparent
+    );
+    border-radius: 12px;
+}
+
+
+   .logos {
+    background: #f8fafc;
+    padding: 10px 15px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
 
     .logos img {
-        height: 75px;
+       height: 75px;
+       width: auto;
         filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
         transition: var(--transicao);
     }
@@ -81,6 +103,7 @@
         color: var(--azul-marinho);
         font-size: 22px;
         margin: 0;
+       text-align: center;
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 900;
@@ -97,40 +120,107 @@
 
     .subtitle {
         font-size: 13px;
+        text-align: center;
         color: #555;
         line-height: 1.5;
         margin-bottom: 25px;
         font-weight: 500;
     }
 
-    /* --- PRAZOBOX E ESTADOS --- */
-    #prazoBox {
-        padding: 18px;
-        text-align: center;
-        border-radius: var(--raio-padrao);
-        margin-bottom: 20px;
-        transition: var(--transicao);
-        border: 1.5px solid #eee;
-        background: #fafafa;
-    }
 
-    .estado-verde { background: #E8F5E9; border-color: #A5D6A7; color: #1B5E20; }
-    .estado-urgente { background: #FFF3E0; border-color: #FFCC80; color: #E65100; transform: scale(1.02); }
-    .estado-sucesso { background: #E8F5E9 !important; border: 2px solid #2E7D32 !important; color: #2E7D32 !important; }
-    .estado-inspecao { background: #fdfdfd !important; border: 2px dashed #1A3C6E !important; color: #1A3C6E !important; }
-    .estado-alerta { background: #fff3e0; border-color: var(--alerta-laranja); color: #e65100; }
-    
-    .estado-critico { 
-        background: #ffebee; border-color: var(--critico-vermelho); color: var(--critico-vermelho);
-        animation: pulse-glow 1.5s infinite; transform: scale(1.02);
-        font-weight: bold;
-    }
+/* --- PRAZOBOX E ESTADOS --- */
+#prazoBox {
+    padding: 18px;
+   position: relative;
+    text-align: center;
+    border-radius: var(--raio-padrao);
+    margin-bottom: 20px;
+    transition: var(--transicao);
+    border: 1.5px solid #eee;
+    background: linear-gradient(180deg, #fafafa, #fdfdfd);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+}
 
-    @keyframes pulse-glow {
-        0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
-    }
+   #prazoBox::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--raio-padrao);
+    pointer-events: none;
+    transition: var(--transicao);
+}
+   
+   #prazoBox.ok::before {
+    box-shadow: 0 0 0 2px rgba(46,125,50,0.15);
+}
+
+/* Título interno do PrazoBox */
+#prazoBox strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    color: var(--azul-marinho);
+    text-transform: uppercase;
+}
+
+   #prazoBox.ok #timerDisplay {
+    color: var(--sucesso-verde);
+}
+
+#prazoBox.alerta #timerDisplay {
+    color: var(--alerta-laranja);
+}
+
+#prazoBox.erro #timerDisplay {
+    color: var(--critico-vermelho);
+}
+
+#prazoBox.estado-verde { border-color: var(--sucesso-verde); background:#f1f8f4; }
+   
+#prazoBox.estado-alerta { border-color:#f0ad4e; background:#fff7ed; }
+   
+#prazoBox.estado-critico { border-color:var(--critico-vermelho); background:#fdecea; }
+   
+
+/* Texto principal de status / timer */
+#timerDisplay {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.4;
+}
+
+/* Bloco de consulta quando fechado */
+#consultaFechada {
+    display: none;
+    margin-top: 15px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 15px;
+}
+
+#consultaFechada input {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Estados institucionais (opcionais e prontos para uso) */
+#prazoBox.ok {
+    border-color: var(--sucesso-verde);
+    background: #f1f8f4;
+}
+
+#prazoBox.alerta {
+    border-color: #f0ad4e;
+    background: #fff7ed;
+}
+
+#prazoBox.erro {
+    border-color: var(--critico-vermelho);
+    background: #fdecea;
+}
+
 
     #instMessage {
         font-size: 0.9rem;
@@ -159,7 +249,12 @@
 
     .required::after { content: " *"; color: var(--critico-vermelho); }
 
-    input:not([type="radio"]) {
+   input.valido {
+    border-color: var(--sucesso-verde);
+    background: #f1f8f4;
+} 
+   
+   input:not([type="radio"]) {
         width: 100%;
         padding: 14px;
         border: 1.5px solid #e1e4e8;
@@ -241,6 +336,8 @@
     .btn-outline:hover { background: #f8f9fa; border-color: #999; }
 
     .btn-primary {
+       font-size: 14px;
+       letter-spacing: 1px;
         background: var(--azul-marinho);
         color: #fff;
         box-shadow: 0 4px 12px rgba(26, 60, 110, 0.2);
@@ -252,7 +349,7 @@
         box-shadow: 0 6px 15px rgba(26, 60, 110, 0.3);
     }
 
-    .btn:disabled { background: #cbd5e0 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .btn:disabled { background: #cbd5e0 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; opacity: 0.7; }
 
     /* --- MODAL E COMPONENTES --- */
     .modal {
@@ -275,6 +372,14 @@
         text-align: center;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
     }
+
+   .modal-content h3 {
+    margin-bottom: 10px;
+}
+
+.modal-content p {
+    margin-bottom: 15px;
+}
 
     #historyContent {
         margin: 20px 0;
@@ -311,6 +416,23 @@
         color: #888;
         line-height: 1.6;
     }
+
+.footer::before {
+    content: "";
+    display: block;
+    height: 2px;
+    width: 60%;
+    margin: 0 auto 10px auto;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--ouro-brilhante),
+        transparent
+    );
+    border-radius: 2px;
+}
+
+
 
     /* --- MODO NOTURNO MELHORADO --- */
     @media (prefers-color-scheme: dark) {
@@ -350,19 +472,37 @@
             <p class="subtitle">Formulário de Solicitação de Diária Especial de Reforço do Serviço Operacional</p>
         </header>
 
-        <div id="loadingScreen" style="text-align: center; padding: 50px 0;">
+        <div id="loadingScreen" style="text-align: center; padding: 50px 0;role="status" aria-live="polite;">
             <p>Sincronizando dados com o sistema...</p>
         </div>
 
         <div id="formContent" class="is-hidden">
-            <section id="prazoBox">
-                <div id="timerDisplay">⌛ CALCULANDO PRAZO...</div>
-                
-                <div id="consultaFechada" style="display:none; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px;">
-                    <input type="text" id="matriculaConsulta" placeholder="Matrícula p/ consulta" inputmode="numeric" style="margin-bottom:10px; text-align:center;">
-                    <button type="button" class="btn btn-outline" id="btnHistoryFechado">📂 VER MINHAS SOLICITAÇÕES</button>
-                </div>
-            </section>
+          <section id="prazoBox">
+    <strong class="prazoTitulo">
+        STATUS DO SISTEMA
+    </strong>
+
+    <div id="timerDisplay">
+        ⌛ CALCULANDO PRAZO...
+    </div>
+    
+    <div id="consultaFechada">
+        <input 
+            type="text" 
+            id="matriculaConsulta" 
+            placeholder="Matrícula p/ consulta" 
+            inputmode="numeric"
+        >
+        <button 
+            type="button" 
+            class="btn btn-outline" 
+            id="btnHistoryFechado"
+        >
+            📂 VER MINHAS SOLICITAÇÕES
+        </button>
+    </div>
+</section>
+
 
             <div id="instMessage"></div>
 
@@ -381,7 +521,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="nome">Nome de Guerra:</label>
+                    <label for="nome">Nome Completo:</label>
                     <input type="text" id="nome" name="nome" readonly placeholder="Identificação automática">
                 </div>
 
@@ -424,8 +564,8 @@
 
 <script>
     const CONFIG = {
-        API_URL: "https://script.google.com/macros/s/AKfycbydNKKdRg-4TipeHqTYXNbJYTGiVZ899pGWzBQy4-AwnNV3PmmYOgZt8UW2BhmF6UVvyg/exec",
-        VERSAO: "4.5.3",
+        API_URL: "https://script.google.com/macros/s/AKfycbwNIRDBmERBDy0jtyCa4oXEChPM9ErwBze2oWkbN4w3eocoecJwQyTVw2z9dI8k3zAL6w/exec",
+        VERSAO: "4.5.5",
         EMAIL_LIST: ["gmail.com","hotmail.com","outlook.com","yahoo.com","pm.ro.gov.br"],
         ADMIN_EMAIL: "1cia.rondon@gmail.com"
     };
@@ -678,15 +818,25 @@ function applyInstitutionalTheme(matriculaLogada = null) {
 
     function setupEvents() {
         DOM.email.oninput = (e) => {
-            const val = e.target.value;
-            const datalist = document.getElementById('emailProviders');
-            datalist.innerHTML = "";
-            if (val.includes("@")) {
-                const prefix = val.split("@")[0];
-                CONFIG.EMAIL_LIST.forEach(p => datalist.innerHTML += `<option value="${prefix}@${p}">`);
-            }
-            updateProgress();
-        };
+    const val = e.target.value;
+    const datalist = document.getElementById('emailProviders');
+    datalist.innerHTML = "";
+
+    if (val.includes("@")) {
+        const prefix = val.split("@")[0];
+        CONFIG.EMAIL_LIST.forEach(p => {
+            datalist.innerHTML += `<option value="${prefix}@${p}">`;
+        });
+    }
+
+    // ✅ FEEDBACK VISUAL DE VALIDAÇÃO
+    DOM.email.classList.toggle(
+        "valido",
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+    );
+
+    updateProgress();
+};
 
         DOM.matricula.onblur = () => {
             let val = DOM.matricula.value.trim();
